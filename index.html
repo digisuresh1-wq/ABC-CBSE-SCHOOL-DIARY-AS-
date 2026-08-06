@@ -62,9 +62,7 @@
     width: 100vw;
   }
 
-  body {
-    padding: 10px;
-  }
+  body { padding: 10px; }
 
   .pwa-install-banner {
     width: 210mm;
@@ -297,13 +295,10 @@
   }
 
   .info-row span { white-space: nowrap; }
-
   .info-row.class-row { color: var(--class-color); }
   .info-row.class-row .info-select { color: var(--class-color); border-bottom-color: var(--class-color); }
-
   .info-row.day-row { color: var(--day-color); }
   .info-row.day-row .info-input { color: var(--day-color); border-bottom-color: var(--day-color); }
-
   .info-row.date-row { color: var(--date-color); }
   .info-row.date-row .info-input { color: var(--date-color); border-bottom-color: var(--date-color); }
 
@@ -416,13 +411,14 @@
     z-index: 5;
   }
 
+  /* SCHEDULE CONTAINER FIXED FOR GAPS & SPACING */
   .schedule-container {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 0px; /* Reduced vertical gap between subjects */
     width: 100%;
     flex-grow: 1;
-    justify-content: space-evenly;
+    justify-content: flex-start;
   }
 
   .period-block { 
@@ -430,11 +426,12 @@
     flex-direction: column; 
     position: relative;
     width: 100%;
+    margin-bottom: 2px; /* Smooth tight layout between subjects */
   }
 
   .period-row { 
     display: flex; 
-    align-items: center; 
+    align-items: flex-start; 
     position: relative;
     width: 100%;
   }
@@ -449,50 +446,55 @@
     border-radius: 6px;
     flex-shrink: 0;
     text-align: left;
+    margin-top: 2px;
   }
 
-  .period-icon { font-size: 15px; margin-right: 5px; flex-shrink: 0; cursor: pointer; }
+  .period-icon { font-size: 15px; margin-right: 5px; flex-shrink: 0; cursor: pointer; margin-top: 2px; }
 
   .rule-lines-stack {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    gap: 2px;
+    gap: 0px;
     width: 100%;
   }
 
+  /* 2-FINGER GAP INTEGRATED ON SINGLE/DOUBLE RULES */
   .rule-wrapper {
     position: relative;
-    height: 22px;
-    overflow: hidden;
+    height: 28px; /* Increased line height for finger space */
+    margin-bottom: 8px; /* 2-Finger Gap distance for clear writing */
+    overflow: visible;
     margin-left: 6px;
     flex-grow: 1;
     width: 100%;
+    display: flex;
+    align-items: center;
   }
 
   .rule-line { position: absolute; left: 0; width: 100%; pointer-events: none; }
 
-  .rule-single .line-1 { top: 15px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-single .line-1 { bottom: 0px; border-bottom: 1.5px solid var(--line-top); }
   .rule-single .line-2, .rule-single .line-3, .rule-single .line-4 { display: none; }
 
-  .rule-double .line-1 { top: 5px; border-bottom: 1.5px solid var(--line-top); }
-  .rule-double .line-2 { top: 17px; border-bottom: 1.5px solid var(--line-bot); }
+  .rule-double .line-1 { top: 4px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-double .line-2 { bottom: 2px; border-bottom: 1.5px solid var(--line-bot); }
   .rule-double .line-3, .rule-double .line-4 { display: none; }
 
   .rule-four .line-1 { top: 2px; border-bottom: 1px solid var(--line-top); }
-  .rule-four .line-2 { top: 7px; border-bottom: 1px dashed var(--line-mid1); }
-  .rule-four .line-3 { top: 12px; border-bottom: 1px dashed var(--line-mid2); }
-  .rule-four .line-4 { top: 17px; border-bottom: 1px solid var(--line-bot); }
+  .rule-four .line-2 { top: 9px; border-bottom: 1px dashed var(--line-mid1); }
+  .rule-four .line-3 { top: 16px; border-bottom: 1px dashed var(--line-mid2); }
+  .rule-four .line-4 { top: 23px; border-bottom: 1px solid var(--line-bot); }
 
   .rule-input-full {
     position: absolute;
-    top: -3px;
+    bottom: 2px;
     left: 0;
-    width: 100%;
-    height: 22px;
+    width: 92%;
+    height: 26px;
     font-family: 'Comic Neue', sans-serif;
     font-size: 15px;
-    line-height: 18px;
+    line-height: 24px;
     color: var(--font-color-main);
     font-weight: 700;
     padding: 0 4px;
@@ -500,6 +502,37 @@
     outline: none;
     white-space: nowrap;
     overflow: hidden;
+  }
+
+  .single-line-actions {
+    position: absolute;
+    right: 0;
+    top: 2px;
+    display: flex;
+    gap: 3px;
+    z-index: 5;
+  }
+
+  .btn-line-add {
+    background: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    cursor: pointer;
+    padding: 1px 5px;
+    font-weight: bold;
+  }
+
+  .btn-line-del {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    cursor: pointer;
+    padding: 1px 5px;
+    font-weight: bold;
   }
 
   .break-banner {
@@ -535,6 +568,7 @@
     opacity: 0.6;
     transition: 0.2s;
     flex-shrink: 0;
+    margin-top: 4px;
   }
 
   .compact-space-container {
@@ -677,7 +711,6 @@
     .diary-page { transform: scale(0.38); transform-origin: top center; margin-bottom: -180mm; }
   }
 
-  /* STRICT 1-PAGE PDF PRINTING & SNAP CONFIGURATION */
   @media print, .snap-mode {
     html, body {
       width: 210mm !important;
@@ -688,7 +721,7 @@
       overflow: hidden !important;
     }
     
-    .control-bar, .pwa-install-banner, .upload-btn, .remove-img-btn, .transparent-copyright, .top-right-remove-btn, .delete-period-btn { 
+    .control-bar, .pwa-install-banner, .upload-btn, .remove-img-btn, .transparent-copyright, .top-right-remove-btn, .delete-period-btn, .single-line-actions { 
       display: none !important; 
     }
     
@@ -1035,9 +1068,7 @@
 </div>
 
 <script>
-  // ==========================================
-  // YOUR FIREBASE CONFIGURATION INTEGRATED
-  // ==========================================
+  // FIREBASE CONFIGURATION
   const firebaseConfig = {
     apiKey: "AIzaSyBFs6u_vzgQem4NyxFusGcWseRH2tZFBcc",
     authDomain: "schooldiary-14957.firebaseapp.com",
@@ -1056,7 +1087,7 @@
     console.log("Firebase Connection Failed", e);
   }
 
-  let currentTop = -2;
+  let currentTop = 0;
   let activeBlock = null;
   let currentSelectedClass = '10';
   let saveTimeout = null;
@@ -1199,12 +1230,49 @@
     ]
   };
 
+  // HELPER TO BUILD SINGLE RULE WRAPPER WITH INDIVIDUAL LINE ADD/DELETE BUTTONS
+  function createRuleWrapperHTML(rulingStyle, currentFont) {
+    return `
+      <div class="rule-wrapper ${rulingStyle}">
+        <div class="rule-line line-1"></div>
+        <div class="rule-line line-2"></div>
+        <div class="rule-line line-3"></div>
+        <div class="rule-line line-4"></div>
+        <div contenteditable="true" class="rule-input-full period-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
+        <div class="single-line-actions">
+          <button class="btn-line-add" onclick="addSingleSubLine(this)" title="Add Line Below">➕ Line</button>
+          <button class="btn-line-del" onclick="deleteSingleSubLine(this)" title="Delete This Line">✕ Line</button>
+        </div>
+      </div>`;
+  }
+
+  function addSingleSubLine(btn) {
+    const wrapper = btn.closest('.rule-wrapper');
+    const stack = wrapper.parentElement;
+    const rulingStyle = document.getElementById('ruling-select')?.value || 'rule-single';
+    const currentFont = document.getElementById('font-select')?.value || "'Comic Neue', sans-serif";
+    
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = createRuleWrapperHTML(rulingStyle, currentFont);
+    const newWrapper = tempContainer.firstElementChild;
+    stack.insertBefore(newWrapper, wrapper.nextSibling);
+  }
+
+  function deleteSingleSubLine(btn) {
+    const wrapper = btn.closest('.rule-wrapper');
+    const stack = wrapper.parentElement;
+    if (stack.querySelectorAll('.rule-wrapper').length > 1) {
+      wrapper.remove();
+    } else {
+      alert("At least one line must remain for this subject!");
+    }
+  }
+
   function renderScheduleForClass(clsValue) {
     const container = document.getElementById('schedule-container');
     container.innerHTML = ''; 
 
     let preset = schedulePresets['ALL_GRADES'];
-
     if (clsValue === 'BV1' || clsValue === 'BV2') {
       preset = schedulePresets['BV1_BV2'];
     } else if (clsValue === 'BV3') {
@@ -1232,16 +1300,10 @@
             <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
             <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)">
             <div class="rule-lines-stack">
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
             </div>
-            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
+            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Entire Period">✕</button>
           </div>`;
       }
       container.appendChild(block);
@@ -1288,6 +1350,7 @@
     document.execCommand(command, false, null);
   }
 
+  // FIXED SELECTED TEXT COLOR APPLIER
   function applySelectedColor(color) {
     document.execCommand('foreColor', false, color);
   }
@@ -1363,14 +1426,8 @@
             <span class="period-icon" title="Click to Change Icon">📝</span>
             <input type="text" class="time-input" value="SUBJECT :" onfocus="setActiveBlock(this)">
             <div class="rule-lines-stack">
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
             </div>
             <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
           </div>`;
@@ -1379,14 +1436,8 @@
           <div class="period-row">
             <div style="width: 151px; flex-shrink: 0;"></div>
             <div class="rule-lines-stack">
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
             </div>
             <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
           </div>`;
@@ -1610,7 +1661,6 @@
       backgroundColor: "#ffffff",
       onclone: (clonedDoc) => {
         const clonedPhotoBox = clonedDoc.getElementById('topRightPhotoBox');
-
         if (clonedPhotoBox && !clonedPhotoBox.classList.contains('has-image')) {
           clonedPhotoBox.style.display = 'none';
           clonedPhotoBox.style.border = 'none';
@@ -1651,9 +1701,12 @@
 
     document.querySelectorAll('.period-block').forEach(block => {
       let time = block.querySelector('.time-input')?.value || '';
-      let line1 = block.querySelector('.line-1-text')?.innerText || block.querySelector('.break-banner')?.value || '';
-      let line2 = block.querySelector('.line-2-text')?.innerText || '';
-      let text = line1 + (line2 ? ' | ' + line2 : '');
+      let textArr = [];
+      block.querySelectorAll('.rule-input-full').forEach(inp => {
+        if(inp.innerText.trim()) textArr.push(inp.innerText.trim());
+      });
+      let lineBreak = block.querySelector('.break-banner')?.value || '';
+      let text = textArr.join(' | ') || lineBreak;
       content += `<tr><td><b>${time}</b></td><td>${text}</td></tr>`;
     });
 
@@ -1682,9 +1735,12 @@
 
     document.querySelectorAll('.period-block').forEach(block => {
       let time = (block.querySelector('.time-input')?.value || '').replace(/"/g, '""');
-      let line1 = (block.querySelector('.line-1-text')?.innerText || block.querySelector('.break-banner')?.value || '').replace(/"/g, '""');
-      let line2 = (block.querySelector('.line-2-text')?.innerText || '').replace(/"/g, '""');
-      let text = line1 + (line2 ? ' | ' + line2 : '');
+      let textArr = [];
+      block.querySelectorAll('.rule-input-full').forEach(inp => {
+        if(inp.innerText.trim()) textArr.push(inp.innerText.trim().replace(/"/g, '""'));
+      });
+      let lineBreak = (block.querySelector('.break-banner')?.value || '').replace(/"/g, '""');
+      let text = textArr.join(' | ') || lineBreak;
       csv += `"${time}","${text}"\n`;
     });
 
@@ -1751,9 +1807,7 @@
     }
   }
 
-  // ==========================================
-  // AUTO-SAVE FUNCTIONALITY (LOCAL + FIREBASE)
-  // ==========================================
+  // AUTO-SAVE (LOCAL + FIREBASE)
   function autoSaveDiaryDataForClass(targetClass) {
     if (!targetClass) targetClass = currentSelectedClass;
 
@@ -1770,24 +1824,23 @@
     document.querySelectorAll('.period-block').forEach((block) => {
       const icon = block.querySelector('.period-icon')?.textContent || '';
       const timeInput = block.querySelector('.time-input')?.value || '';
-      const line1Text = block.querySelector('.line-1-text')?.innerHTML || '';
-      const line2Text = block.querySelector('.line-2-text')?.innerHTML || '';
+      const lines = [];
+      block.querySelectorAll('.rule-input-full').forEach(inp => {
+        lines.push(inp.innerHTML || '');
+      });
       const breakBanner = block.querySelector('.break-banner')?.value || '';
       saveData.periods.push({
         icon,
         timeInput,
-        line1Text,
-        line2Text,
+        lines,
         breakBanner,
         isBreak: !!block.querySelector('.break-banner')
       });
     });
 
-    // Local Storage Save
     localStorage.setItem(`ABC_DAIRY_AS_diary_save_${targetClass}`, JSON.stringify(saveData));
     localStorage.setItem('ABC_DAIRY_AS_last_active_class', targetClass);
 
-    // Firebase Cloud Realtime Database Sync
     if (db) {
       db.ref('diaries/' + targetClass).set(saveData);
     }
@@ -1800,9 +1853,7 @@
     }, 500);
   }
 
-  // ==========================================
-  // AUTO-LOAD FUNCTIONALITY (LOCAL + FIREBASE)
-  // ==========================================
+  // AUTO-LOAD (LOCAL + FIREBASE)
   function populateDiaryFields(saveData) {
     if (!saveData) return;
 
@@ -1818,15 +1869,20 @@
         if (periodBlocks[index]) {
           const iconSpan = periodBlocks[index].querySelector('.period-icon');
           const timeInput = periodBlocks[index].querySelector('.time-input');
-          const line1Text = periodBlocks[index].querySelector('.line-1-text');
-          const line2Text = periodBlocks[index].querySelector('.line-2-text');
           const breakBanner = periodBlocks[index].querySelector('.break-banner');
 
           if (iconSpan && pData.icon !== undefined) iconSpan.textContent = pData.icon;
           if (timeInput && pData.timeInput !== undefined) timeInput.value = pData.timeInput;
-          if (line1Text && pData.line1Text !== undefined) line1Text.innerHTML = pData.line1Text;
-          if (line2Text && pData.line2Text !== undefined) line2Text.innerHTML = pData.line2Text;
           if (breakBanner && pData.breakBanner !== undefined) breakBanner.value = pData.breakBanner;
+
+          const lineInputs = periodBlocks[index].querySelectorAll('.rule-input-full');
+          if (pData.lines && pData.lines.length > 0) {
+            pData.lines.forEach((lineText, lIdx) => {
+              if (lineInputs[lIdx]) {
+                lineInputs[lIdx].innerHTML = lineText;
+              }
+            });
+          }
         }
       });
     }
@@ -1839,7 +1895,6 @@
     document.getElementById('dedicated-text').value = '';
     document.getElementById('remarks-text').value = '';
 
-    // 1. LocalStorage నుండి లోడ్ చేయడం
     const rawData = localStorage.getItem(`ABC_DAIRY_AS_diary_save_${targetClass}`);
     if (rawData) {
       try {
@@ -1850,7 +1905,6 @@
       }
     }
 
-    // 2. Firebase Database నుండి లైవ్ డేటా లోడ్ చేయడం
     if (db) {
       db.ref('diaries/' + targetClass).on('value', (snapshot) => {
         const cloudData = snapshot.val();
