@@ -411,11 +411,10 @@
     z-index: 5;
   }
 
-  /* SCHEDULE CONTAINER FIXED FOR GAPS & SPACING */
   .schedule-container {
     display: flex;
     flex-direction: column;
-    gap: 0px; /* Reduced vertical gap between subjects */
+    gap: 0px;
     width: 100%;
     flex-grow: 1;
     justify-content: flex-start;
@@ -426,7 +425,7 @@
     flex-direction: column; 
     position: relative;
     width: 100%;
-    margin-bottom: 2px; /* Smooth tight layout between subjects */
+    margin-bottom: 2px;
   }
 
   .period-row { 
@@ -459,11 +458,10 @@
     width: 100%;
   }
 
-  /* 2-FINGER GAP INTEGRATED ON SINGLE/DOUBLE RULES */
   .rule-wrapper {
     position: relative;
-    height: 28px; /* Increased line height for finger space */
-    margin-bottom: 8px; /* 2-Finger Gap distance for clear writing */
+    height: 28px;
+    margin-bottom: 8px;
     overflow: visible;
     margin-left: 6px;
     flex-grow: 1;
@@ -1230,7 +1228,6 @@
     ]
   };
 
-  // HELPER TO BUILD SINGLE RULE WRAPPER WITH INDIVIDUAL LINE ADD/DELETE BUTTONS
   function createRuleWrapperHTML(rulingStyle, currentFont) {
     return `
       <div class="rule-wrapper ${rulingStyle}">
@@ -1350,7 +1347,6 @@
     document.execCommand(command, false, null);
   }
 
-  // FIXED SELECTED TEXT COLOR APPLIER
   function applySelectedColor(color) {
     document.execCommand('foreColor', false, color);
   }
@@ -1601,12 +1597,13 @@
         label.style.display = 'none';
         removeBtn.style.display = 'flex';
         box.classList.add('has-image');
+        autoSaveDiaryData();
       });
     }
   }
 
   function removeTopRightPhoto(event) {
-    event.stopPropagation();
+    if(event) event.stopPropagation();
     const img = document.getElementById('topRightImgPreview');
     const box = document.getElementById('topRightPhotoBox');
     const label = document.getElementById('topRightPhotoLabel');
@@ -1620,13 +1617,15 @@
     removeBtn.style.display = 'none';
     box.classList.remove('has-image');
     document.getElementById('topRightInput').value = '';
+    autoSaveDiaryData();
   }
 
+  // DYNAMIC FILE NAME INCLUDES DATE FROM INPUT FIELD
   function getExportFileName(extension) {
     let cls = document.getElementById('diary-class').value || 'Class';
     let dateStr = document.getElementById('diary-date').value || '';
-    dateStr = dateStr.replace(/[\/\s]/g, '-');
-    let suffix = dateStr ? `_${dateStr}` : '';
+    dateStr = dateStr.trim().replace(/[\/\s\.]/g, '-');
+    let suffix = dateStr ? `_Date${dateStr}` : '';
     return `ABC_(AS)Diary_Class${cls}${suffix}.${extension}`;
   }
 
@@ -1765,7 +1764,7 @@
     if(file) {
       processHDImage(file, function(hdDataUrl) {
         document.getElementById('logo-img').src = hdDataUrl;
-        localStorage.setItem('bv_diary_saved_logo', hdDataUrl);
+        autoSaveDiaryData();
       });
     }
   }
@@ -1777,14 +1776,17 @@
         document.getElementById('space-img-preview').src = hdDataUrl;
         document.getElementById('space-img-preview').style.display = 'block';
         document.getElementById('remove-img-btn').style.display = 'flex';
+        autoSaveDiaryData();
       });
     }
   }
 
   function removeSpaceImage() {
+    document.getElementById('space-img-preview').src = '';
     document.getElementById('space-img-preview').style.display = 'none';
     document.getElementById('spaceBannerOverlay').style.display = 'none';
     document.getElementById('remove-img-btn').style.display = 'none';
+    autoSaveDiaryData();
   }
 
   function changeBg(event) { 
@@ -1792,7 +1794,7 @@
     if(file) {
       processHDImage(file, function(hdDataUrl) {
         document.getElementById('diary-container').style.backgroundImage = `url('${hdDataUrl}')`;
-        localStorage.setItem('bv_diary_saved_bg', hdDataUrl);
+        autoSaveDiaryData();
       });
     }
   }
@@ -1803,13 +1805,20 @@
       processHDImage(file, function(hdDataUrl) {
         document.getElementById('sig-preview').src = hdDataUrl;
         document.getElementById('sig-preview').style.display = 'block';
+        autoSaveDiaryData();
       });
     }
   }
 
-  // AUTO-SAVE (LOCAL + FIREBASE)
+  // AUTO-SAVE INCLUDING ALL IMAGE DATA (LOCAL + FIREBASE)
   function autoSaveDiaryDataForClass(targetClass) {
     if (!targetClass) targetClass = currentSelectedClass;
+
+    const topRightImg = document.getElementById('topRightImgPreview');
+    const spaceImg = document.getElementById('space-img-preview');
+    const sigImg = document.getElementById('sig-preview');
+    const logoImg = document.getElementById('logo-img');
+    const diaryPage = document.getElementById('diary-container');
 
     const saveData = {
       diaryClass: targetClass,
@@ -1818,6 +1827,14 @@
       spaceText: document.getElementById('space-textarea').value,
       dedicatedText: document.getElementById('dedicated-text').value,
       remarksText: document.getElementById('remarks-text').value,
+      
+      // IMAGE DATA STORAGE
+      logoSrc: logoImg.src || '',
+      bgImage: diaryPage.style.backgroundImage || '',
+      studentPhotoSrc: topRightImg.style.display !== 'none' ? topRightImg.src : '',
+      spacePhotoSrc: spaceImg.style.display !== 'none' ? spaceImg.src : '',
+      signatureSrc: sigImg.style.display !== 'none' ? sigImg.src : '',
+
       periods: []
     };
 
@@ -1838,8 +1855,12 @@
       });
     });
 
-    localStorage.setItem(`ABC_DAIRY_AS_diary_save_${targetClass}`, JSON.stringify(saveData));
-    localStorage.setItem('ABC_DAIRY_AS_last_active_class', targetClass);
+    try {
+      localStorage.setItem(`ABC_DAIRY_AS_diary_save_${targetClass}`, JSON.stringify(saveData));
+      localStorage.setItem('ABC_DAIRY_AS_last_active_class', targetClass);
+    } catch(e) {
+      console.log('Local storage size exceeded for images:', e);
+    }
 
     if (db) {
       db.ref('diaries/' + targetClass).set(saveData);
@@ -1853,7 +1874,7 @@
     }, 500);
   }
 
-  // AUTO-LOAD (LOCAL + FIREBASE)
+  // AUTO-LOAD INCLUDING ALL IMAGES
   function populateDiaryFields(saveData) {
     if (!saveData) return;
 
@@ -1862,6 +1883,37 @@
     if (saveData.spaceText !== undefined) document.getElementById('space-textarea').value = saveData.spaceText;
     if (saveData.dedicatedText !== undefined) document.getElementById('dedicated-text').value = saveData.dedicatedText;
     if (saveData.remarksText !== undefined) document.getElementById('remarks-text').value = saveData.remarksText;
+
+    // RESTORE IMAGES
+    if (saveData.logoSrc) document.getElementById('logo-img').src = saveData.logoSrc;
+    if (saveData.bgImage) document.getElementById('diary-container').style.backgroundImage = saveData.bgImage;
+
+    const topRightImg = document.getElementById('topRightImgPreview');
+    const photoBox = document.getElementById('topRightPhotoBox');
+    const photoLabel = document.getElementById('topRightPhotoLabel');
+    const photoRemoveBtn = document.getElementById('topRightRemoveBtn');
+
+    if (saveData.studentPhotoSrc) {
+      topRightImg.src = saveData.studentPhotoSrc;
+      topRightImg.style.display = 'block';
+      photoLabel.style.display = 'none';
+      photoRemoveBtn.style.display = 'flex';
+      photoBox.classList.add('has-image');
+    }
+
+    const spaceImg = document.getElementById('space-img-preview');
+    const spaceRemoveBtn = document.getElementById('remove-img-btn');
+    if (saveData.spacePhotoSrc) {
+      spaceImg.src = saveData.spacePhotoSrc;
+      spaceImg.style.display = 'block';
+      spaceRemoveBtn.style.display = 'flex';
+    }
+
+    const sigImg = document.getElementById('sig-preview');
+    if (saveData.signatureSrc) {
+      sigImg.src = saveData.signatureSrc;
+      sigImg.style.display = 'block';
+    }
 
     if (saveData.periods && saveData.periods.length > 0) {
       const periodBlocks = document.querySelectorAll('.period-block');
@@ -1895,6 +1947,10 @@
     document.getElementById('dedicated-text').value = '';
     document.getElementById('remarks-text').value = '';
 
+    removeTopRightPhoto();
+    removeSpaceImage();
+    document.getElementById('sig-preview').style.display = 'none';
+
     const rawData = localStorage.getItem(`ABC_DAIRY_AS_diary_save_${targetClass}`);
     if (rawData) {
       try {
@@ -1916,16 +1972,6 @@
   }
 
   function autoLoadDiaryDataOnPageLoad() {
-    const savedLogo = localStorage.getItem('bv_diary_saved_logo');
-    if (savedLogo) {
-      document.getElementById('logo-img').src = savedLogo;
-    }
-
-    const savedBg = localStorage.getItem('bv_diary_saved_bg');
-    if (savedBg) {
-      document.getElementById('diary-container').style.backgroundImage = `url('${savedBg}')`;
-    }
-
     const lastClass = localStorage.getItem('ABC_DAIRY_AS_last_active_class') || '10';
     document.getElementById('diary-class').value = lastClass;
     currentSelectedClass = lastClass;
@@ -1935,7 +1981,7 @@
 
   function clearSavedData() {
     const activeClass = document.getElementById('diary-class').value;
-    if (confirm(`Are you sure you want to clear all saved notes for class ${activeClass}?`)) {
+    if (confirm(`Are you sure you want to clear all saved notes and pictures for class ${activeClass}?`)) {
       localStorage.removeItem(`ABC_DAIRY_AS_diary_save_${activeClass}`);
       if (db) {
         db.ref('diaries/' + activeClass).remove();
@@ -1946,6 +1992,9 @@
       document.getElementById('space-textarea').value = '';
       document.getElementById('dedicated-text').value = '';
       document.getElementById('remarks-text').value = '';
+      removeTopRightPhoto();
+      removeSpaceImage();
+      document.getElementById('sig-preview').style.display = 'none';
     }
   }
 
