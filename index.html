@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ABC (AS)Diary - Interactive School Diary by AVULA SURESHKUMAR</title>
+
+<!-- CLEAN FIXED PWA MANIFEST -->
+<link rel="manifest" href='data:application/manifest+json,{"name":"ABC DIARY(AS)","short_name":"ABC DIARY(AS)","start_url":".","display":"standalone","background_color":"#2c3e50","theme_color":"#0083a8"}'>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- FIREBASE REALTIME DATABASE SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Fredoka:wght@600;700&family=Nunito:wght@700;800;900&family=Poppins:wght@600;700&family=Quicksand:wght@700&family=Roboto:wght@700&family=Open+Sans:wght@700&family=Montserrat:wght@700&family=Lato:wght@700&family=Oswald:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Pacifico&family=Caveat:wght@700&family=Kalam:wght@700&family=Lobster&family=Dancing+Script:wght@700&display=swap');
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  :root {
+    --bg-page: #2c3e50;
+    --card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(244, 251, 253, 0.92) 100%);
+    --primary: #0083a8;
+    --primary-dark: #005f7a;
+    --accent-red: #d32f2f;
+    --time-bg: #e6f7ff;
+    --break-bg: linear-gradient(145deg, #ff7675, #d63031);
+    --border-color: #0083a8;
+    
+    --line-top: #29b6f6;
+    --line-mid1: #ef5350;
+    --line-mid2: #ef5350;
+    --line-bot: #66bb6a;
+
+    --font-color-main: #1a252f;
+    --space-text-color: #1a252f;
+    --space-border-color: #0083a8;
+    --space-border-style: dashed;
+    --space-border-width: 2px;
+
+    --class-color: #8e44ad;
+    --day-color: #d32f2f;
+    --date-color: #27ae60;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-page);
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    width: 100vw;
+  }
+
+  body { padding: 10px; }
+
+  .sync-status {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #27ae60;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 9999;
+    display: none;
+  }
+
+  .pwa-install-banner {
+    width: 210mm;
+    max-width: 100%;
+    background: linear-gradient(145deg, #2c3e50, #1a252f);
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--primary);
+  }
+
+  .pwa-install-btn {
+    background: linear-gradient(145deg, #0083a8, #005f7a);
+    color: #fff;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 800;
+    cursor: pointer;
+    font-size: 12px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .control-bar {
+    width: 210mm;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.25);
+    gap: 8px;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #2c3e50;
+    flex-wrap: wrap;
+  }
+
+  .control-select, .control-color {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1.5px solid var(--primary);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    outline: none;
+    cursor: pointer;
+    font-size: 12px;
+    min-height: 34px;
+  }
+
+  .control-select { max-width: 155px; }
+
+  .export-dropdown {
+    background: linear-gradient(145deg, #2ed573, #26af5f);
+    color: #ffffff;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+    outline: none;
+    min-height: 34px;
+  }
+
+  .btn-pos {
+    background: #f39c12;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: 0.2s;
+    min-height: 34px;
+  }
+  .btn-pos:hover { background: #d35400; }
+
+  .btn-add-period {
+    background: linear-gradient(145deg, #27ae60, #2ea043);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
+    min-height: 34px;
+  }
+
+  .btn-clear {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
+    min-height: 34px;
+  }
+
+  .btn-action {
+    color: #ffffff;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 34px;
+  }
+
+  .btn-fmt {
+    background: #2980b9;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+    min-height: 34px;
+  }
+
+  .btn-bg { background: linear-gradient(145deg, #ffa502, #e1b12c); }
+  .btn-img { background: linear-gradient(145deg, #9b59b6, #8e44ad); }
+
+  .diary-wrapper {
+    width: 210mm;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .diary-page {
+    width: 210mm;
+    height: 297mm;
+    max-height: 297mm;
+    box-sizing: border-box;
+    background-image: url('https://abchighschool.com/public/uploads/pages/1684751693_3e8fefe868b425805ef9.jpeg');
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    padding: 35px 40px 30px 40px;
+    position: relative;
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .inner-container {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 3.5px solid var(--border-color);
+    padding: 12px 16px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  input, textarea, select {
+    font-family: inherit;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--font-color-main);
+  }
+
+  .header {
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    align-items: center;
+    margin-bottom: 6px;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .info-box {
+    border: 2.5px solid var(--primary);
+    border-radius: 12px;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.95);
+    width: 155px;
+    min-height: 75px;
+    box-shadow: 0px 3px 0px var(--primary-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 4px;
+  }
+
+  .info-row {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .info-row span { white-space: nowrap; }
+  .info-row.class-row { color: var(--class-color); }
+  .info-row.class-row .info-select { color: var(--class-color); border-bottom-color: var(--class-color); }
+  .info-row.day-row { color: var(--day-color); }
+  .info-row.day-row .info-input { color: var(--day-color); border-bottom-color: var(--day-color); }
+  .info-row.date-row { color: var(--date-color); }
+  .info-row.date-row .info-input { color: var(--date-color); border-bottom-color: var(--date-color); }
+
+  .info-input, .info-select {
+    font-weight: 800;
+    width: 80px;
+    font-size: 13px;
+    text-transform: uppercase;
+    border-bottom: 2px solid;
+    padding-left: 2px;
+  }
+
+  .logo-container-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 75px;
+    padding: 0 5px;
+    overflow: hidden;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .center-logo-banner {
+    max-height: 70px;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+    filter: brightness(1.05) contrast(1.05);
+  }
+
+  .top-right-photo-box {
+    width: 130px;
+    height: 75px;
+    border: 2px dashed var(--primary);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    resize: both;
+    min-width: 80px;
+    min-height: 50px;
+    max-width: 220px;
+    max-height: 140px;
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.15);
+  }
+
+  .top-right-photo-box span {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--primary);
+    text-align: center;
+  }
+
+  .top-right-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    filter: brightness(1.08) contrast(1.12) saturate(1.15);
+  }
+
+  .banner-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(145deg, rgba(0, 131, 168, 0.92), rgba(0, 95, 122, 0.92));
+    color: #ffffff;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    text-align: center;
+    padding: 2px 3px;
+    display: none;
+    z-index: 4;
+    word-break: break-word;
+    box-shadow: 0px -2px 6px rgba(0,0,0,0.2);
+  }
+
+  .top-right-remove-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #e74c3c;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    z-index: 5;
+  }
+
+  .schedule-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    width: 100%;
+    flex-grow: 1;
+    justify-content: flex-start;
+  }
+
+  .period-block { 
+    display: flex; 
+    flex-direction: column; 
+    position: relative;
+    width: 100%;
+    margin-bottom: 2px;
+  }
+
+  .period-row { 
+    display: flex; 
+    align-items: flex-start; 
+    position: relative;
+    width: 100%;
+  }
+
+  .time-input {
+    width: 135px;
+    font-weight: 900;
+    font-size: 11.5px;
+    color: var(--primary);
+    padding: 3px 5px;
+    background: var(--time-bg);
+    border-radius: 6px;
+    flex-shrink: 0;
+    text-align: left;
+    margin-top: 2px;
+  }
+
+  .period-icon { font-size: 15px; margin-right: 5px; flex-shrink: 0; cursor: pointer; margin-top: 2px; }
+
+  .rule-lines-stack {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 0px;
+    width: 100%;
+  }
+
+  .rule-wrapper {
+    position: relative;
+    height: 28px;
+    margin-bottom: 8px;
+    overflow: visible;
+    margin-left: 6px;
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .rule-line { position: absolute; left: 0; width: 100%; pointer-events: none; }
+
+  .rule-single .line-1 { bottom: 0px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-single .line-2, .rule-single .line-3, .rule-single .line-4 { display: none; }
+
+  .rule-double .line-1 { top: 4px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-double .line-2 { bottom: 2px; border-bottom: 1.5px solid var(--line-bot); }
+  .rule-double .line-3, .rule-double .line-4 { display: none; }
+
+  .rule-four .line-1 { top: 2px; border-bottom: 1px solid var(--line-top); }
+  .rule-four .line-2 { top: 9px; border-bottom: 1px dashed var(--line-mid1); }
+  .rule-four .line-3 { top: 16px; border-bottom: 1px dashed var(--line-mid2); }
+  .rule-four .line-4 { top: 23px; border-bottom: 1px solid var(--line-bot); }
+
+  .rule-input-full {
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 92%;
+    height: 26px;
+    font-family: 'Comic Neue', sans-serif;
+    font-size: 15px;
+    line-height: 24px;
+    color: var(--font-color-main);
+    font-weight: 700;
+    padding: 0 4px;
+    z-index: 2;
+    outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .single-line-actions {
+    position: absolute;
+    right: 0;
+    top: 2px;
+    display: flex;
+    gap: 3px;
+    z-index: 5;
+  }
+
+  .btn-line-add {
+    background: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    cursor: pointer;
+    padding: 1px 5px;
+    font-weight: bold;
+  }
+
+  .btn-line-del {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    cursor: pointer;
+    padding: 1px 5px;
+    font-weight: bold;
+  }
+
+  .break-banner {
+    width: 100%;
+    height: 28px;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 2px;
+    line-height: 28px;
+    z-index: 2;
+    background: var(--break-bg);
+    border-radius: 6px;
+    margin-left: 6px;
+  }
+
+  .delete-period-btn {
+    background: #ff4757;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: 0.2s;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .compact-space-container {
+    height: 50px;
+    min-height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 4px 0;
+    resize: vertical;
+    overflow: hidden;
+    border-width: var(--space-border-width);
+    border-style: var(--space-border-style);
+    border-color: var(--space-border-color);
+    border-radius: 8px;
+  }
+
+  .space-text-input {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    font-family: 'Comic Neue', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--font-color-main);
+    padding: 4px 8px;
+    z-index: 1;
+    line-height: 1.3;
+  }
+
+  .space-inserted-img {
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: none;
+    border-radius: 8px;
+    position: absolute;
+    z-index: 2;
+    filter: brightness(1.08) contrast(1.12) saturate(1.15);
+  }
+
+  .remove-img-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    z-index: 10;
+  }
+
+  .footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .remark-row {
+    display: flex;
+    align-items: flex-end;
+    font-weight: 800;
+    font-size: 11.5px;
+    color: var(--primary);
+  }
+
+  .remark-label { white-space: nowrap; margin-right: 6px; }
+
+  .remark-input {
+    flex-grow: 1;
+    border-bottom: 2px solid var(--primary);
+    font-size: 14px;
+    color: var(--font-color-main);
+    font-weight: 700;
+    padding-left: 4px;
+  }
+
+  .signatures {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 4px;
+    padding: 0 8px;
+    font-weight: 800;
+    font-size: 11.5px;
+    color: var(--primary);
+  }
+
+  .signature-box { display: flex; flex-direction: column; align-items: center; }
+
+  .signature-preview {
+    height: 30px;
+    max-width: 130px;
+    object-fit: contain;
+    margin-bottom: 2px;
+    display: none;
+    filter: contrast(1.2);
+  }
+
+  .upload-btn {
+    font-size: 10px;
+    background: linear-gradient(145deg, #00a8ff, #0097e6);
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 800;
+    margin-bottom: 3px;
+  }
+
+  .transparent-copyright {
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 820px) {
+    body { padding: 4px; }
+    .control-bar, .pwa-install-banner { width: 100%; padding: 8px; justify-content: space-between; border-radius: 8px; }
+    .control-group { font-size: 11px; }
+    .control-select { max-width: 105px; font-size: 11px; padding: 4px; }
+    .diary-wrapper { width: 100%; overflow-x: hidden; display: flex; justify-content: center; }
+    .diary-page { transform: scale(0.46); transform-origin: top center; margin-bottom: -155mm; }
+  }
+
+  @media screen and (max-width: 480px) {
+    .diary-page { transform: scale(0.38); transform-origin: top center; margin-bottom: -180mm; }
+  }
+
+  @media print, .snap-mode {
+    html, body {
+      width: 210mm !important;
+      height: 297mm !important;
+      background: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+    }
+    
+    .control-bar, .pwa-install-banner, .upload-btn, .remove-img-btn, .transparent-copyright, .top-right-remove-btn, .delete-period-btn, .single-line-actions, .sync-status { 
+      display: none !important; 
+    }
+    
+    .compact-space-container, .top-right-photo-box { resize: none !important; }
+    textarea::placeholder, input::placeholder { color: transparent !important; opacity: 0 !important; }
+    
+    .top-right-photo-box:not(.has-image) { 
+      display: none !important; 
+      border: none !important; 
+      background: transparent !important; 
+    }
+    
+    .top-right-photo-box.has-image { 
+      border: none !important; 
+      background: transparent !important; 
+    }
+    
+    .top-right-photo-box span { display: none !important; }
+    
+    .diary-wrapper { 
+      width: 210mm !important; 
+      height: 297mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      page-break-inside: avoid !important;
+      page-break-before: avoid !important;
+      page-break-after: avoid !important;
+    }
+    
+    .diary-page { 
+      width: 210mm !important; 
+      height: 297mm !important; 
+      max-height: 297mm !important;
+      box-shadow: none !important; 
+      padding: 30px 35px 25px 35px !important; 
+      transform: none !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      -webkit-print-color-adjust: exact !important; 
+      print-color-adjust: exact !important; 
+      page-break-inside: avoid !important;
+    }
+    
+    .inner-container { 
+      box-shadow: none !important; 
+      height: 100% !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="sync-status" id="syncStatus">☁️ Cloud Saved</div>
+
+<div class="pwa-install-banner" id="pwaBanner">
+  <span>📱 Install <b>BV Diary App</b> on your Device</span>
+  <button class="pwa-install-btn" id="pwaInstallBtn">📥 Install App</button>
+</div>
+
+<div class="control-bar">
+  <div class="control-group">
+    <label>🎉 Occasion Presets (200+):</label>
+    <select class="control-select" id="occasion-select" onchange="applyOccasionTheme(this.value)"></select>
+  </div>
+
+  <div class="control-group">
+    <label>🎨 Theme:</label>
+    <select class="control-select" id="theme-select" onchange="applyTheme(this.value)">
+      <option value="bv-classic" selected>1. BV Ocean Blue</option>
+      <option value="royal-purple">2. Royal Purple</option>
+      <option value="fresh-mint">3. Fresh Mint Green</option>
+      <option value="sunset-orange">4. Sunset Coral</option>
+      <option value="golden-amber">5. Golden Amber</option>
+      <option value="dark-slate">6. Dark Slate</option>
+      <option value="cherry-blossom">7. Cherry Pink</option>
+      <option value="teal-sky">8. Vibrant Teal</option>
+      <option value="chocolate-warmth">9. Chocolate</option>
+      <option value="forest-emerald">10. Emerald</option>
+      <option value="lavender-dream">11. Lavender</option>
+      <option value="sunshine-yellow">12. Sunshine</option>
+      <option value="ruby-red">13. Ruby Red</option>
+      <option value="corporate-grey">14. Corporate</option>
+      <option value="pastel-rainbow">15. Pastel</option>
+      <option value="midnight-blue">16. Midnight Blue</option>
+      <option value="rose-gold">17. Rose Gold</option>
+      <option value="cyan-breeze">18. Cyan Breeze</option>
+      <option value="vintage-cream">19. Vintage Cream</option>
+      <option value="neon-cyber">20. Neon Modern</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>🎂 Top Wish Overlay:</label>
+    <select class="control-select" id="template-select" onchange="applyEventTemplate(this.value, 'topRightBannerOverlay')">
+      <option value="" selected>Select Wish Banner...</option>
+      <optgroup label="🎂 Birthday Wishes">
+        <option value="🎂 Happy Birthday! Wish you success!">🎂 Happy Birthday! Wish you success!</option>
+        <option value="🎉 Wishing you a joyful Birthday!">🎉 Wishing you a joyful Birthday!</option>
+        <option value="🌟 Happy Birthday to our Bright Star!">🌟 Happy Birthday to our Bright Star!</option>
+        <option value="🎈 Best Wishes on your Special Day!">🎈 Best Wishes on your Special Day!</option>
+      </optgroup>
+      <optgroup label="🏆 Congratulations & Winners">
+        <option value="🏆 Congratulations on your achievement!">🏆 Congratulations on your achievement!</option>
+        <option value="🥇 1st Place Winner!">🥇 1st Place Winner!</option>
+        <option value="🏅 Winner in Competition!">🏅 Winner in Competition!</option>
+        <option value="⭐ Proud Moment for our School!">⭐ Proud Moment for our School!</option>
+      </optgroup>
+      <optgroup label="⭐ Appraisal & Joy">
+        <option value="⭐ Student of the Month!">⭐ Student of the Month!</option>
+        <option value="💯 100% Attendance Award!">💯 100% Attendance Award!</option>
+        <option value="😊 Keep Shining & Spreading Joy!">😊 Keep Shining & Spreading Joy!</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>🎂 Space Wish Overlay:</label>
+    <select class="control-select" id="space-template-select" onchange="applyEventTemplate(this.value, 'spaceBannerOverlay')">
+      <option value="" selected>Select Space Wish Banner...</option>
+      <optgroup label="🎂 Birthday Wishes">
+        <option value="🎂 Happy Birthday! Wish you success!">🎂 Happy Birthday! Wish you success!</option>
+        <option value="🎉 Wishing you a joyful Birthday!">🎉 Wishing you a joyful Birthday!</option>
+        <option value="🌟 Happy Birthday to our Bright Star!">🌟 Happy Birthday to our Bright Star!</option>
+        <option value="🎈 Best Wishes on your Special Day!">🎈 Best Wishes on your Special Day!</option>
+      </optgroup>
+      <optgroup label="🏆 Congratulations & Winners">
+        <option value="🏆 Congratulations on your achievement!">🏆 Congratulations on your achievement!</option>
+        <option value="🥇 1st Place Winner!">🥇 1st Place Winner!</option>
+        <option value="🏅 Winner in Competition!">🏅 Winner in Competition!</option>
+        <option value="⭐ Proud Moment for our School!">⭐ Proud Moment for our School!</option>
+      </optgroup>
+      <optgroup label="⭐ Appraisal & Joy">
+        <option value="⭐ Student of the Month!">⭐ Student of the Month!</option>
+        <option value="💯 100% Attendance Award!">💯 100% Attendance Award!</option>
+        <option value="😊 Keep Shining & Spreading Joy!">😊 Keep Shining & Spreading Joy!</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>📏 Ruling:</label>
+    <select class="control-select" id="ruling-select" onchange="changeRuling(this.value)">
+      <option value="rule-single" selected>Single Line (Default)</option>
+      <option value="rule-double">Double Line</option>
+      <option value="rule-four">Four Line</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>🔤 Font:</label>
+    <select class="control-select" id="font-select" onchange="changeFontFamily(this.value)"></select>
+  </div>
+
+  <div class="control-group">
+    <label>📏 Size:</label>
+    <select class="control-select" onchange="changeFontSize(this.value)">
+      <option value="14px">14px</option>
+      <option value="15px" selected>15px (Default)</option>
+      <option value="16px">16px</option>
+      <option value="18px">18px</option>
+      <option value="20px">20px</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>🎭 3D Style:</label>
+    <select class="control-select" id="3d-select" onchange="apply3DEffectIndex(this.value)"></select>
+  </div>
+
+  <div class="control-group">
+    <label>🎨 Main Color:</label>
+    <input type="color" class="control-color" value="#1a252f" onchange="changeFontColor(this.value)" title="Change All Text Color">
+  </div>
+
+  <div class="control-group">
+    <label>🍎 Break Color:</label>
+    <input type="color" class="control-color" value="#ff7675" onchange="changeBreakColor(this.value)" title="Change Break Banner Color">
+  </div>
+
+  <div class="control-group">
+    <label>✏️ Formatting:</label>
+    <button class="btn-fmt" onclick="formatSelection('bold')"><b>B</b></button>
+    <button class="btn-fmt" onclick="formatSelection('italic')"><i>I</i></button>
+    <button class="btn-fmt" onclick="formatSelection('underline')"><u>U</u></button>
+    <input type="color" class="control-color" value="#1a252f" id="selection-color-picker" onchange="applySelectedColor(this.value)" title="Color Selected Text">
+  </div>
+
+  <div class="control-group">
+    <label>🎓 Class:</label>
+    <input type="color" class="control-color" value="#8e44ad" onchange="changeHeaderColor('--class-color', this.value)">
+  </div>
+
+  <div class="control-group">
+    <label>🗓️ Day:</label>
+    <input type="color" class="control-color" value="#d32f2f" onchange="changeHeaderColor('--day-color', this.value)">
+  </div>
+
+  <div class="control-group">
+    <label>📅 Date:</label>
+    <input type="color" class="control-color" value="#27ae60" onchange="changeHeaderColor('--date-color', this.value)">
+  </div>
+
+  <div class="control-group">
+    <label>📌 Period Icons:</label>
+    <select class="control-select" id="period-icon-select" onchange="changeActivePeriodIcon(this.value); this.value='';"></select>
+  </div>
+
+  <div class="control-group">
+    <label>✨ Line Style:</label>
+    <select class="control-select" onchange="changeSpaceBorderStyle(this.value)">
+      <option value="none">No Border</option>
+      <option value="dashed" selected>Dashed</option>
+      <option value="solid">Solid</option>
+      <option value="dotted">Dotted</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>↕️ Text Adjust:</label>
+    <button class="btn-pos" onclick="moveText(-1)">▲ Up</button>
+    <button class="btn-pos" onclick="moveText(1)">▼ Down</button>
+  </div>
+
+  <div class="control-group">
+    <button class="btn-add-period" onclick="addNewPeriod('period', false)">➕ Line Only</button>
+    <button class="btn-add-period" style="background: linear-gradient(145deg, #2980b9, #1f618d);" onclick="addNewPeriod('period', true)">🏷️ Line + Subject</button>
+    <button class="btn-add-period" style="background: linear-gradient(145deg, #e67e22, #d35400);" onclick="addNewPeriod('break', false)">🍎 Add Break</button>
+    <button class="btn-clear" onclick="clearSavedData()">🧹 Clear Class Data</button>
+  </div>
+
+  <div class="control-group">
+    <label>📥 Export File:</label>
+    <select class="export-dropdown" onchange="handleExport(this.value); this.value='';">
+      <option value="" disabled selected>Select Format...</option>
+      <option value="pdf">📄 Save PDF</option>
+      <option value="snap">📸 Take Snap (PNG)</option>
+      <option value="word">📝 Export Word (.doc)</option>
+      <option value="excel">📊 Export Excel (.csv)</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>🎭 Emojis:</label>
+    <select class="control-select" id="emoji-select" onchange="insertEmojiFromSelect(this.value); this.value='';"></select>
+  </div>
+
+  <label class="btn-action btn-pos" style="background: #2980b9;">
+    🏷️ Logo <input type="file" accept="image/*" style="display: none;" onchange="changeLogo(event)">
+  </label>
+  <label class="btn-action btn-img">
+    📷 Birthday/Space Img <input type="file" accept="image/*" style="display: none;" onchange="insertSpaceImage(event)">
+  </label>
+  <label class="btn-action btn-bg">
+    🖼️ BG <input type="file" accept="image/*" style="display: none;" onchange="changeBg(event)">
+  </label>
+</div>
+
+<div class="diary-wrapper">
+  <div class="diary-page" id="diary-container">
+    <div class="inner-container">
+      
+      <div class="header">
+        <div class="info-box">
+          <div class="info-row class-row">
+            <span>CLASS:</span>
+            <select class="info-select" id="diary-class" onchange="handleClassChange(this.value)">
+              <option value="BV1">BV1</option>
+              <option value="BV2">BV2</option>
+              <option value="BV3">BV3</option>
+              <option value="1F">1F</option>
+              <option value="1G">1G</option>
+              <option value="2F">2F</option>
+              <option value="2G">2G</option>
+              <option value="3F">3F</option>
+              <option value="3G">3G</option>
+              <option value="4F">4F</option>
+              <option value="4G">4G</option>
+              <option value="5F">5F</option>
+              <option value="5G">5G</option>
+              <option value="6F">6F</option>
+              <option value="6G">6G</option>
+              <option value="7F">7F</option>
+              <option value="7G">7G</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10" selected>10</option>
+            </select>
+          </div>
+          <div class="info-row day-row">
+            <span>DAY:</span>
+            <input type="text" class="info-input" id="diary-day" placeholder="_______">
+          </div>
+          <div class="info-row date-row">
+            <span>DATE:</span>
+            <input type="text" class="info-input" id="diary-date" placeholder="DD/MM/YY">
+          </div>
+        </div>
+
+        <div class="logo-container-center">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='270' height='75' viewBox='0 0 270 75'><rect width='100%' height='100%' fill='none'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Fredoka, sans-serif' font-size='22' font-weight='bold' fill='%230083a8'>ABC HIGH SCHOOL</text></svg>" id="logo-img" class="center-logo-banner" alt="ABC High School Logo">
+        </div>
+
+        <div class="top-right-photo-box" id="topRightPhotoBox" onclick="triggerTopRightUpload()" title="Drag bottom-right corner to resize">
+          <span id="topRightPhotoLabel">🎂 Student Photo</span>
+          <img id="topRightImgPreview" class="top-right-preview-img" alt="Student Photo">
+          <div id="topRightBannerOverlay" class="banner-overlay"></div>
+          <button id="topRightRemoveBtn" class="top-right-remove-btn" onclick="removeTopRightPhoto(event)">✕</button>
+          <input type="file" id="topRightInput" accept="image/*" style="display:none;" onchange="loadTopRightPhoto(event)">
+        </div>
+      </div>
+
+      <div class="schedule-container" id="schedule-container"></div>
+
+      <div class="compact-space-container" id="space-spacer" title="Drag bottom-right corner to resize">
+        <textarea id="space-textarea" class="space-text-input" placeholder="Type extra notes, birthday wishes, homework or announcements here..."></textarea>
+        <img id="space-img-preview" class="space-inserted-img" alt="Space/Birthday Picture">
+        <div id="spaceBannerOverlay" class="banner-overlay" style="z-index: 5;"></div>
+        <button id="remove-img-btn" class="remove-img-btn" onclick="removeSpaceImage()">✕</button>
+      </div>
+
+      <div class="footer-section">
+        <div class="remark-row">
+          <span class="remark-label">WEEK DEDICATION TOPIC :</span>
+          <input type="text" class="remark-input" id="dedicated-text">
+        </div>
+        <div class="remark-row">
+          <span class="remark-label">TEACHER'S / PARENT'S REMARKS :</span>
+          <input type="text" class="remark-input" id="remarks-text">
+        </div>
+        <div class="signatures">
+          <span>Sign. of Parent</span>
+          <div class="signature-box">
+            <img id="sig-preview" class="signature-preview" alt="Signature">
+            <label class="upload-btn">+ Upload Sign <input type="file" accept="image/*" style="display: none;" onchange="loadSignature(event)"></label>
+            <span>Sign. of Class Teacher</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="transparent-copyright">
+  Copy rights @sureshkumar Avula
+</div>
+
+<script>
+  // FIREBASE CONFIGURATION
+  const firebaseConfig = {
+    apiKey: "AIzaSyBFs6u_vzgQem4NyxFusGcWseRH2tZFBcc",
+    authDomain: "schooldiary-14957.firebaseapp.com",
+    databaseURL: "https://schooldiary-14957-default-rtdb.firebaseio.com",
+    projectId: "schooldiary-14957",
+    storageBucket: "schooldiary-14957.firebasestorage.app",
+    messagingSenderId: "1021090731358",
+    appId: "1:1021090731358:web:56c1587c544eaa431debcf"
+  };
+
+  let db = null;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  } catch(e) {
+    console.log("Firebase Connection Failed", e);
+  }
+
+  let currentTop = 0;
+  let activeBlock = null;
+  let currentSelectedClass = '10';
+  let saveTimeout = null;
+  let deferredPrompt = null;
+  let isUpdatingFromCloud = false;
+
+  const occasionCategories = [
+    { title: "🎂 Birthdays & Celebrations", theme: "cherry-blossom", prefix: "Birthday" },
+    { title: "🇮🇳 Independence & Republic Day", theme: "sunset-orange", prefix: "Independence / Republic Day" },
+    { title: "👨‍🏫 Teachers' Day Special", theme: "royal-purple", prefix: "Teachers Day" },
+    { title: "🎈 Children's Day Fest", theme: "sunshine-yellow", prefix: "Childrens Day" },
+    { title: "🏆 Annual Sports & Cultural Day", theme: "golden-amber", prefix: "Sports & Cultural Day" },
+    { title: "🪔 Diwali / Deepavali Festival", theme: "ruby-red", prefix: "Diwali" },
+    { title: "🪁 Sankranti / Pongal Festival", theme: "teal-sky", prefix: "Sankranti" },
+    { title: "🪔 Dussehra / Vijayadashami", theme: "golden-amber", prefix: "Dussehra" },
+    { title: "🎄 Christmas & New Year", theme: "forest-emerald", prefix: "Christmas" },
+    { title: "🎨 Science Fair & Quiz", theme: "cyan-breeze", prefix: "Science Fair" }
+  ];
+
+  const occasionSelect = document.getElementById('occasion-select');
+  let defaultOccOpt = document.createElement('option');
+  defaultOccOpt.value = 'default'; defaultOccOpt.text = 'Select Festival / Occasion...'; defaultOccOpt.selected = true;
+  occasionSelect.appendChild(defaultOccOpt);
+
+  let occasionIndex = 1;
+  occasionCategories.forEach(cat => {
+    let optGroup = document.createElement('optgroup');
+    optGroup.label = cat.title;
+    for (let i = 1; i <= 20; i++) {
+      let option = document.createElement('option');
+      option.value = JSON.stringify({ theme: cat.theme, name: `${cat.prefix} Variant #${i}` });
+      option.text = `${occasionIndex++}. ${cat.prefix} Theme Style ${i}`;
+      optGroup.appendChild(option);
+    }
+    occasionSelect.appendChild(optGroup);
+  });
+
+  function applyOccasionTheme(jsonStr) {
+    if (!jsonStr || jsonStr === 'default') {
+      applyTheme('bv-classic');
+      document.getElementById('diary-container').style.backgroundImage = "url('https://abchighschool.com/public/uploads/pages/1684751693_3e8fefe868b425805ef9.jpeg')";
+      return;
+    }
+    try {
+      const data = JSON.parse(jsonStr);
+      document.getElementById('theme-select').value = data.theme;
+      applyTheme(data.theme);
+    } catch(e) {}
+  }
+
+  function processHDImage(file, callback) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        let maxDim = 600;
+        let width = img.width;
+        let height = img.height;
+        if (width > height && width > maxDim) {
+          height *= maxDim / width;
+          width = maxDim;
+        } else if (height > maxDim) {
+          width *= maxDim / height;
+          height = maxDim;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        ctx.filter = 'brightness(1.08) contrast(1.12) saturate(1.15)';
+        ctx.drawImage(img, 0, 0, width, height);
+        callback(canvas.toDataURL('image/jpeg', 0.6));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const banner = document.getElementById('pwaBanner');
+    if (banner) banner.style.display = 'flex';
+  });
+
+  document.getElementById('pwaInstallBtn')?.addEventListener('click', () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          document.getElementById('pwaBanner').style.display = 'none';
+        }
+        deferredPrompt = null;
+      });
+    }
+  });
+
+  const themes = {
+    'bv-classic': { primary: '#0083a8', dark: '#005f7a', timeBg: '#e6f7ff', lineTop: '#29b6f6', lineBot: '#66bb6a' },
+    'royal-purple': { primary: '#8e44ad', dark: '#6c5ce7', timeBg: '#f3e5f5', lineTop: '#a29bfe', lineBot: '#fd79a8' },
+    'fresh-mint': { primary: '#27ae60', dark: '#1e8449', timeBg: '#e8f8f5', lineTop: '#55efc4', lineBot: '#00b894' },
+    'sunset-orange': { primary: '#e67e22', dark: '#d35400', timeBg: '#fbeee6', lineTop: '#fab1a0', lineBot: '#ff7675' },
+    'golden-amber': { primary: '#f39c12', dark: '#b7950b', timeBg: '#fef9e7', lineTop: '#ffeaa7', lineBot: '#fdcb6e' },
+    'dark-slate': { primary: '#2c3e50', dark: '#1a252f', timeBg: '#ebedef', lineTop: '#74b9ff', lineBot: '#81ecec' },
+    'cherry-blossom': { primary: '#e84393', dark: '#c2185b', timeBg: '#fce4ec', lineTop: '#fd79a8', lineBot: '#ff7675' },
+    'teal-sky': { primary: '#00cec9', dark: '#008b8b', timeBg: '#e0f7fa', lineTop: '#81ecec', lineBot: '#55efc4' },
+    'chocolate-warmth': { primary: '#795548', dark: '#4e342e', timeBg: '#efebe9', lineTop: '#d7ccc8', lineBot: '#a1887f' },
+    'forest-emerald': { primary: '#1b5e20', dark: '#0d3b11', timeBg: '#e8f5e9', lineTop: '#81c784', lineBot: '#4caf50' },
+    'lavender-dream': { primary: '#6a1b9a', dark: '#4a148c', timeBg: '#f3e5f5', lineTop: '#ba68c8', lineBot: '#ab47bc' },
+    'sunshine-yellow': { primary: '#fbc02d', dark: '#f57f17', timeBg: '#fffde7', lineTop: '#fff176', lineBot: '#ffee58' },
+    'ruby-red': { primary: '#c62828', dark: '#8e0000', timeBg: '#ffebee', lineTop: '#ef5350', lineBot: '#e53935' },
+    'corporate-grey': { primary: '#455a64', dark: '#263238', timeBg: '#eceff1', lineTop: '#90a4ae', lineBot: '#78909c' },
+    'pastel-rainbow': { primary: '#ff6b6b', dark: '#ee5253', timeBg: '#f8efba', lineTop: '#48dbfb', lineBot: '#1dd1a1' },
+    'midnight-blue': { primary: '#0c2461', dark: '#0a192f', timeBg: '#e8eaf6', lineTop: '#4a69bd', lineBot: '#6a89cc' },
+    'rose-gold': { primary: '#b83b5e', dark: '#6a2c70', timeBg: '#f9f3f3', lineTop: '#f08a5d', lineBot: '#eeecda' },
+    'cyan-breeze': { primary: '#00a8ff', dark: '#0097e6', timeBg: '#e3f2fd', lineTop: '#00d2d3', lineBot: '#54a0ff' },
+    'vintage-cream': { primary: '#8d6e63', dark: '#5d4037', timeBg: '#f5f5dc', lineTop: '#d7ccc8', lineBot: '#bcaaa4' },
+    'neon-cyber': { primary: '#00f2fe', dark: '#4facfe', timeBg: '#e0f7fa', lineTop: '#ff007f', lineBot: '#00f2fe' }
+  };
+
+  const schedulePresets = {
+    'BV1_BV2': [
+      { icon: '🎙️', label: '9.00 - 9.40 :', isBreak: false },
+      { icon: '📚🎙️', label: '9.40 - 10.15 :', isBreak: false },
+      { icon: '🍎', label: '10.15 - 10.30 :', isBreak: true, banner: '— FRUIT BREAK —' },
+      { icon: '📓', label: '10.30 - 12.00 :', isBreak: false },
+      { icon: '🍱', label: '12.00 - 1.15 :', isBreak: true, banner: '— LUNCH BREAK —' },
+      { icon: '😴', label: '1.15 - 2.00 :', isBreak: true, banner: '— NAP / REST TIME —' },
+      { icon: '🎨📖', label: '2.00 - 3.00 :', isBreak: false },
+      { icon: '🎙️', label: '3.00 - 3.15 :', isBreak: false }
+    ],
+    'BV3': [
+      { icon: '🎙️', label: '9.00 - 9.40 :', isBreak: false },
+      { icon: '📚🎙️', label: '9.40 - 10.15 :', isBreak: false },
+      { icon: '🍎', label: '10.15 - 10.30 :', isBreak: true, banner: '— FRUIT BREAK —' },
+      { icon: '📓', label: '10.30 - 12.00 :', isBreak: false },
+      { icon: '🍱', label: '12.00 - 1.15 :', isBreak: true, banner: '— LUNCH BREAK —' },
+      { icon: '🎨📖', label: '1.15 - 3.00 :', isBreak: false },
+      { icon: '🎙️', label: '3.00 - 3.15 :', isBreak: false }
+    ],
+    'ALL_GRADES': [
+      { icon: '📚', label: 'TELUGU :', isBreak: false },
+      { icon: '📖', label: 'HINDI / G.K. :', isBreak: false },
+      { icon: '✏️', label: 'ENGLISH :', isBreak: false },
+      { icon: '🔢', label: 'MATHS :', isBreak: false },
+      { icon: '🧪', label: 'P.S. :', isBreak: false },
+      { icon: '⚗️', label: 'CHEMISTRY :', isBreak: false },
+      { icon: '🔬', label: 'N.S. :', isBreak: false },
+      { icon: '🌍', label: 'SOCIAL :', isBreak: false },
+      { icon: '🤖', label: 'A.I. :', isBreak: false }
+    ]
+  };
+
+  function createRuleWrapperHTML(rulingStyle, currentFont) {
+    return `
+      <div class="rule-wrapper ${rulingStyle}">
+        <div class="rule-line line-1"></div>
+        <div class="rule-line line-2"></div>
+        <div class="rule-line line-3"></div>
+        <div class="rule-line line-4"></div>
+        <div contenteditable="true" class="rule-input-full period-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
+        <div class="single-line-actions">
+          <button class="btn-line-add" onclick="addSingleSubLine(this)" title="Add Line Below">➕ Line</button>
+          <button class="btn-line-del" onclick="deleteSingleSubLine(this)" title="Delete This Line">✕ Line</button>
+        </div>
+      </div>`;
+  }
+
+  function addSingleSubLine(btn) {
+    const wrapper = btn.closest('.rule-wrapper');
+    const stack = wrapper.parentElement;
+    const rulingStyle = document.getElementById('ruling-select')?.value || 'rule-single';
+    const currentFont = document.getElementById('font-select')?.value || "'Comic Neue', sans-serif";
+    
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = createRuleWrapperHTML(rulingStyle, currentFont);
+    const newWrapper = tempContainer.firstElementChild;
+    stack.insertBefore(newWrapper, wrapper.nextSibling);
+    autoSaveDiaryData();
+  }
+
+  function deleteSingleSubLine(btn) {
+    const wrapper = btn.closest('.rule-wrapper');
+    const stack = wrapper.parentElement;
+    if (stack.querySelectorAll('.rule-wrapper').length > 1) {
+      wrapper.remove();
+      autoSaveDiaryData();
+    } else {
+      alert("At least one line must remain for this subject!");
+    }
+  }
+
+  function renderScheduleForClass(clsValue) {
+    const container = document.getElementById('schedule-container');
+    container.innerHTML = ''; 
+
+    let preset = schedulePresets['ALL_GRADES'];
+    if (clsValue === 'BV1' || clsValue === 'BV2') {
+      preset = schedulePresets['BV1_BV2'];
+    } else if (clsValue === 'BV3') {
+      preset = schedulePresets['BV3'];
+    }
+
+    const rulingStyle = document.getElementById('ruling-select')?.value || 'rule-single';
+    const currentFont = document.getElementById('font-select')?.value || "'Comic Neue', sans-serif";
+
+    preset.forEach((item) => {
+      const block = document.createElement('div');
+      block.className = 'period-block';
+
+      if (item.isBreak) {
+        block.innerHTML = `
+          <div class="period-row">
+            <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
+            <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)">
+            <input type="text" class="break-banner" value="${item.banner}" onfocus="setActiveBlock(this)">
+            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Break">✕</button>
+          </div>`;
+      } else {
+        block.innerHTML = `
+          <div class="period-row">
+            <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
+            <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)">
+            <div class="rule-lines-stack">
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
+            </div>
+            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Entire Period">✕</button>
+          </div>`;
+      }
+      container.appendChild(block);
+    });
+  }
+
+  function applyEventTemplate(templateText, overlayId) {
+    const overlay = document.getElementById(overlayId);
+    if (!overlay) return;
+    if (!templateText) {
+      overlay.style.display = 'none';
+      return;
+    }
+    overlay.textContent = templateText;
+    overlay.style.display = 'block';
+  }
+
+  function handleClassChange(newClass) {
+    autoSaveDiaryDataForClass(currentSelectedClass);
+    currentSelectedClass = newClass;
+    renderScheduleForClass(newClass);
+    autoLoadDiaryDataForClass(newClass);
+  }
+
+  function applyTheme(themeKey) {
+    const t = themes[themeKey] || themes['bv-classic'];
+    document.documentElement.style.setProperty('--primary', t.primary);
+    document.documentElement.style.setProperty('--primary-dark', t.dark);
+    document.documentElement.style.setProperty('--time-bg', t.timeBg);
+    document.documentElement.style.setProperty('--line-top', t.lineTop);
+    document.documentElement.style.setProperty('--line-bot', t.lineBot);
+    document.documentElement.style.setProperty('--border-color', t.primary);
+  }
+
+  function changeFontColor(color) {
+    document.documentElement.style.setProperty('--font-color-main', color);
+  }
+
+  function changeBreakColor(color) {
+    document.documentElement.style.setProperty('--break-bg', color);
+  }
+
+  function formatSelection(command) {
+    document.execCommand(command, false, null);
+  }
+
+  function applySelectedColor(color) {
+    document.execCommand('foreColor', false, color);
+  }
+
+  function changeHeaderColor(variableName, color) {
+    document.documentElement.style.setProperty(variableName, color);
+  }
+
+  function changeSpaceBorderStyle(style) {
+    document.documentElement.style.setProperty('--space-border-style', style);
+    document.documentElement.style.setProperty('--space-border-width', style === 'none' ? '0px' : '2px');
+  }
+
+  function setActiveBlock(element) {
+    activeBlock = element.closest('.period-block');
+  }
+
+  function changeActivePeriodIcon(iconChar) {
+    if (!iconChar) return;
+    if (activeBlock) {
+      const iconSpan = activeBlock.querySelector('.period-icon');
+      if (iconSpan) iconSpan.textContent = iconChar;
+    } else {
+      const firstIcon = document.querySelector('.period-icon');
+      if (firstIcon) firstIcon.textContent = iconChar;
+    }
+  }
+
+  function moveText(step) {
+    currentTop += step;
+    document.querySelectorAll('.rule-input-full').forEach(input => {
+      input.style.top = currentTop + 'px';
+    });
+  }
+
+  function changeFontSize(size) {
+    document.querySelectorAll('.rule-input-full').forEach(input => {
+      input.style.fontSize = size;
+    });
+  }
+
+  function changeRuling(rulingClass) {
+    document.querySelectorAll('.rule-wrapper').forEach(wrapper => {
+      wrapper.classList.remove('rule-single', 'rule-double', 'rule-four');
+      if (wrapper.querySelector('.rule-input-full')) wrapper.classList.add(rulingClass);
+    });
+  }
+
+  function deletePeriod(button) {
+    const block = button.closest('.period-block');
+    if (block) {
+      block.remove();
+      autoSaveDiaryData();
+    }
+  }
+
+  function addNewPeriod(type, withSubjectBox) {
+    const container = document.getElementById('schedule-container');
+    const rulingStyle = document.getElementById('ruling-select').value;
+    const currentFont = document.getElementById('font-select').value;
+    const block = document.createElement('div');
+    block.className = 'period-block';
+
+    if (type === 'break') {
+      block.innerHTML = `
+        <div class="period-row">
+          <span class="period-icon">🍎</span>
+          <input type="text" class="time-input" value="Time Slot -" onfocus="setActiveBlock(this)">
+          <input type="text" class="break-banner" value="— BREAK —" onfocus="setActiveBlock(this)">
+          <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Break">✕</button>
+        </div>`;
+    } else {
+      if (withSubjectBox) {
+        block.innerHTML = `
+          <div class="period-row">
+            <span class="period-icon" title="Click to Change Icon">📝</span>
+            <input type="text" class="time-input" value="SUBJECT :" onfocus="setActiveBlock(this)">
+            <div class="rule-lines-stack">
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
+            </div>
+            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
+          </div>`;
+      } else {
+        block.innerHTML = `
+          <div class="period-row">
+            <div style="width: 151px; flex-shrink: 0;"></div>
+            <div class="rule-lines-stack">
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
+              ${createRuleWrapperHTML(rulingStyle, currentFont)}
+            </div>
+            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
+          </div>`;
+      }
+    }
+
+    if (activeBlock && activeBlock.parentNode === container) {
+      activeBlock.after(block);
+    } else {
+      container.appendChild(block);
+    }
+    setActiveBlock(block.querySelector('.rule-input-full, input'));
+    autoSaveDiaryData();
+  }
+
+  function insertEmojiFromSelect(emoji) {
+    if (!emoji) return;
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      const textNode = document.createTextNode(emoji);
+      range.insertNode(textNode);
+      range.setStartAfter(textNode);
+      range.setEndAfter(textNode);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } else {
+      const area = document.getElementById('space-textarea');
+      area.value += emoji;
+    }
+    autoSaveDiaryData();
+  }
+
+  const select3d = document.getElementById('3d-select');
+  let default3dOpt = document.createElement('option');
+  default3dOpt.value = '0'; default3dOpt.text = '0. Plain Normal Color';
+  select3d.appendChild(default3dOpt);
+
+  const colors3D = ['#0083a8', '#e74c3c', '#8e44ad', '#27ae60', '#d35400', '#2c3e50', '#f39c12', '#16a085', '#e84393', '#1289a7'];
+
+  for (let i = 1; i <= 200; i++) {
+    let option = document.createElement('option');
+    option.value = i.toString();
+    let category = "Extrusion 3D";
+    if(i > 40 && i <= 80) category = "Neon Glow 3D";
+    else if(i > 80 && i <= 120) category = "Metallic Chrome 3D";
+    else if(i > 120 && i <= 160) category = "Pop-Art Retro 3D";
+    else if(i > 160) category = "Prism Multi-Shadow";
+    option.text = `${i}. ${category} #${i}`;
+    select3d.appendChild(option);
+  }
+
+  function apply3DEffectIndex(indexStr) {
+    const idx = parseInt(indexStr);
+    const inputs = document.querySelectorAll('.rule-input-full, .space-text-input');
+
+    if (idx === 0) {
+      inputs.forEach(input => {
+        input.style.textShadow = 'none';
+        input.style.webkitTextFillColor = 'initial';
+        input.style.background = 'none';
+      });
+      return;
+    }
+
+    const depth = (idx % 8) + 2;
+    const mainColor = colors3D[(idx - 1) % colors3D.length];
+    const subColor = colors3D[(idx + 3) % colors3D.length];
+    let shadowStack = [];
+
+    if (idx <= 40) {
+      for (let d = 1; d <= depth; d++) {
+        shadowStack.push(`${d}px ${d}px 0px ${mainColor}`);
+      }
+      shadowStack.push(`${depth + 2}px ${depth + 2}px 5px rgba(0,0,0,0.3)`);
+    } else if (idx <= 80) {
+      shadowStack.push(`0 0 5px ${mainColor}`, `0 0 10px ${mainColor}`, `2px 2px 0px ${subColor}`);
+    } else if (idx <= 120) {
+      shadowStack.push(`1px 1px 0px #fff`, `2px 2px 0px #999`, `3px 3px 0px #333`, `4px 4px 6px rgba(0,0,0,0.5)`);
+    } else if (idx <= 160) {
+      shadowStack.push(`3px 3px 0px ${mainColor}`, `6px 6px 0px ${subColor}`);
+    } else {
+      shadowStack.push(`1px 1px 0px #ff0000`, `2px 2px 0px #00ff00`, `3px 3px 0px #0000ff`, `4px 4px 5px rgba(0,0,0,0.3)`);
+    }
+
+    const cssShadowStr = shadowStack.join(', ');
+
+    inputs.forEach(input => {
+      input.style.textShadow = cssShadowStr;
+      input.style.webkitTextFillColor = 'initial';
+      input.style.background = 'none';
+    });
+  }
+
+  const fontList = [
+    'Comic Neue', 'Fredoka', 'Nunito', 'Poppins', 'Quicksand', 'Roboto', 'Open Sans', 'Montserrat', 'Lato', 'Oswald', 
+    'Raleway', 'Inter', 'Pacifico', 'Caveat', 'Kalam', 'Lobster', 'Dancing Script', 'Comfortaa', 'Short Stack', 'Pangolin', 
+    'Patrick Hand', 'Indie Flower', 'Itim', 'Sniglet', 'Chewy', 'Mali', 'Shadows Into Light', 'Verdana', 'Arial', 'Georgia'
+  ];
+
+  const fontSelect = document.getElementById('font-select');
+  for (let i = 1; i <= 200; i++) {
+    let fontName = fontList[(i - 1) % fontList.length];
+    let option = document.createElement('option');
+    option.value = `'${fontName}', sans-serif`;
+    option.text = `${i}. ${fontName} Style ${Math.ceil(i/fontList.length)}`;
+    fontSelect.appendChild(option);
+  }
+
+  const emojiBaseList = [
+    '⭐', '🌟', '✨', '📌', '🔔', '📢', '🎉', '🎓', '🎨', '✏️', '📚', '📝', '💯', '🏆', '🥇', '🍎', '😴', '🌈', '❤️', '😊', 
+    '👍', '🔥', '💡', '⏰', '🚀', '🎯', '☘️', '☀️', '🍀', '💬', '🧠', '🎁', '🏅', '🥇', '🥈', '🥉', '⚽', '🏀', '🎵', '🎶',
+    '🤩', '🥳', '😎', '✍️', '🙋‍♂️', '🙋‍♀️', '🏫', '🎒', '📐', '📏', '📊', '📈', '📋', '🗓️', '📅', '🖍️', '🖊️', '🖋️', '🔍', '🔎'
+  ];
+
+  const emojiSelect = document.getElementById('emoji-select');
+  let defaultOpt = document.createElement('option');
+  defaultOpt.value = ''; defaultOpt.text = 'Select Emoji...'; defaultOpt.disabled = true; defaultOpt.selected = true;
+  emojiSelect.appendChild(defaultOpt);
+
+  for (let i = 1; i <= 200; i++) {
+    let emojiChar = emojiBaseList[(i - 1) % emojiBaseList.length];
+    let option = document.createElement('option');
+    option.value = emojiChar;
+    option.text = `${i}. ${emojiChar} Emoji Variant ${i}`;
+    emojiSelect.appendChild(option);
+  }
+
+  const periodIconSelect = document.getElementById('period-icon-select');
+  let defaultIconOpt = document.createElement('option');
+  defaultIconOpt.value = ''; defaultIconOpt.text = 'Select Icon...'; defaultIconOpt.disabled = true; defaultIconOpt.selected = true;
+  periodIconSelect.appendChild(defaultIconOpt);
+
+  const iconBaseList = [
+    '📚', '📖', '✏️', '🔢', '🧪', '⚗️', '🔬', '🌍', '🤖', '🎙️', '📓', '🍎', '🍱', '😴', '🎨', '💡', '🌱', '⭐', '🔔', '📢', 
+    '🏆', '🥇', '🚀', '🎯', '☘️', '🧠', '🏅', '⚽', '🎵', '🎒', '📐', '📏', '📊', '📈', '📋', '🗓️', '📅', '🖍️', '🖊️', '🖋️'
+  ];
+
+  for (let i = 1; i <= 200; i++) {
+    let iconChar = iconBaseList[(i - 1) % iconBaseList.length];
+    let option = document.createElement('option');
+    option.value = iconChar;
+    option.text = `${i}. ${iconChar} Icon #${i}`;
+    periodIconSelect.appendChild(option);
+  }
+
+  function triggerTopRightUpload() {
+    document.getElementById('topRightInput').click();
+  }
+
+  function loadTopRightPhoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+      processHDImage(file, function(hdDataUrl) {
+        const img = document.getElementById('topRightImgPreview');
+        const box = document.getElementById('topRightPhotoBox');
+        const label = document.getElementById('topRightPhotoLabel');
+        const removeBtn = document.getElementById('topRightRemoveBtn');
+
+        img.src = hdDataUrl;
+        img.style.display = 'block';
+        label.style.display = 'none';
+        removeBtn.style.display = 'flex';
+        box.classList.add('has-image');
+        autoSaveDiaryData();
+      });
+    }
+  }
+
+  function removeTopRightPhoto(event) {
+    if(event) event.stopPropagation();
+    const img = document.getElementById('topRightImgPreview');
+    const box = document.getElementById('topRightPhotoBox');
+    const label = document.getElementById('topRightPhotoLabel');
+    const removeBtn = document.getElementById('topRightRemoveBtn');
+    const overlay = document.getElementById('topRightBannerOverlay');
+
+    img.src = '';
+    img.style.display = 'none';
+    overlay.style.display = 'none';
+    label.style.display = 'block';
+    removeBtn.style.display = 'none';
+    box.classList.remove('has-image');
+    document.getElementById('topRightInput').value = '';
+    autoSaveDiaryData();
+  }
+
+  function getExportFileName(extension) {
+    let cls = document.getElementById('diary-class').value || 'Class';
+    let dateStr = document.getElementById('diary-date').value || '';
+    dateStr = dateStr.trim().replace(/[\/\s\.]/g, '-');
+    let suffix = dateStr ? `_Date${dateStr}` : '';
+    return `ABC_(AS)Diary_Class${cls}${suffix}.${extension}`;
+  }
+
+  function handleExport(type) {
+    if (type === 'pdf') {
+      const oldTitle = document.title;
+      document.title = getExportFileName('pdf').replace('.pdf', '');
+      window.print();
+      document.title = oldTitle;
+    }
+    else if (type === 'snap') takeSnap();
+    else if (type === 'word') exportToWord();
+    else if (type === 'excel') exportToExcel();
+  }
+
+  function takeSnap() {
+    const container = document.getElementById('diary-container');
+    const photoBox = document.getElementById('topRightPhotoBox');
+
+    container.classList.add('snap-mode');
+
+    if (!photoBox.classList.contains('has-image')) {
+      photoBox.style.display = 'none';
+      photoBox.style.visibility = 'hidden';
+      photoBox.style.border = 'none';
+    }
+
+    html2canvas(container, { 
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      onclone: (clonedDoc) => {
+        const clonedPhotoBox = clonedDoc.getElementById('topRightPhotoBox');
+        if (clonedPhotoBox && !clonedPhotoBox.classList.contains('has-image')) {
+          clonedPhotoBox.style.display = 'none';
+          clonedPhotoBox.style.border = 'none';
+          clonedPhotoBox.style.background = 'transparent';
+        }
+      }
+    }).then(canvas => {
+      let link = document.createElement('a');
+      link.download = getExportFileName('png').replace('.png', '_HD.png');
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+      
+      container.classList.remove('snap-mode');
+      if (!photoBox.classList.contains('has-image')) {
+        photoBox.style.display = 'flex';
+        photoBox.style.visibility = 'visible';
+        photoBox.style.border = '2px dashed var(--primary)';
+      }
+    });
+  }
+
+  function exportToWord() {
+    let day = document.getElementById('diary-day').value || '____';
+    let date = document.getElementById('diary-date').value || '____';
+    let cls = document.getElementById('diary-class').value || '____';
+    
+    let content = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><title>BV Diary Daily Notes</title></head><body>
+    <h2 style="color:#0083a8; text-align:center;">BV Diary - School Daily Diary (${cls})</h2>
+    <p><b>Class:</b> ${cls} &nbsp;&nbsp;&nbsp;&nbsp; <b>Day:</b> ${day} &nbsp;&nbsp;&nbsp;&nbsp; <b>Date:</b> ${date}</p>
+    <hr/>
+    <h3>Schedule & Periods</h3>
+    <table border="1" cellspacing="0" cellpadding="6" style="width:100%; border-collapse:collapse; font-family:Arial;">
+      <tr style="background-color:#e6f7ff;">
+        <th>Time / Subject</th>
+        <th>Activity / Notes / Homework</th>
+      </tr>`;
+
+    document.querySelectorAll('.period-block').forEach(block => {
+      let time = block.querySelector('.time-input')?.value || '';
+      let textArr = [];
+      block.querySelectorAll('.rule-input-full').forEach(inp => {
+        if(inp.innerText.trim()) textArr.push(inp.innerText.trim());
+      });
+      let lineBreak = block.querySelector('.break-banner')?.value || '';
+      let text = textArr.join(' | ') || lineBreak;
+      content += `<tr><td><b>${time}</b></td><td>${text}</td></tr>`;
+    });
+
+    content += `</table><br/>`;
+    content += `<p><b>Extra Notes / Space:</b><br/>${document.getElementById('space-textarea').value || 'N/A'}</p>`;
+    content += `<p><b>Week Dedication Topic :</b> ${document.getElementById('dedicated-text').value || 'N/A'}</p>`;
+    content += `<p><b>Teacher's / Parent's Remarks :</b> ${document.getElementById('remarks-text').value || 'N/A'}</p>`;
+    content += `</body></html>`;
+
+    let blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = getExportFileName('doc');
+    a.click();
+  }
+
+  function exportToExcel() {
+    let day = document.getElementById('diary-day').value || '____';
+    let date = document.getElementById('diary-date').value || '____';
+    let cls = document.getElementById('diary-class').value || '____';
+
+    let csv = `BV Diary Daily Diary Schedule (${cls})\n`;
+    csv += `Class,${cls},Day,${day},Date,${date}\n\n`;
+    csv += `Time / Subject,Notes / Homework\n`;
+
+    document.querySelectorAll('.period-block').forEach(block => {
+      let time = (block.querySelector('.time-input')?.value || '').replace(/"/g, '""');
+      let textArr = [];
+      block.querySelectorAll('.rule-input-full').forEach(inp => {
+        if(inp.innerText.trim()) textArr.push(inp.innerText.trim().replace(/"/g, '""'));
+      });
+      let lineBreak = (block.querySelector('.break-banner')?.value || '').replace(/"/g, '""');
+      let text = textArr.join(' | ') || lineBreak;
+      csv += `"${time}","${text}"\n`;
+    });
+
+    csv += `\nNotes / Space,"${(document.getElementById('space-textarea').value || '').replace(/"/g, '""')}"\n`;
+    csv += `Week Dedication Topic,"${(document.getElementById('dedicated-text').value || '').replace(/"/g, '""')}"\n`;
+    csv += `Remarks,"${(document.getElementById('remarks-text').value || '').replace(/"/g, '""')}"\n`;
+
+    let blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = getExportFileName('csv');
+    a.click();
+  }
+
+  function changeFontFamily(font) {
+    document.querySelectorAll('.rule-input-full, .remark-input, .space-text-input, .info-input, .info-select').forEach(input => input.style.fontFamily = font);
+  }
+
+  function changeLogo(event) { 
+    const file = event.target.files[0];
+    if(file) {
+      processHDImage(file, function(hdDataUrl) {
+        document.getElementById('logo-img').src = hdDataUrl;
+        autoSaveDiaryData();
+      });
+    }
+  }
+
+  function insertSpaceImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+      processHDImage(file, function(hdDataUrl) {
+        document.getElementById('space-img-preview').src = hdDataUrl;
+        document.getElementById('space-img-preview').style.display = 'block';
+        document.getElementById('remove-img-btn').style.display = 'flex';
+        autoSaveDiaryData();
+      });
+    }
+  }
+
+  function removeSpaceImage() {
+    document.getElementById('space-img-preview').src = '';
+    document.getElementById('space-img-preview').style.display = 'none';
+    document.getElementById('spaceBannerOverlay').style.display = 'none';
+    document.getElementById('remove-img-btn').style.display = 'none';
+    autoSaveDiaryData();
+  }
+
+  function changeBg(event) { 
+    const file = event.target.files[0];
+    if(file) {
+      processHDImage(file, function(hdDataUrl) {
+        document.getElementById('diary-container').style.backgroundImage = `url('${hdDataUrl}')`;
+        autoSaveDiaryData();
+      });
+    }
+  }
+
+  function loadSignature(event) {
+    const file = event.target.files[0];
+    if(file) {
+      processHDImage(file, function(hdDataUrl) {
+        document.getElementById('sig-preview').src = hdDataUrl;
+        document.getElementById('sig-preview').style.display = 'block';
+        autoSaveDiaryData();
+      });
+    }
+  }
+
+  // FIREBASE REALTIME WRITE FUNCTION
+  function autoSaveDiaryDataForClass(targetClass) {
+    if (isUpdatingFromCloud) return;
+    if (!targetClass) targetClass = currentSelectedClass;
+
+    const topRightImg = document.getElementById('topRightImgPreview');
+    const spaceImg = document.getElementById('space-img-preview');
+    const sigImg = document.getElementById('sig-preview');
+    const logoImg = document.getElementById('logo-img');
+    const diaryPage = document.getElementById('diary-container');
+
+    const saveData = {
+      diaryClass: targetClass,
+      diaryDay: document.getElementById('diary-day').value,
+      diaryDate: document.getElementById('diary-date').value,
+      spaceText: document.getElementById('space-textarea').value,
+      dedicatedText: document.getElementById('dedicated-text').value,
+      remarksText: document.getElementById('remarks-text').value,
+      
+      logoSrc: logoImg.src || '',
+      bgImage: diaryPage.style.backgroundImage || '',
+      studentPhotoSrc: topRightImg.style.display !== 'none' ? topRightImg.src : '',
+      spacePhotoSrc: spaceImg.style.display !== 'none' ? spaceImg.src : '',
+      signatureSrc: sigImg.style.display !== 'none' ? sigImg.src : '',
+
+      periods: []
+    };
+
+    document.querySelectorAll('.period-block').forEach((block) => {
+      const icon = block.querySelector('.period-icon')?.textContent || '';
+      const timeInput = block.querySelector('.time-input')?.value || '';
+      const lines = [];
+      block.querySelectorAll('.rule-input-full').forEach(inp => {
+        lines.push(inp.innerHTML || '');
+      });
+      const breakBanner = block.querySelector('.break-banner')?.value || '';
+      saveData.periods.push({
+        icon,
+        timeInput,
+        lines,
+        breakBanner,
+        isBreak: !!block.querySelector('.break-banner')
+      });
+    });
+
+    try {
+      localStorage.setItem(`ABC_DAIRY_AS_diary_save_${targetClass}`, JSON.stringify(saveData));
+      localStorage.setItem('ABC_DAIRY_AS_last_active_class', targetClass);
+    } catch(e) {}
+
+    if (db) {
+      db.ref('diaries/' + targetClass).set(saveData).then(() => {
+        showSyncBadge();
+      }).catch(err => {
+        console.error("Firebase write error:", err);
+      });
+    }
+  }
+
+  function showSyncBadge() {
+    const statusBox = document.getElementById('syncStatus');
+    if(statusBox) {
+      statusBox.style.display = 'block';
+      setTimeout(() => { statusBox.style.display = 'none'; }, 1500);
+    }
+  }
+
+  function autoSaveDiaryData() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      autoSaveDiaryDataForClass(currentSelectedClass);
+    }, 1200);
+  }
+
+  function populateDiaryFields(saveData) {
+    if (!saveData) return;
+    isUpdatingFromCloud = true;
+
+    if (saveData.diaryDay !== undefined) document.getElementById('diary-day').value = saveData.diaryDay;
+    if (saveData.diaryDate !== undefined) document.getElementById('diary-date').value = saveData.diaryDate;
+    if (saveData.spaceText !== undefined) document.getElementById('space-textarea').value = saveData.spaceText;
+    if (saveData.dedicatedText !== undefined) document.getElementById('dedicated-text').value = saveData.dedicatedText;
+    if (saveData.remarksText !== undefined) document.getElementById('remarks-text').value = saveData.remarksText;
+
+    if (saveData.logoSrc) document.getElementById('logo-img').src = saveData.logoSrc;
+    if (saveData.bgImage) document.getElementById('diary-container').style.backgroundImage = saveData.bgImage;
+
+    const topRightImg = document.getElementById('topRightImgPreview');
+    const photoBox = document.getElementById('topRightPhotoBox');
+    const photoLabel = document.getElementById('topRightPhotoLabel');
+    const photoRemoveBtn = document.getElementById('topRightRemoveBtn');
+
+    if (saveData.studentPhotoSrc) {
+      topRightImg.src = saveData.studentPhotoSrc;
+      topRightImg.style.display = 'block';
+      photoLabel.style.display = 'none';
+      photoRemoveBtn.style.display = 'flex';
+      photoBox.classList.add('has-image');
+    }
+
+    const spaceImg = document.getElementById('space-img-preview');
+    const spaceRemoveBtn = document.getElementById('remove-img-btn');
+    if (saveData.spacePhotoSrc) {
+      spaceImg.src = saveData.spacePhotoSrc;
+      spaceImg.style.display = 'block';
+      spaceRemoveBtn.style.display = 'flex';
+    }
+
+    const sigImg = document.getElementById('sig-preview');
+    if (saveData.signatureSrc) {
+      sigImg.src = saveData.signatureSrc;
+      sigImg.style.display = 'block';
+    }
+
+    if (saveData.periods && saveData.periods.length > 0) {
+      const periodBlocks = document.querySelectorAll('.period-block');
+      saveData.periods.forEach((pData, index) => {
+        if (periodBlocks[index]) {
+          const iconSpan = periodBlocks[index].querySelector('.period-icon');
+          const timeInput = periodBlocks[index].querySelector('.time-input');
+          const breakBanner = periodBlocks[index].querySelector('.break-banner');
+
+          if (iconSpan && pData.icon !== undefined) iconSpan.textContent = pData.icon;
+          if (timeInput && pData.timeInput !== undefined) timeInput.value = pData.timeInput;
+          if (breakBanner && pData.breakBanner !== undefined) breakBanner.value = pData.breakBanner;
+
+          const lineInputs = periodBlocks[index].querySelectorAll('.rule-input-full');
+          if (pData.lines && pData.lines.length > 0) {
+            pData.lines.forEach((lineText, lIdx) => {
+              if (lineInputs[lIdx]) {
+                lineInputs[lIdx].innerHTML = lineText;
+              }
+            });
+          }
+        }
+      });
+    }
+    setTimeout(() => { isUpdatingFromCloud = false; }, 300);
+  }
+
+  // REALTIME REAL-TIME CLOUD LISTENER (LIVE SYNC FIX)
+  function autoLoadDiaryDataForClass(targetClass) {
+    document.getElementById('diary-day').value = '';
+    document.getElementById('diary-date').value = '';
+    document.getElementById('space-textarea').value = '';
+    document.getElementById('dedicated-text').value = '';
+    document.getElementById('remarks-text').value = '';
+
+    removeTopRightPhoto();
+    removeSpaceImage();
+    document.getElementById('sig-preview').style.display = 'none';
+
+    // 1. Local Storage Cache Load
+    const rawData = localStorage.getItem(`ABC_DAIRY_AS_diary_save_${targetClass}`);
+    if (rawData) {
+      try {
+        populateDiaryFields(JSON.parse(rawData));
+      } catch(e) {}
+    }
+
+    // 2. Realtime Listener from Firebase
+    if (db) {
+      db.ref('diaries/' + targetClass).on('value', (snapshot) => {
+        const cloudData = snapshot.val();
+        if (cloudData) {
+          populateDiaryFields(cloudData);
+        }
+      });
+    }
+  }
+
+  function autoLoadDiaryDataOnPageLoad() {
+    const lastClass = localStorage.getItem('ABC_DAIRY_AS_last_active_class') || '10';
+    document.getElementById('diary-class').value = lastClass;
+    currentSelectedClass = lastClass;
+    renderScheduleForClass(lastClass);
+    autoLoadDiaryDataForClass(lastClass);
+  }
+
+  function clearSavedData() {
+    const activeClass = document.getElementById('diary-class').value;
+    if (confirm(`Are you sure you want to clear all saved notes and pictures for class ${activeClass}?`)) {
+      localStorage.removeItem(`ABC_DAIRY_AS_diary_save_${activeClass}`);
+      if (db) {
+        db.ref('diaries/' + activeClass).remove();
+      }
+      renderScheduleForClass(activeClass);
+      document.getElementById('diary-day').value = '';
+      document.getElementById('diary-date').value = '';
+      document.getElementById('space-textarea').value = '';
+      document.getElementById('dedicated-text').value = '';
+      document.getElementById('remarks-text').value = '';
+      removeTopRightPhoto();
+      removeSpaceImage();
+      document.getElementById('sig-preview').style.display = 'none';
+    }
+  }
+
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+      self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+      self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+      self.addEventListener('fetch', e => {
+        e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+      });
+    `;
+    const blob = new Blob([swCode], { type: 'text/javascript' });
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).catch(() => {});
+  }
+
+  document.getElementById('diary-container').addEventListener('input', autoSaveDiaryData);
+  window.addEventListener('DOMContentLoaded', autoLoadDiaryDataOnPageLoad);
+</script>
+
+</body>
+</html>
