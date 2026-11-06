@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>ABC CBSE(AS) Diary - Interactive School Diary by SURESHKUMAR AVULA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Fredoka:wght@600;700&family=Nunito:wght@700;800;900&family=Poppins:wght@600;700&family=Quicksand:wght@700&family=Roboto:wght@700&family=Open+Sans:wght@700&family=Montserrat:wght@700&family=Lato:wght@700&family=Oswald:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Pacifico&family=Caveat:wght@700&family=Kalam:wght@700&family=Lobster&family=Dancing+Script:wght@700&display=swap');
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  :root {
+    --bg-page: #2c3e50;
+    --card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(244, 251, 253, 0.95) 100%);
+    --primary: #0083a8;
+    --primary-dark: #005f7a;
+    --accent-red: #d32f2f;
+    --time-bg: #e6f7ff;
+    --break-bg: linear-gradient(145deg, #ff7675, #d63031);
+    --border-color: #0083a8;
+    
+    --line-top: #29b6f6;
+    --line-mid1: #ef5350;
+    --line-mid2: #ef5350;
+    --line-bot: #66bb6a;
+
+    --font-color-main: #1a252f;
+    --space-text-color: #1a252f;
+    --space-border-color: #0083a8;
+    --space-border-style: dashed;
+    --space-border-width: 2px;
+
+    --class-color: #8e44ad;
+    --day-color: #d32f2f;
+    --date-color: #27ae60;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 5px;
+    background-color: var(--bg-page);
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* --- Welcome / Splash Screen Styles --- */
+  #welcome-screen {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(135deg, #005f7a, #0083a8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+    text-align: center;
+    transition: opacity 0.5s ease;
+  }
+  .welcome-card {
+    background: #ffffff;
+    padding: 30px 20px;
+    border-radius: 20px;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+    max-width: 350px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  .welcome-logo {
+    max-width: 150px;
+    max-height: 100px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .welcome-logo:hover {
+    transform: scale(1.05);
+  }
+  .welcome-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 20px;
+    color: #0083a8;
+    font-weight: 700;
+    margin: 0;
+  }
+  .welcome-instruction {
+    font-size: 13px;
+    color: #555;
+    font-weight: 600;
+  }
+  .enter-diary-btn {
+    background: linear-gradient(145deg, #27ae60, #219653);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+  }
+
+  /* --- Main App Container --- */
+  #main-app-container {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .control-bar {
+    width: 100%;
+    max-width: 210mm;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.25);
+    gap: 6px;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #2c3e50;
+  }
+
+  .control-select, .control-color {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1.5px solid var(--primary);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    outline: none;
+    cursor: pointer;
+    font-size: 12px;
+    min-height: 34px;
+  }
+
+  .export-dropdown {
+    background: linear-gradient(145deg, #2ed573, #26af5f);
+    color: #ffffff;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+    outline: none;
+    min-height: 34px;
+  }
+
+  .btn-menu {
+    background: linear-gradient(145deg, #3498db, #2980b9);
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: 'Fredoka', sans-serif;
+    min-height: 34px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
+  }
+  .btn-menu:hover { background: #1f618d; }
+
+  /* Modal Popup Styles for Menu */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  .modal-content {
+    background: #ffffff;
+    width: 95%;
+    max-width: 650px;
+    max-height: 85vh;
+    border-radius: 14px;
+    padding: 15px;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 8px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 18px;
+    color: var(--primary);
+  }
+  .close-modal {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+  }
+
+  .btn-pos {
+    background: #f39c12; color: #fff; border: none; padding: 6px 10px;
+    border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; min-height: 34px;
+  }
+  .btn-add-period {
+    background: linear-gradient(145deg, #27ae60, #2ea043); color: #fff; border: none;
+    padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 12px; min-height: 34px;
+  }
+  .btn-clear {
+    background: linear-gradient(145deg, #e74c3c, #c0392b); color: #fff; border: none;
+    padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 12px; min-height: 34px;
+  }
+  .btn-action {
+    color: #ffffff; font-family: 'Fredoka', sans-serif; font-size: 12px; font-weight: 700;
+    padding: 6px 12px; border: none; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; min-height: 34px;
+  }
+  .btn-fmt { background: #2980b9; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-weight: bold; cursor: pointer; font-size: 12px; min-height: 34px; }
+  .btn-bg { background: linear-gradient(145deg, #ffa502, #e1b12c); }
+  .btn-img { background: linear-gradient(145deg, #9b59b6, #8e44ad); }
+
+  .diary-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .diary-page {
+    width: 210mm;
+    min-height: 297mm;
+    box-sizing: border-box;
+    background-image: url('https://abchighschool.com/public/uploads/pages/1684751693_3e8fefe868b425805ef9.jpeg');
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    padding: 60px 50px 40px 50px;
+    position: relative;
+    background-color: #ffffff;
+    box-shadow: 0px 5px 20px rgba(0,0,0,0.3);
+    border-radius: 8px;
+  }
+
+  .inner-container {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    border: 3.5px solid var(--border-color);
+    padding: 16px 18px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  input, textarea, select {
+    font-family: inherit;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--font-color-main);
+  }
+
+  .header {
+    display: grid;
+    grid-template-columns: 165px 1fr 140px;
+    align-items: center;
+    margin-bottom: 12px;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .info-box {
+    border: 2.5px solid var(--primary);
+    border-radius: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    width: 160px;
+    min-height: 85px;
+    box-shadow: 0px 3px 0px var(--primary-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 6px;
+  }
+
+  .info-row {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .info-row span { white-space: nowrap; }
+  .info-row.class-row { color: var(--class-color); }
+  .info-row.class-row .info-select { color: var(--class-color); border-bottom-color: var(--class-color); }
+  .info-row.day-row { color: var(--day-color); }
+  .info-row.day-row .info-input { color: var(--day-color); border-bottom-color: var(--day-color); }
+  .info-row.date-row { color: var(--date-color); }
+  .info-row.date-row .info-input { color: var(--date-color); border-bottom-color: var(--date-color); }
+
+  .info-input, .info-select {
+    font-weight: 800;
+    width: 85px;
+    font-size: 13.5px;
+    text-transform: uppercase;
+    border-bottom: 2px solid;
+    padding-left: 2px;
+  }
+
+  .logo-container-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 85px;
+    padding: 0 5px;
+    overflow: hidden;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .center-logo-banner {
+    max-height: 80px;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .top-right-photo-box {
+    width: 140px;
+    height: 85px;
+    border: 2px dashed var(--primary);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .top-right-photo-box span {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--primary);
+    text-align: center;
+  }
+
+  .top-right-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .top-right-remove-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #e74c3c;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    z-index: 5;
+  }
+
+  .schedule-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .period-block { 
+    display: flex; 
+    flex-direction: column; 
+    position: relative;
+    width: 100%;
+  }
+
+  .period-row { 
+    display: flex; 
+    align-items: center; 
+    position: relative;
+    width: 100%;
+  }
+
+  .time-input {
+    width: 145px;
+    font-weight: 900;
+    font-size: 12.5px;
+    color: var(--primary);
+    padding: 4px 6px;
+    background: var(--time-bg);
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .period-icon { font-size: 16px; margin-right: 6px; flex-shrink: 0; cursor: pointer; }
+
+  .rule-lines-stack {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 2px;
+  }
+
+  .rule-wrapper {
+    position: relative;
+    height: 28px;
+    overflow: hidden;
+    margin-left: 6px;
+    flex-grow: 1;
+  }
+
+  .rule-line { position: absolute; left: 0; width: 100%; pointer-events: none; }
+
+  .rule-single .line-1 { top: 20px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-double .line-1 { top: 6px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-double .line-2 { top: 22px; border-bottom: 1.5px solid var(--line-bot); }
+  .rule-four .line-1 { top: 3px; border-bottom: 1px solid var(--line-top); }
+  .rule-four .line-2 { top: 10px; border-bottom: 1px dashed var(--line-mid1); }
+  .rule-four .line-3 { top: 17px; border-bottom: 1px dashed var(--line-mid2); }
+  .rule-four .line-4 { top: 24px; border-bottom: 1px solid var(--line-bot); }
+
+  .rule-input-full {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    width: 100%;
+    height: 26px;
+    font-family: 'Comic Neue', sans-serif;
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--font-color-main);
+    font-weight: 700;
+    padding: 0 6px;
+    z-index: 2;
+    outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .break-banner {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 2px;
+    line-height: 32px;
+    z-index: 2;
+    background: var(--break-bg);
+    border-radius: 8px;
+  }
+
+  .delete-period-btn {
+    background: #ff4757;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: 0.2s;
+    flex-shrink: 0;
+  }
+  .delete-period-btn:hover { opacity: 1; transform: scale(1.1); }
+
+  .compact-space-container {
+    height: 45px;
+    min-height: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 6px 0;
+    resize: vertical;
+    overflow: hidden;
+    border-width: var(--space-border-width);
+    border-style: var(--space-border-style);
+    border-color: var(--space-border-color);
+    border-radius: 8px;
+  }
+  .space-text-input {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    font-family: 'Comic Neue', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--font-color-main);
+    padding: 6px 10px;
+    z-index: 1;
+    line-height: 1.4;
+  }
+  .space-inserted-img {
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: none;
+    border-radius: 8px;
+    position: absolute;
+    z-index: 2;
+  }
+  .remove-img-btn {
+    position: absolute;
+    top: 2px; right: 2px;
+    background: #e74c3c; color: #fff; border: none;
+    border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; display: none; align-items: center; justify-content: center; font-weight: bold; z-index: 10;
+  }
+
+  .footer-section { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
+  .remark-row { display: flex; align-items: flex-end; font-weight: 800; font-size: 12px; color: var(--primary); }
+  .remark-label { white-space: nowrap; margin-right: 6px; }
+  .remark-input { flex-grow: 1; border-bottom: 2px solid var(--primary); font-size: 15px; color: var(--font-color-main); font-weight: 700; padding-left: 6px; }
+
+  .signatures { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; padding: 0 10px; font-weight: 800; font-size: 12px; color: var(--primary); }
+  .signature-box { display: flex; flex-direction: column; align-items: center; }
+  .signature-preview { height: 35px; max-width: 140px; object-fit: contain; margin-bottom: 2px; display: none; }
+  .upload-btn { font-size: 11px; background: linear-gradient(145deg, #00a8ff, #0097e6); color: #ffffff; padding: 3px 10px; border-radius: 12px; cursor: pointer; font-weight: 800; margin-bottom: 4px; }
+
+  .transparent-copyright { margin-top: 15px; font-size: 12px; font-weight: 700; color: rgba(255, 255, 255, 0.25); letter-spacing: 1px; text-align: center; }
+
+  /* Mobile responsive styling for view clarity without portrait forcing deformation */
+  @media screen and (max-width: 820px) {
+    body { padding: 2px; }
+    .control-bar { width: 100%; padding: 6px 10px; border-radius: 6px; margin-bottom: 6px; }
+    .diary-wrapper { width: 100%; overflow-x: auto; display: block; }
+    .diary-page { 
+      width: 210mm !important;
+      min-height: 297mm !important;
+      transform: scale(0.45);
+      transform-origin: top left;
+      margin-bottom: -160mm;
+    }
+  }
+
+  @media print, .snap-mode {
+    body { background: none !important; padding: 0 !important; margin: 0 !important; }
+    .control-bar, .upload-btn, .remove-img-btn, .transparent-copyright, .top-right-remove-btn, .delete-period-btn, .modal-overlay, #welcome-screen { display: none !important; }
+    .compact-space-container { resize: none !important; }
+    textarea::placeholder, input::placeholder { color: transparent !important; opacity: 0 !important; }
+    .top-right-photo-box:not(.has-image) { display: none !important; border: none !important; background: transparent !important; }
+    .diary-wrapper { width: 210mm !important; overflow: visible !important; }
+    .diary-page { width: 210mm !important; min-height: 297mm !important; box-shadow: none !important; padding: 60px 50px 40px 50px !important; transform: none !important; margin: 0 !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="welcome-screen">
+  <div class="welcome-card">
+    <h2 class="welcome-title">ABC CBSE SCHOOL</h2>
+    <img src="https://abchighschool.com/public/uploads/pages/1684751693_3e8fefe868b425805ef9.jpeg" class="welcome-logo" alt="School Logo" onclick="openDiary()">
+    <p class="welcome-instruction">Tap the School Logo to Open Interactive Diary</p>
+    <button class="enter-diary-btn" onclick="openDiary()">Open Diary ➔</button>
+  </div>
+</div>
+
+<div id="main-app-container">
+  <div class="control-bar">
+    <div class="control-group">
+      <button class="btn-menu" onclick="toggleMenu(true)">⚙️ Settings Menu</button>
+    </div>
+
+    <div class="control-group">
+      <label>📥 Export:</label>
+      <select class="export-dropdown" onchange="handleExport(this.value); this.value='';">
+        <option value="" disabled selected>Format...</option>
+        <option value="pdf">📄 Save PDF</option>
+        <option value="snap">📸 Take Snap (PNG)</option>
+        <option value="email">📧 Send Mail</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label class="btn-action btn-pos" style="background: #2980b9; margin: 0;">
+        🏷️ Logo <input type="file" accept="image/*" style="display: none;" onchange="changeLogo(event)">
+      </label>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>⚙️ Diary Customization Menu</span>
+        <button class="close-modal" onclick="toggleMenu(false)">✕</button>
+      </div>
+      
+      <div class="modal-grid">
+        <div class="control-group">
+          <label>🎨 Theme:</label>
+          <select class="control-select" onchange="applyTheme(this.value)">
+            <option value="bv-classic" selected>1. BV Ocean Blue</option>
+            <option value="royal-purple">2. Royal Purple</option>
+            <option value="fresh-mint">3. Fresh Mint Green</option>
+            <option value="sunset-orange">4. Sunset Coral</option>
+            <option value="golden-amber">5. Golden Amber</option>
+            <option value="dark-slate">6. Dark Slate</option>
+            <option value="cherry-blossom">7. Cherry Pink</option>
+            <option value="teal-sky">8. Vibrant Teal</option>
+            <option value="chocolate-warmth">9. Chocolate</option>
+            <option value="forest-emerald">10. Emerald</option>
+            <option value="lavender-dream">11. Lavender</option>
+            <option value="sunshine-yellow">12. Sunshine</option>
+            <option value="ruby-red">13. Ruby Red</option>
+            <option value="corporate-grey">14. Corporate</option>
+            <option value="pastel-rainbow">15. Pastel</option>
+            <option value="midnight-blue">16. Midnight Blue</option>
+            <option value="rose-gold">17. Rose Gold</option>
+            <option value="cyan-breeze">18. Cyan Breeze</option>
+            <option value="vintage-cream">19. Vintage Cream</option>
+            <option value="neon-cyber">20. Neon Modern</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>📏 Ruling:</label>
+          <select class="control-select" id="ruling-select" onchange="changeRuling(this.value)">
+            <option value="rule-single" selected>Single Line</option>
+            <option value="rule-double">Double Line</option>
+            <option value="rule-four">Four Line</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>🔤 Font:</label>
+          <select class="control-select" id="font-select" onchange="changeFontFamily(this.value)"></select>
+        </div>
+
+        <div class="control-group">
+          <label>📏 Size:</label>
+          <select class="control-select" onchange="changeFontSize(this.value)">
+            <option value="15px">15px</option>
+            <option value="16px">16px</option>
+            <option value="18px" selected>18px</option>
+            <option value="20px">20px</option>
+            <option value="22px">22px</option>
+            <option value="24px">24px</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>🎭 3D Style:</label>
+          <select class="control-select" id="3d-select" onchange="apply3DEffectIndex(this.value)"></select>
+        </div>
+
+        <div class="control-group">
+          <label>🎨 Main Color:</label>
+          <input type="color" class="control-color" value="#1a252f" onchange="changeFontColor(this.value)">
+        </div>
+
+        <div class="control-group">
+          <label>🍎 Break Color:</label>
+          <input type="color" class="control-color" value="#ff7675" onchange="changeBreakColor(this.value)">
+        </div>
+
+        <div class="control-group">
+          <label>✏️ Selection:</label>
+          <button class="btn-fmt" onclick="formatSelection('bold')"><b>B</b></button>
+          <button class="btn-fmt" onclick="formatSelection('italic')"><i>I</i></button>
+          <button class="btn-fmt" onclick="formatSelection('underline')"><u>U</u></button>
+          <input type="color" class="control-color" value="#1a252f" onchange="applySelectedColor(this.value)">
+        </div>
+
+        <div class="control-group">
+          <label>🎓 Class Color:</label>
+          <input type="color" class="control-color" value="#8e44ad" onchange="changeHeaderColor('--class-color', this.value)">
+        </div>
+
+        <div class="control-group">
+          <label>🗓️ Day Color:</label>
+          <input type="color" class="control-color" value="#d32f2f" onchange="changeHeaderColor('--day-color', this.value)">
+        </div>
+
+        <div class="control-group">
+          <label>📅 Date Color:</label>
+          <input type="color" class="control-color" value="#27ae60" onchange="changeHeaderColor('--date-color', this.value)">
+        </div>
+
+        <div class="control-group">
+          <label>📌 Icons:</label>
+          <select class="control-select" id="period-icon-select" onchange="changeActivePeriodIcon(this.value); this.value='';"></select>
+        </div>
+
+        <div class="control-group">
+          <label>✨ Line Style:</label>
+          <select class="control-select" onchange="changeSpaceBorderStyle(this.value)">
+            <option value="none">No Border</option>
+            <option value="dashed" selected>Dashed</option>
+            <option value="solid">Solid</option>
+            <option value="dotted">Dotted</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>↕️ Text Move:</label>
+          <button class="btn-pos" onclick="moveText(-1)">▲ Up</button>
+          <button class="btn-pos" onclick="moveText(1)">▼ Down</button>
+        </div>
+
+        <div class="control-group">
+          <label>🎭 Emojis:</label>
+          <select class="control-select" id="emoji-select" onchange="insertEmojiFromSelect(this.value); this.value='';"></select>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; border-top: 2px solid #eee; padding-top: 10px;">
+        <button class="btn-add-period" onclick="addNewPeriod('period', false)">➕ Line</button>
+        <button class="btn-add-period" style="background: linear-gradient(145deg, #2980b9, #1f618d);" onclick="addNewPeriod('period', true)">🏷️ Subject</button>
+        <button class="btn-add-period" style="background: linear-gradient(145deg, #e67e22, #d35400);" onclick="addNewPeriod('break', false)">🍎 Break</button>
+        
+        <label class="btn-action btn-img" style="margin:0;">
+          📷 Space Img <input type="file" accept="image/*" style="display: none;" onchange="insertSpaceImage(event)">
+        </label>
+        <label class="btn-action btn-bg" style="margin:0;">
+          🖼️ BG <input type="file" accept="image/*" style="display: none;" onchange="changeBg(event)">
+        </label>
+
+        <button class="btn-clear" onclick="clearSavedData()">🧹 Clear Data</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="diary-wrapper">
+    <div class="diary-page" id="diary-container">
+      <div class="inner-container">
+        
+        <div class="header">
+          <div class="info-box">
+            <div class="info-row class-row">
+              <span>CLASS:</span>
+              <select class="info-select" id="diary-class" onchange="handleClassChange(this.value)">
+                <option value="BV1">BV1</option>
+                <option value="BV2">BV2</option>
+                <option value="BV3">BV3</option>
+                <option value="1F">1F</option>
+                <option value="1G">1G</option>
+                <option value="2F">2F</option>
+                <option value="2G">2G</option>
+                <option value="3F">3F</option>
+                <option value="3G">3G</option>
+                <option value="4F">4F</option>
+                <option value="4G">4G</option>
+                <option value="5F">5F</option>
+                <option value="5G">5G</option>
+                <option value="6F">6F</option>
+                <option value="6G">6G</option>
+                <option value="7F">7F</option>
+                <option value="7G">7G</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10" selected>10</option>
+              </select>
+            </div>
+            <div class="info-row day-row">
+              <span>DAY:</span>
+              <input type="text" class="info-input" id="diary-day" placeholder="_______">
+            </div>
+            <div class="info-row date-row">
+              <span>DATE:</span>
+              <input type="text" class="info-input" id="diary-date" placeholder="DD/MM/YY">
+            </div>
+          </div>
+
+          <div class="logo-container-center">
+            <img src="https://abchighschool.com/public/uploads/pages/1684751693_3e8fefe868b425805ef9.jpeg" id="logo-img" class="center-logo-banner" alt="ABC High School Logo">
+          </div>
+
+          <div class="top-right-photo-box" id="topRightPhotoBox" onclick="triggerTopRightUpload()">
+            <span id="topRightPhotoLabel">➕ Add Photo</span>
+            <img id="topRightImgPreview" class="top-right-preview-img" alt="Top Right Photo">
+            <button id="topRightRemoveBtn" class="top-right-remove-btn" onclick="removeTopRightPhoto(event)">✕</button>
+            <input type="file" id="topRightInput" accept="image/*" style="display:none;" onchange="loadTopRightPhoto(event)">
+          </div>
+        </div>
+
+        <div class="schedule-container" id="schedule-container"></div>
+
+        <div class="compact-space-container" id="space-spacer">
+          <textarea id="space-textarea" class="space-text-input" placeholder="Type extra notes, homework or announcements here..."></textarea>
+          <img id="space-img-preview" class="space-inserted-img" alt="Space Picture">
+          <button id="remove-img-btn" class="remove-img-btn" onclick="removeSpaceImage()">✕</button>
+        </div>
+
+        <div class="footer-section">
+          <div class="remark-row">
+            <span class="remark-label">WEEK DEDICATION TOPIC :</span>
+            <input type="text" class="remark-input" id="dedicated-text">
+          </div>
+          <div class="remark-row">
+            <span class="remark-label">TEACHER'S / PARENT'S REMARKS :</span>
+            <input type="text" class="remark-input" id="remarks-text">
+          </div>
+          <div class="signatures">
+            <span>Sign. of Parent</span>
+            <div class="signature-box">
+              <img id="sig-preview" class="signature-preview" alt="Signature">
+              <label class="upload-btn">+ Upload Sign <input type="file" accept="image/*" style="display: none;" onchange="loadSignature(event)"></label>
+              <span>Sign. of Class Teacher</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="transparent-copyright">
+    Copy rights @sureshkumar Avula
+  </div>
+</div>
+
+<script>
+  let currentTop = -2;
+  let activeBlock = null;
+  let currentSelectedClass = '10';
+  let saveTimeout = null;
+
+  function openDiary() {
+    const welcome = document.getElementById('welcome-screen');
+    welcome.style.opacity = '0';
+    setTimeout(() => {
+      welcome.style.display = 'none';
+      document.getElementById('main-app-container').style.display = 'flex';
+    }, 400);
+  }
+
+  function toggleMenu(show) {
+    document.getElementById('settingsModal').style.display = show ? 'flex' : 'none';
+  }
+
+  const themes = {
+    'bv-classic': { primary: '#0083a8', dark: '#005f7a', timeBg: '#e6f7ff', lineTop: '#29b6f6', lineBot: '#66bb6a' },
+    'royal-purple': { primary: '#8e44ad', dark: '#6c5ce7', timeBg: '#f3e5f5', lineTop: '#a29bfe', lineBot: '#fd79a8' },
+    'fresh-mint': { primary: '#27ae60', dark: '#1e8449', timeBg: '#e8f8f5', lineTop: '#55efc4', lineBot: '#00b894' },
+    'sunset-orange': { primary: '#e67e22', dark: '#d35400', timeBg: '#fbeee6', lineTop: '#fab1a0', lineBot: '#ff7675' },
+    'golden-amber': { primary: '#f39c12', dark: '#b7950b', timeBg: '#fef9e7', lineTop: '#ffeaa7', lineBot: '#fdcb6e' },
+    'dark-slate': { primary: '#2c3e50', dark: '#1a252f', timeBg: '#ebedef', lineTop: '#74b9ff', lineBot: '#81ecec' },
+    'cherry-blossom': { primary: '#e84393', dark: '#c2185b', timeBg: '#fce4ec', lineTop: '#fd79a8', lineBot: '#ff7675' },
+    'teal-sky': { primary: '#00cec9', dark: '#008b8b', timeBg: '#e0f7fa', lineTop: '#81ecec', lineBot: '#55efc4' },
+    'chocolate-warmth': { primary: '#795548', dark: '#4e342e', timeBg: '#efebe9', lineTop: '#d7ccc8', lineBot: '#a1887f' },
+    'forest-emerald': { primary: '#1b5e20', dark: '#0d3b11', timeBg: '#e8f5e9', lineTop: '#81c784', lineBot: '#4caf50' },
+    'lavender-dream': { primary: '#6a1b9a', dark: '#4a148c', timeBg: '#f3e5f5', lineTop: '#ba68c8', lineBot: '#ab47bc' },
+    'sunshine-yellow': { primary: '#fbc02d', dark: '#f57f17', timeBg: '#fffde7', lineTop: '#fff176', lineBot: '#ffee58' },
+    'ruby-red': { primary: '#c62828', dark: '#8e0000', timeBg: '#ffebee', lineTop: '#ef5350', lineBot: '#e53935' },
+    'corporate-grey': { primary: '#455a64', dark: '#263238', timeBg: '#eceff1', lineTop: '#90a4ae', lineBot: '#78909c' },
+    'pastel-rainbow': { primary: '#ff6b6b', dark: '#ee5253', timeBg: '#f8efba', lineTop: '#48dbfb', lineBot: '#1dd1a1' },
+    'midnight-blue': { primary: '#0c2461', dark: '#0a192f', timeBg: '#e8eaf6', lineTop: '#4a69bd', lineBot: '#6a89cc' },
+    'rose-gold': { primary: '#b83b5e', dark: '#6a2c70', timeBg: '#f9f3f3', lineTop: '#f08a5d', lineBot: '#eeecda' },
+    'cyan-breeze': { primary: '#00a8ff', dark: '#0097e6', timeBg: '#e3f2fd', lineTop: '#00d2d3', lineBot: '#54a0ff' },
+    'vintage-cream': { primary: '#8d6e63', dark: '#5d4037', timeBg: '#f5f5dc', lineTop: '#d7ccc8', lineBot: '#bcaaa4' },
+    'neon-cyber': { primary: '#00f2fe', dark: '#4facfe', timeBg: '#e0f7fa', lineTop: '#ff007f', lineBot: '#00f2fe' }
+  };
+
+  const schedulePresets = {
+    'BV1_BV2': [
+      { icon: '🎙️', label: '9.00 - 9.40 :', isBreak: false },
+      { icon: '📚🎙️', label: '9.40 - 10.15 :', isBreak: false },
+      { icon: '🍎', label: '10.15 - 10.30 :', isBreak: true, banner: '— FRUIT BREAK —' },
+      { icon: '📓', label: '10.30 - 12.00 :', isBreak: false },
+      { icon: '🍱', label: '12.00 - 1.15 :', isBreak: true, banner: '— LUNCH BREAK —' },
+      { icon: '😴', label: '1.15 - 2.00 :', isBreak: true, banner: '— NAP / REST TIME —' },
+      { icon: '🎨📖', label: '2.00 - 3.00 :', isBreak: false },
+      { icon: '🎙️', label: '3.00 - 3.15 :', isBreak: false }
+    ],
+    'BV3': [
+      { icon: '🎙️', label: '9.00 - 9.40 :', isBreak: false },
+      { icon: '📚🎙️', label: '9.40 - 10.15 :', isBreak: false },
+      { icon: '🍎', label: '10.15 - 10.30 :', isBreak: true, banner: '— FRUIT BREAK —' },
+      { icon: '📓', label: '10.30 - 12.00 :', isBreak: false },
+      { icon: '🍱', label: '12.00 - 1.15 :', isBreak: true, banner: '— LUNCH BREAK —' },
+      { icon: '🎨📖', label: '1.15 - 3.00 :', isBreak: false },
+      { icon: '🎙️', label: '3.00 - 3.15 :', isBreak: false }
+    ],
+    'PRIMARY_1_5': [
+      { icon: '✏️', label: 'ENGLISH :', isBreak: false },
+      { icon: '📚', label: 'TELUGU :', isBreak: false },
+      { icon: '📖', label: 'HINDI :', isBreak: false },
+      { icon: '🌱', label: 'EVS :', isBreak: false },
+      { icon: '💡', label: 'G.K. :', isBreak: false },
+      { icon: '🔢', label: 'MATHS :', isBreak: false },
+      { icon: '📝', label: 'SUBJECT 7 :', isBreak: false },
+      { icon: '📝', label: 'SUBJECT 8 :', isBreak: false },
+      { icon: '📝', label: 'SUBJECT 9 :', isBreak: false }
+    ],
+    'HIGH_SCHOOL': [
+      { icon: '📚', label: 'TELUGU :', isBreak: false },
+      { icon: '📖', label: 'HINDI / G.K. :', isBreak: false },
+      { icon: '✏️', label: 'ENGLISH :', isBreak: false },
+      { icon: '🔢', label: 'MATHS :', isBreak: false },
+      { icon: '🧪', label: 'P.S. :', isBreak: false },
+      { icon: '⚗️', label: 'CHEMISTRY :', isBreak: false },
+      { icon: '🔬', label: 'N.S. :', isBreak: false },
+      { icon: '🌍', label: 'SOCIAL :', isBreak: false },
+      { icon: '🤖', label: 'A.I. :', isBreak: false }
+    ]
+  };
+
+  function renderScheduleForClass(clsValue) {
+    const container = document.getElementById('schedule-container');
+    container.innerHTML = ""; 
+
+    let preset = schedulePresets['HIGH_SCHOOL'];
+    if (clsValue === 'BV1' || clsValue === 'BV2') {
+      preset = schedulePresets['BV1_BV2'];
+    } else if (clsValue === 'BV3') {
+      preset = schedulePresets['BV3'];
+    } else if (['1F','1G','2F','2G','3F','3G','4F','4G','5F','5G'].includes(clsValue)) {
+      preset = schedulePresets['PRIMARY_1_5'];
+    }
+
+    const rulingStyle = document.getElementById('ruling-select')?.value || 'rule-single';
+    const currentFont = document.getElementById('font-select')?.value || "'Comic Neue', sans-serif";
+
+    preset.forEach((item) => {
+      const block = document.createElement('div');
+      block.className = 'period-block';
+
+      if (item.isBreak) {
+        block.innerHTML = `
+          <div class="period-row">
+            <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
+            <input type="text" class="time-input" value="${item.label}">
+            <div class="rule-wrapper">
+              <input type="text" class="break-banner" value="${item.banner}">
+            </div>
+            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Break">✕</button>
+          </div>`;
+      } else {
+        block.innerHTML = `
+          <div class="period-row">
+            <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
+            <input type="text" class="time-input" value="${item.label}">
+            <div class="rule-lines-stack">
+              <div class="rule-wrapper ${rulingStyle}">
+                <div class="rule-line line-1"></div><div class="rule-line line-2"></div>
+                <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
+              </div>
+              <div class="rule-wrapper ${rulingStyle}">
+                <div class="rule-line line-1"></div><div class="rule-line line-2"></div>
+                <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
+              </div>
+            </div>
+            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
+          </div>`;
+      }
+      container.appendChild(block);
+    });
+  }
+
+  function handleClassChange(newClass) {
+    autoSaveDiaryDataForClass(currentSelectedClass);
+    currentSelectedClass = newClass;
+    renderScheduleForClass(newClass);
+    autoLoadDiaryDataForClass(newClass);
+  }
+
+  function applyTheme(themeKey) {
+    const t = themes[themeKey] || themes['bv-classic'];
+    document.documentElement.style.setProperty('--primary', t.primary);
+    document.documentElement.style.setProperty('--primary-dark', t.dark);
+    document.documentElement.style.setProperty('--time-bg', t.timeBg);
+    document.documentElement.style.setProperty('--line-top', t.lineTop);
+    document.documentElement.style.setProperty('--line-bot', t.lineBot);
+    document.documentElement.style.setProperty('--border-color', t.primary);
+  }
+
+  function changeFontColor(color) { document.documentElement.style.setProperty('--font-color-main', color); }
+  function changeBreakColor(color) { document.documentElement.style.setProperty('--break-bg', color); }
+  function formatSelection(command) { document.execCommand(command, false, null); }
+  function applySelectedColor(color) { document.execCommand('foreColor', false, color); }
+  function changeHeaderColor(variableName, color) { document.documentElement.style.setProperty(variableName, color); }
+  function changeSpaceBorderStyle(style) {
+    document.documentElement.style.setProperty('--space-border-style', style);
+    document.documentElement.style.setProperty('--space-border-width', style === 'none' ? '0px' : '2px');
+  }
+
+  function changeActivePeriodIcon(iconChar) {
+    if (!iconChar) return;
+    if (activeBlock) {
+      const iconSpan = activeBlock.querySelector('.period-icon');
+      if (iconSpan) iconSpan.textContent = iconChar;
+    }
+  }
+
+  function moveText(step) {
+    currentTop += step;
+    document.querySelectorAll('.rule-input-full').forEach(input => { input.style.top = currentTop + 'px'; });
+  }
+
+  function changeFontSize(size) {
+    document.querySelectorAll('.rule-input-full').forEach(input => { input.style.fontSize = size; });
+  }
+
+  function changeRuling(rulingClass) {
+    document.querySelectorAll('.rule-wrapper').forEach(wrapper => {
+      wrapper.classList.remove('rule-single', 'rule-double', 'rule-four');
+      if (wrapper.querySelector('.rule-input-full')) wrapper.classList.add(rulingClass);
+    });
+  }
+
+  function deletePeriod(button) {
+    const block = button.closest('.period-block');
+    if (block) { block.remove(); autoSaveDiaryData(); }
+  }
+
+  function addNewPeriod(type, withSubjectBox) {
+    const container = document.getElementById('schedule-container');
+    const rulingStyle = document.getElementById('ruling-select').value;
+    const currentFont = document.getElementById('font-select').value;
+    const block = document.createElement('div');
+    block.className = 'period-block';
+
+    if (type === 'break') {
+      block.innerHTML = `
+        <div class="period-row">
+          <span class="period-icon">🍎</span>
+          <input type="text" class="time-input" value="Time Slot -">
+          <div class="rule-wrapper">
+            <input type="text" class="break-banner" value="— BREAK —">
+          </div>
+          <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Break">✕</button>
+        </div>`;
+    } else {
+      if (withSubjectBox) {
+        block.innerHTML = `
+          <div class="period-row">
+            <span class="period-icon">📝</span>
+            <input type="text" class="time-input" value="SUBJECT :">
+            <div class="rule-lines-stack">
+              <div class="rule-wrapper ${rulingStyle}">
+                <div class="rule-line line-1"></div><div class="rule-line line-2"></div>
+                <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
+              </div>
+              <div class="rule-wrapper ${rulingStyle}">
+                <div class="rule-line line-1"></div><div class="rule-line line-2"></div>
+                <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
+              </div>
+            </div>
+            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
+          </div>`;
+      } else {
+        block.innerHTML = `
+          <div class="period-row">
+            <div style="width: 151px; flex-shrink: 0;"></div>
+            <div class="rule-lines-stack">
+              <div class="rule-wrapper ${rulingStyle}">
+                <div class="rule-line line-1"></div><div class="rule-line line-2"></div>
+                <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
+              </div>
+              <div class="rule-wrapper ${rulingStyle}">
+                <div class="rule-line line-1"></div><div class="rule-line line-2"></div>
+                <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
+              </div>
+            </div>
+            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
+          </div>`;
+      }
+    }
+    container.appendChild(block);
+    autoSaveDiaryData();
+  }
+
+  function insertEmojiFromSelect(emoji) {
+    if (!emoji) return;
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      const textNode = document.createTextNode(emoji);
+      range.insertNode(textNode);
+      range.setStartAfter(textNode);
+      range.setEndAfter(textNode);
+      sel.removeAllRanges(); sel.addRange(range);
+    } else {
+      document.getElementById('space-textarea').value += emoji;
+    }
+    autoSaveDiaryData();
+  }
+
+  const select3d = document.getElementById('3d-select');
+  select3d.innerHTML = '<option value="0">0. Plain Normal Color</option>';
+  for (let i = 1; i <= 200; i++) {
+    let opt = document.createElement('option');
+    opt.value = i.toString(); opt.text = `${i}. 3D Style Variant ${i}`;
+    select3d.appendChild(opt);
+  }
+
+  const fontList = ['Comic Neue', 'Fredoka', 'Nunito', 'Poppins', 'Quicksand', 'Roboto', 'Open Sans', 'Montserrat', 'Lato', 'Oswald'];
+  const fontSelect = document.getElementById('font-select');
+  fontSelect.innerHTML = '';
+  for (let i = 1; i <= 50; i++) {
+    let fontName = fontList[(i - 1) % fontList.length];
+    let opt = document.createElement('option');
+    opt.value = `'${fontName}', sans-serif`; opt.text = `${i}. ${fontName}`;
+    fontSelect.appendChild(opt);
+  }
+
+  const emojiBaseList = ['⭐', '🌟', '✨', '📌', '🔔', '📢', '🎉', '🎓', '🎨', '✏️', '📚', '📝', '💯', '🏆', '🥇', '🍎', '😴', '🌈', '❤️', '😊'];
+  const emojiSelect = document.getElementById('emoji-select');
+  emojiSelect.innerHTML = '<option value="" disabled selected>Emoji...</option>';
+  emojiBaseList.forEach(em => {
+    let opt = document.createElement('option'); opt.value = em; opt.text = em;
+    emojiSelect.appendChild(opt);
+  });
+
+  const periodIconSelect = document.getElementById('period-icon-select');
+  periodIconSelect.innerHTML = '<option value="" disabled selected>Icon...</option>';
+  ['📚', '📖', '✏️', '🔢', '🧪', '🤖', '🎙️', '📓', '🍎', '🍱', '😴', '🎨', '💡'].forEach(ic => {
+    let opt = document.createElement('option'); opt.value = ic; opt.text = ic;
+    periodIconSelect.appendChild(opt);
+  });
+
+  function apply3DEffectIndex(indexStr) {
+    const idx = parseInt(indexStr);
+    const inputs = document.querySelectorAll('.rule-input-full, .space-text-input');
+    if (idx === 0) { inputs.forEach(input => { input.style.textShadow = 'none'; }); return; }
+    inputs.forEach(input => { input.style.textShadow = '2px 2px 0px #0083a8, 4px 4px 5px rgba(0,0,0,0.3)'; });
+  }
+
+  function triggerTopRightUpload() { document.getElementById('topRightInput').click(); }
+  function loadTopRightPhoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.getElementById('topRightImgPreview');
+        img.src = e.target.result; img.style.display = 'block';
+        document.getElementById('topRightPhotoLabel').style.display = 'none';
+        document.getElementById('topRightRemoveBtn').style.display = 'flex';
+        document.getElementById('topRightPhotoBox').classList.add('has-image');
+        autoSaveDiaryData();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function removeTopRightPhoto(event) {
+    event.stopPropagation();
+    document.getElementById('topRightImgPreview').style.display = 'none';
+    document.getElementById('topRightPhotoLabel').style.display = 'block';
+    document.getElementById('topRightRemoveBtn').style.display = 'none';
+    document.getElementById('topRightPhotoBox').classList.remove('has-image');
+    autoSaveDiaryData();
+  }
+
+  function handleExport(type) {
+    if (type === 'pdf') {
+      window.print();
+    } else if (type === 'snap') {
+      takeSnap();
+    } else if (type === 'email') {
+      sendEmail();
+    }
+  }
+
+  function takeSnap() {
+    const container = document.getElementById('diary-container');
+    container.classList.add('snap-mode');
+    
+    // Exact portrait scale settings for file saving name configuration
+    let clsName = document.getElementById('diary-class').value;
+    let dateStr = document.getElementById('diary-date').value.trim().replace(/\//g, '');
+    if(!dateStr) dateStr = '06112026';
+    let fileName = `ABC_${clsName}_ASDIARY_${dateStr}.png`;
+
+    html2canvas(container, { scale: 3, useCORS: true, backgroundColor: "#ffffff", windowWidth: 800 }).then(canvas => {
+      let link = document.createElement('a');
+      link.download = fileName;
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+      container.classList.remove('snap-mode');
+    });
+  }
+
+  function sendEmail() {
+    let cls = document.getElementById('diary-class').value.toUpperCase();
+    let dateVal = document.getElementById('diary-date').value || 'Today';
+    
+    // Class wise email routing mapping
+    const emailMap = {
+      '6F': 'grade6a@abchighschool.org',
+      '6G': 'grade6b@abchighschool.org',
+      '7F': 'grade7a@abchighschool.org',
+      '7G': 'grade7b@abchighschool.org',
+      '8': 'grade8@abchighschool.org',
+      '9': 'grade9@abchighschool.org',
+      '10': 'grade10@abchighschool.org'
+    };
+
+    let targetEmail = emailMap[cls] || 'teacher.a.suresh@abchighschool.org';
+    let ccEmail = 'teacher.a.suresh@abchighschool.org';
+    let subject = encodeURIComponent(`ABC School Diary - Class ${cls} - ${dateVal}`);
+    let body = encodeURIComponent(`Respected Sir,\n\nPlease find attached/reviewed online digital diary details for Class ${cls} on date ${dateVal}.\n\nRegards,\nClass Teacher`);
+
+    // Opens default mail client targeting specified source email and CCing to Suresh Kumar
+    window.location.href = `mailto:${targetEmail}?cc=${ccEmail}&subject=${subject}&body=${body}`;
+  }
+
+  function changeFontFamily(font) {
+    document.querySelectorAll('.rule-input-full, .remark-input, .space-text-input').forEach(input => input.style.fontFamily = font);
+  }
+
+  function changeLogo(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('logo-img').src = e.target.result;
+        document.querySelector('.welcome-logo').src = e.target.result;
+        localStorage.setItem('bv_diary_saved_logo', e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function insertSpaceImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('space-img-preview').src = e.target.result;
+        document.getElementById('space-img-preview').style.display = 'block';
+        document.getElementById('remove-img-btn').style.display = 'flex';
+        autoSaveDiaryData();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function removeSpaceImage() {
+    document.getElementById('space-img-preview').style.display = 'none';
+    document.getElementById('remove-img-btn').style.display = 'none';
+    autoSaveDiaryData();
+  }
+
+  function changeBg(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('diary-container').style.backgroundImage = `url('${e.target.result}')`;
+        localStorage.setItem('bv_diary_saved_bg', e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function loadSignature(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('sig-preview').src = e.target.result;
+        document.getElementById('sig-preview').style.display = 'block';
+        autoSaveDiaryData();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function autoSaveDiaryDataForClass(targetClass) {
+    if (!targetClass) targetClass = document.getElementById('diary-class').value;
+    let dateVal = document.getElementById('diary-date').value.trim().replace(/\//g, '-');
+    if (!dateVal) dateVal = 'general';
+
+    const saveData = {
+      diaryClass: targetClass,
+      diaryDay: document.getElementById('diary-day').value,
+      diaryDate: document.getElementById('diary-date').value,
+      spaceText: document.getElementById('space-textarea').value,
+      dedicatedText: document.getElementById('dedicated-text').value,
+      remarksText: document.getElementById('remarks-text').value,
+      topRightImg: document.getElementById('topRightImgPreview').src || '',
+      hasTopRightImg: document.getElementById('topRightPhotoBox').classList.contains('has-image'),
+      spaceImg: document.getElementById('space-img-preview').src || '',
+      sigImg: document.getElementById('sig-preview').src || '',
+      periods: []
+    };
+
+    document.querySelectorAll('.period-block').forEach((block) => {
+      const icon = block.querySelector('.period-icon')?.textContent || '';
+      const timeInput = block.querySelector('.time-input')?.value || '';
+      const line1Text = block.querySelector('.line-1-text')?.innerHTML || '';
+      const line2Text = block.querySelector('.line-2-text')?.innerHTML || '';
+      const breakBanner = block.querySelector('.break-banner')?.value || '';
+      saveData.periods.push({ icon, timeInput, line1Text, line2Text, breakBanner, isBreak: !!block.querySelector('.break-banner') });
+    });
+
+    localStorage.setItem(`bv_diary_save_${targetClass}_${dateVal}`, JSON.stringify(saveData));
+    localStorage.setItem('bv_diary_last_active_class', targetClass);
+  }
+
+  function autoSaveDiaryData() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => { 
+      autoSaveDiaryDataForClass(document.getElementById('diary-class').value); 
+    }, 400);
+  }
+
+  function autoLoadDiaryDataForClass(targetClass) {
+    let dateVal = document.getElementById('diary-date').value.trim().replace(/\//g, '-');
+    if (!dateVal) dateVal = 'general';
+
+    const rawData = localStorage.getItem(`bv_diary_save_${targetClass}_${dateVal}`) || localStorage.getItem(`bv_diary_save_${targetClass}`);
+    
+    document.getElementById('space-textarea').value = '';
+    document.getElementById('dedicated-text').value = '';
+    document.getElementById('remarks-text').value = '';
+    removeTopRightPhoto({stopPropagation: ()=>{}});
+    removeSpaceImage();
+    document.getElementById('sig-preview').style.display = 'none';
+
+    if (!rawData) {
+      renderScheduleForClass(targetClass);
+      return;
+    }
+
+    try {
+      const saveData = JSON.parse(rawData);
+      if (saveData.diaryDay) document.getElementById('diary-day').value = saveData.diaryDay;
+      if (saveData.diaryDate) document.getElementById('diary-date').value = saveData.diaryDate;
+      if (saveData.spaceText) document.getElementById('space-textarea').value = saveData.spaceText;
+      if (saveData.dedicatedText) document.getElementById('dedicated-text').value = saveData.dedicatedText;
+      if (saveData.remarksText) document.getElementById('remarks-text').value = saveData.remarksText;
+
+      if (saveData.hasTopRightImg && saveData.topRightImg) {
+        const img = document.getElementById('topRightImgPreview');
+        img.src = saveData.topRightImg; img.style.display = 'block';
+        document.getElementById('topRightPhotoLabel').style.display = 'none';
+        document.getElementById('topRightRemoveBtn').style.display = 'flex';
+        document.getElementById('topRightPhotoBox').classList.add('has-image');
+      }
+      if (saveData.spaceImg) {
+        document.getElementById('space-img-preview').src = saveData.spaceImg;
+        document.getElementById('space-img-preview').style.display = 'block';
+        document.getElementById('remove-img-btn').style.display = 'flex';
+      }
+      if (saveData.sigImg) {
+        document.getElementById('sig-preview').src = saveData.sigImg;
+        document.getElementById('sig-preview').style.display = 'block';
+      }
+
+      if (saveData.periods && saveData.periods.length > 0) {
+        const container = document.getElementById('schedule-container');
+        container.innerHTML = '';
+        saveData.periods.forEach((pData) => {
+          const block = document.createElement('div');
+          block.className = 'period-block';
+          const rulingStyle = document.getElementById('ruling-select').value;
+          const currentFont = document.getElementById('font-select').value;
+
+          if (pData.isBreak) {
+            block.innerHTML = `
+              <div class="period-row">
+                <span class="period-icon">${pData.icon || '🍎'}</span>
+                <input type="text" class="time-input" value="${pData.timeInput || ''}">
+                <div class="rule-wrapper">
+                  <input type="text" class="break-banner" value="${pData.breakBanner || ''}">
+                </div>
+                <button class="delete-period-btn" onclick="deletePeriod(this)">✕</button>
+              </div>`;
+          } else {
+            block.innerHTML = `
+              <div class="period-row">
+                <span class="period-icon">${pData.icon || '📝'}</span>
+                <input type="text" class="time-input" value="${pData.timeInput || ''}">
+                <div class="rule-lines-stack">
+                  <div class="rule-wrapper ${rulingStyle}">
+                    <div class="rule-line line-1"></div><div class="rule-line line-2"></div>
+                    <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};">${pData.line1Text || ''}</div>
+                  </div>
+                  <div class="rule-wrapper ${rulingStyle}">
+                    <div class="rule-line line-1"></div><div class="rule-line line-2"></div>
+                    <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};">${pData.line2Text || ''}</div>
+                  </div>
+                </div>
+                <button class="delete-period-btn" onclick="deletePeriod(this)">✕</button>
+              </div>`;
+          }
+          container.appendChild(block);
+        });
+      }
+    } catch(e) { console.log('Error loading data:', e); }
+  }
+
+  function autoLoadDiaryDataOnPageLoad() {
+    const savedLogo = localStorage.getItem('bv_diary_saved_logo');
+    if (savedLogo) {
+      document.getElementById('logo-img').src = savedLogo;
+      document.querySelector('.welcome-logo').src = savedLogo;
+    }
+
+    const savedBg = localStorage.getItem('bv_diary_saved_bg');
+    if (savedBg) document.getElementById('diary-container').style.backgroundImage = `url('${savedBg}')`;
+
+    const lastClass = localStorage.getItem('bv_diary_last_active_class') || '10';
+    document.getElementById('diary-class').value = lastClass;
+    currentSelectedClass = lastClass;
+    
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    const formattedDate = `${dd}/${mm}/${yyyy}`;
+    
+    const options = { weekday: 'long' };
+    const dayName = today.toLocaleDateString('en-US', options).toUpperCase();
+
+    const dateInput = document.getElementById('diary-date');
+    const dayInput = document.getElementById('diary-day');
+    
+    if (!dateInput.value) dateInput.value = formattedDate;
+    if (!dayInput.value) dayInput.value = dayName;
+
+    autoLoadDiaryDataForClass(lastClass);
+  }
+
+  function clearSavedData() {
+    let dateVal = document.getElementById('diary-date').value.trim().replace(/\//g, '-');
+    if (!dateVal) dateVal = 'general';
+    const activeClass = document.getElementById('diary-class').value;
+    
+    if (confirm(`Are you sure you want to clear saved notes for class ${activeClass}?`)) {
+      localStorage.removeItem(`bv_diary_save_${activeClass}_${dateVal}`);
+      localStorage.removeItem(`bv_diary_save_${activeClass}`);
+      renderScheduleForClass(activeClass);
+      document.getElementById('space-textarea').value = '';
+      document.getElementById('dedicated-text').value = '';
+      document.getElementById('remarks-text').value = '';
+      removeTopRightPhoto({stopPropagation: ()=>{}});
+      removeSpaceImage();
+      document.getElementById('sig-preview').style.display = 'none';
+    }
+  }
+
+  const containerEl = document.getElementById('diary-container');
+  containerEl.addEventListener('input', autoSaveDiaryData);
+  containerEl.addEventListener('keyup', autoSaveDiaryData);
+  
+  document.getElementById('diary-date').addEventListener('change', () => {
+    autoLoadDiaryDataForClass(document.getElementById('diary-class').value);
+  });
+
+  window.addEventListener('DOMContentLoaded', autoLoadDiaryDataOnPageLoad);
+</script>
+
+</body>
+</html>
