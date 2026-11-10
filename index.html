@@ -6,432 +6,243 @@
 <title>ABC CBSE(AS) Diary - Interactive School Diary by SURESHKUMAR AVULA</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- Firebase SDKs -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, off, remove } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
+<style>
+  :root {
+    --primary: #0083a8;
+    --primary-dark: #005f7a;
+    --time-bg: #e6f7ff;
+    --line-top: #29b6f6;
+    --line-bot: #66bb6a;
+    --border-color: #0083a8;
+    --font-color-main: #333333;
+    --break-bg: #fff3cd;
+    --space-border-style: solid;
+    --space-border-width: 2px;
+  }
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAZW-bZmHMEAeJHoZeu922DZzY7shLHZxI",
-    authDomain: "abc-school-diary.firebaseapp.com",
-    projectId: "abc-school-diary",
-    storageBucket: "abc-school-diary.firebasestorage.app",
-    messagingSenderId: "399913582814",
-    appId: "1:399913582814:web:53739cf1606491f893424f",
-    measurementId: "G-DQM4SRDG1X"
-  };
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Poppins', sans-serif; background: #f0f2f5; color: var(--font-color-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  /* Welcome Screen */
+  #welcome-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 1000; color: white; text-align: center; padding: 20px;
+    transition: opacity 0.4s ease;
+  }
+  #welcome-screen h1 { font-size: 2.2rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+  #welcome-screen p { font-size: 1.1rem; margin-bottom: 30px; opacity: 0.9; }
+  .enter-btn {
+    background: white; color: var(--primary); border: none; padding: 14px 35px;
+    font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.2s, background 0.2s;
+  }
+  .enter-btn:hover { transform: scale(1.05); background: #f8f9fa; }
 
-  let currentTop = 0;
-  let activeBlock = null;
+  /* Main Container */
+  #main-app-container {
+    display: none; width: 100%; max-width: 900px; background: white;
+    min-height: 100vh; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  }
+
+  /* Header */
+  .diary-header {
+    background: var(--primary); color: white; padding: 15px 20px;
+    display: flex; justify-content: space-between; align-items: center; position: relative;
+  }
+  .school-title { font-size: 1.3rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+  .top-right-box { display: flex; align-items: center; gap: 10px; }
+  .top-photo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid white; background: #ddd; }
+  .menu-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+
+  /* Toolbar */
+  .toolbar {
+    background: #f8f9fa; padding: 10px 15px; border-bottom: 1px solid #dee2e6;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+  }
+  .toolbar select, .toolbar button { padding: 6px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9rem; cursor: pointer; }
+  .toolbar button { background: var(--primary); color: white; border: none; }
+
+  /* Content Body */
+  .diary-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+  .remark-section { display: flex; align-items: center; gap: 10px; background: var(--time-bg); padding: 10px 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
+  .remark-input { flex-grow: 1; border: none; background: transparent; font-size: 1rem; outline: none; color: var(--font-color-main); font-weight: 500; }
+
+  /* Schedule Container */
+  #schedule-container { display: flex; flex-direction: column; gap: 12px; }
+  .period-block { display: flex; flex-direction: column; border-bottom: 1px dashed #ddd; padding-bottom: 10px; position: relative; }
+  .period-row { display: flex; align-items: center; gap: 10px; width: 100%; }
+  
+  .period-icon { font-size: 1.2rem; width: 30px; text-align: center; cursor: pointer; flex-shrink: 0; }
+  .time-input { width: 140px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; font-size: 0.85rem; background: var(--time-bg); text-align: center; flex-shrink: 0; }
+  
+  .rule-lines-stack { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; position: relative; }
+  .rule-wrapper { position: relative; width: 100%; min-height: 38px; border: var(--space-border-width) var(--space-border-style) var(--border-color); border-radius: 4px; background: #fff; overflow: hidden; }
+  
+  .rule-line { position: absolute; left: 0; right: 0; height: 1px; }
+  .rule-single .line-1 { top: 50%; background: var(--line-top); }
+  .rule-double .line-1 { top: 33%; background: var(--line-top); }
+  .rule-double .line-2 { top: 66%; background: var(--line-bot); }
+  
+  .rule-input-full {
+    position: absolute; left: 10px; right: 10px; border: none; background: transparent;
+    outline: none; font-size: 0.95rem; line-height: 38px; z-index: 2; white-space: pre-wrap; word-break: break-word;
+  }
+  
+  .break-banner { width: 100%; text-align: center; font-weight: bold; background: var(--break-bg); padding: 8px; border: 1px dashed var(--primary); border-radius: 4px; font-size: 0.9rem; }
+  
+  .delete-period-btn, .top-right-remove-btn {
+    background: #ff4d4d; color: white; border: none; width: 24px; height: 24px;
+    border-radius: 50%; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  /* Footer Controls */
+  .diary-footer { padding: 15px 20px; display: flex; justify-content: space-between; background: #f8f9fa; border-top: 1px solid #dee2e6; }
+
+  /* Settings Modal */
+  #settingsModal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000;
+  }
+  .modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 450px; display: flex; flex-direction: column; gap: 15px; max-height: 90vh; overflow-y: auto; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1.1rem; }
+  .close-modal { background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+</style>
+</head>
+<body>
+
+  <!-- Welcome Screen -->
+  <div id="welcome-screen">
+    <h1>ABC CBSE(AS) School Diary</h1>
+    <p>Interactive Digital Diary - Powered by Local Storage</p>
+    <button class="enter-btn" onclick="openDiary()">Open Diary 🚀</button>
+  </div>
+
+  <!-- Main App Container -->
+  <div id="main-app-container">
+    <div class="diary-header">
+      <div class="school-title">
+        <span>🏫 ABC CBSE School - Piduguralla</span>
+      </div>
+      <div class="top-right-box">
+        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='45' height='45' viewBox='0 0 24 24' fill='%23ccc'><circle cx='12' cy='12' r='12'/></svg>" class="top-photo" id="school-logo-img" alt="Logo">
+        <button class="menu-btn" onclick="toggleMenu(true)">⚙️ Settings</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div>
+        <label>Class:</label>
+        <select id="class-select" onchange="handleClassChange(this.value)">
+          <option value="10" selected>Class 10</option>
+          <option value="9">Class 9</option>
+          <option value="8">Class 8</option>
+          <option value="7">Class 7</option>
+          <option value="6">Class 6</option>
+          <option value="BV1">BV-1</option>
+          <option value="BV2">BV-2</option>
+          <option value="BV3">BV-3</option>
+        </select>
+      </div>
+      <div>
+        <button onclick="addNewPeriod('normal', true)">+ Add Period</button>
+        <button onclick="addNewPeriod('break', false)">+ Add Break</button>
+        <button onclick="takeSnap()" style="background: #27ae60;">📥 Download Snapshot</button>
+      </div>
+    </div>
+
+    <div class="diary-body" id="capture-area">
+      <div class="remark-section">
+        <span>📌</span>
+        <input type="text" id="dedicated-input" class="remark-input" placeholder="Daily thought or dedication message here..." oninput="autoSaveDiaryData()">
+      </div>
+      <div id="schedule-container"></div>
+    </div>
+
+    <div class="diary-footer">
+      <small style="color: #666;">Developed by Sureshkumar Avula | IT Coordinator</small>
+      <small style="color: #27ae60; font-weight: bold;">● Auto-saved locally</small>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Diary Settings & Customization</span>
+        <button class="close-modal" onclick="toggleMenu(false)">✕</button>
+      </div>
+      <div>
+        <label style="font-weight: 500; display: block; margin-bottom: 5px;">Select Theme:</label>
+        <select id="theme-select" onchange="applyTheme(this.value)" style="width: 100%; padding: 8px; border-radius: 4px;">
+          <option value="bv-classic">Classic Blue</option>
+          <option value="royal-purple">Royal Purple</option>
+          <option value="fresh-mint">Fresh Mint</option>
+          <option value="sunset-orange">Sunset Orange</option>
+          <option value="dark-slate">Dark Slate</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight: 500; display: block; margin-bottom: 5px;">Font Style:</label>
+        <select id="font-select" onchange="changeFontSize(this.value)" style="width: 100%; padding: 8px; border-radius: 4px;">
+          <option value="'Poppins', sans-serif">Poppins</option>
+          <option value="'Comic Neue', sans-serif">Comic Neue</option>
+          <option value="'Fredoka', sans-serif">Fredoka</option>
+        </select>
+      </div>
+      <button onclick="toggleMenu(false)" style="background: var(--primary); color: white; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">Done</button>
+    </div>
+  </div>
+
+<script>
   let currentSelectedClass = '10';
-  let saveTimeout = null;
-  let currentDbRef = null;
-  let isReceivingData = false;
-
-  window.openDiary = function() {
-    const welcome = document.getElementById('welcome-screen');
-    const mainContainer = document.getElementById('main-app-container');
-    const diaryPage = document.getElementById('diary-container');
-    
-    if (welcome) {
-      welcome.style.opacity = '0';
-      setTimeout(() => {
-        welcome.style.display = 'none';
-        if (mainContainer) mainContainer.style.display = 'flex';
-        renderScheduleForClass(currentSelectedClass);
-        listenToDiaryChanges(currentSelectedClass);
-        if (diaryPage) diaryPage.classList.add('book-open-anim');
-      }, 300);
-    }
-  };
-
-  window.toggleMenu = function(show) {
-    const modal = document.getElementById('settingsModal');
-    if (modal) modal.style.display = show ? 'flex' : 'none';
-  };
+  let currentTop = -2;
 
   const themes = {
     'bv-classic': { primary: '#0083a8', dark: '#005f7a', timeBg: '#e6f7ff', lineTop: '#29b6f6', lineBot: '#66bb6a' },
     'royal-purple': { primary: '#8e44ad', dark: '#6c5ce7', timeBg: '#f3e5f5', lineTop: '#a29bfe', lineBot: '#fd79a8' },
     'fresh-mint': { primary: '#27ae60', dark: '#1e8449', timeBg: '#e8f8f5', lineTop: '#55efc4', lineBot: '#00b894' },
     'sunset-orange': { primary: '#e67e22', dark: '#d35400', timeBg: '#fbeee6', lineTop: '#fab1a0', lineBot: '#ff7675' },
-    'golden-amber': { primary: '#f39c12', dark: '#b7950b', timeBg: '#fef9e7', lineTop: '#ffeaa7', lineBot: '#fdcb6e' },
-    'dark-slate': { primary: '#2c3e50', dark: '#1a252f', timeBg: '#ebedef', lineTop: '#74b9ff', lineBot: '#81ecec' },
-    'cherry-blossom': { primary: '#e84393', dark: '#c2185b', timeBg: '#fce4ec', lineTop: '#fd79a8', lineBot: '#ff7675' },
-    'teal-sky': { primary: '#00cec9', dark: '#008b8b', timeBg: '#e0f7fa', lineTop: '#81ecec', lineBot: '#55efc4' },
-    'chocolate-warmth': { primary: '#795548', dark: '#4e342e', timeBg: '#efebe9', lineTop: '#d7ccc8', lineBot: '#a1887f' },
-    'forest-emerald': { primary: '#1b5e20', dark: '#0d3b11', timeBg: '#e8f5e9', lineTop: '#81c784', lineBot: '#4caf50' },
-    'lavender-dream': { primary: '#6a1b9a', dark: '#4a148c', timeBg: '#f3e5f5', lineTop: '#ba68c8', lineBot: '#ab47bc' },
-    'sunshine-yellow': { primary: '#fbc02d', dark: '#f57f17', timeBg: '#fffde7', lineTop: '#fff176', lineBot: '#ffee58' },
-    'ruby-red': { primary: '#c62828', dark: '#8e0000', timeBg: '#ffebee', lineTop: '#ef5350', lineBot: '#e53935' },
-    'corporate-grey': { primary: '#455a64', dark: '#263238', timeBg: '#eceff1', lineTop: '#90a4ae', lineBot: '#78909c' },
-    'pastel-rainbow': { primary: '#ff6b6b', dark: '#ee5253', timeBg: '#f8efba', lineTop: '#48dbfb', lineBot: '#1dd1a1' },
-    'midnight-blue': { primary: '#0c2461', dark: '#0a192f', timeBg: '#e8eaf6', lineTop: '#4a69bd', lineBot: '#6a89cc' },
-    'rose-gold': { primary: '#b83b5e', dark: '#6a2c70', timeBg: '#f9f3f3', lineTop: '#f08a5d', lineBot: '#eeecda' },
-    'cyan-breeze': { primary: '#00a8ff', dark: '#0097e6', timeBg: '#e3f2fd', lineTop: '#00d2d3', lineBot: '#54a0ff' },
-    'vintage-cream': { primary: '#8d6e63', dark: '#5d4037', timeBg: '#f5f5dc', lineTop: '#d7ccc8', lineBot: '#bcaaa4' },
-    'neon-cyber': { primary: '#00f2fe', dark: '#4facfe', timeBg: '#e0f7fa', lineTop: '#ff007f', lineBot: '#00f2fe' }
+    'dark-slate': { primary: '#2c3e50', dark: '#1a252f', timeBg: '#ebedef', lineTop: '#74b9ff', lineBot: '#81ecec' }
   };
 
   const schedulePresets = {
-    'BV1_BV2': [
-      { icon: '🎙️', label: '9.00 - 9.40 :', isBreak: false, lang: '' },
-      { icon: '📚🎙️', label: '9.40 - 10.15 :', isBreak: false, lang: '' },
-      { icon: '🍎', label: '10.15 - 10.30 :', isBreak: true, banner: '— FRUIT BREAK —' },
-      { icon: '📓', label: '10.30 - 12.00 :', isBreak: false, lang: '' },
-      { icon: '🍱', label: '12.00 - 1.15 :', isBreak: true, banner: '— LUNCH BREAK —' },
-      { icon: '😴', label: '1.15 - 2.00 :', isBreak: true, banner: '— NAP / REST TIME —' },
-      { icon: '🎨📖', label: '2.00 - 3.00 :', isBreak: false, lang: '' },
-      { icon: '🎙️', label: '3.00 - 3.15 :', isBreak: false, lang: '' }
-    ],
-    'BV3': [
-      { icon: '🎙️', label: '9.00 - 9.40 :', isBreak: false, lang: '' },
-      { icon: '📚🎙️', label: '9.40 - 10.15 :', isBreak: false, lang: '' },
-      { icon: '🍎', label: '10.15 - 10.30 :', isBreak: true, banner: '— FRUIT BREAK —' },
-      { icon: '📓', label: '10.30 - 12.00 :', isBreak: false, lang: '' },
-      { icon: '🍱', label: '12.00 - 1.15 :', isBreak: true, banner: '— LUNCH BREAK —' },
-      { icon: '🎨📖', label: '1.15 - 3.00 :', isBreak: false, lang: '' },
-      { icon: '🎙️', label: '3.00 - 3.15 :', isBreak: false, lang: '' }
-    ],
-    'PRIMARY_1_5': [
-      { icon: '✏️', label: 'ENGLISH :', isBreak: false, lang: '' },
-      { icon: '📚', label: 'TELUGU :', isBreak: false, lang: 'te' },
-      { icon: '📖', label: 'HINDI :', isBreak: false, lang: 'hi' },
-      { icon: '🌱', label: 'EVS :', isBreak: false, lang: '' },
-      { icon: '💡', label: 'G.K. :', isBreak: false, lang: '' },
-      { icon: '🔢', label: 'MATHS :', isBreak: false, lang: '' },
-      { icon: '📝', label: 'SUBJECT 7 :', isBreak: false, lang: '' },
-      { icon: '📝', label: 'SUBJECT 8 :', isBreak: false, lang: '' },
-      { icon: '📝', label: 'SUBJECT 9 :', isBreak: false, lang: '' }
-    ],
     'HIGH_SCHOOL': [
-      { icon: '📚', label: 'TELUGU :', isBreak: false, lang: 'te' },
-      { icon: '📖', label: 'HINDI / G.K. :', isBreak: false, lang: 'hi' },
-      { icon: '✏️', label: 'ENGLISH :', isBreak: false, lang: '' },
-      { icon: '🔢', label: 'MATHS :', isBreak: false, lang: '' },
-      { icon: '🧪', label: 'P.S. :', isBreak: false, lang: '' },
-      { icon: '⚗️', label: 'CHEMISTRY :', isBreak: false, lang: '' },
-      { icon: '🔬', label: 'N.S. :', isBreak: false, lang: '' },
-      { icon: '🌍', label: 'SOCIAL :', isBreak: false, lang: '' },
-      { icon: '🤖', label: 'A.I. :', isBreak: false, lang: '' }
+      { icon: '📚', label: 'TELUGU :', isBreak: false },
+      { icon: '📖', label: 'HINDI :', isBreak: false },
+      { icon: '✏️', label: 'ENGLISH :', isBreak: false },
+      { icon: '🔢', label: 'MATHS :', isBreak: false },
+      { icon: '🧪', label: 'P.S. :', isBreak: false },
+      { icon: '🔬', label: 'N.S. :', isBreak: false },
+      { icon: '🌍', label: 'SOCIAL :', isBreak: false },
+      { icon: '🤖', label: 'A.I. :', isBreak: false }
+    ],
+    'BV1_BV2': [
+      { icon: '🎙️', label: '9.00 - 9.40 :', isBreak: false },
+      { icon: '🍎', label: '10.15 - 10.30 :', isBreak: true, banner: '— FRUIT BREAK —' },
+      { icon: '🍱', label: '12.00 - 1.15 :', isBreak: true, banner: '— LUNCH BREAK —' }
     ]
   };
 
-  function renderScheduleForClass(clsValue) {
-    const container = document.getElementById('schedule-container');
-    if (!container) return;
-    container.innerHTML = ""; 
-
-    let preset = schedulePresets['HIGH_SCHOOL'];
-    if (clsValue === 'BV1' || clsValue === 'BV2') {
-      preset = schedulePresets['BV1_BV2'];
-    } else if (clsValue === 'BV3') {
-      preset = schedulePresets['BV3'];
-    } else if (['1F','1G','2F','2G','3F','3G','4F','4G','5F','5G'].includes(clsValue)) {
-      preset = schedulePresets['PRIMARY_1_5'];
-    }
-
-    const rulingStyle = document.getElementById('ruling-select')?.value || 'rule-single';
-    const currentFont = document.getElementById('font-select')?.value || "'Comic Neue', sans-serif";
-
-    preset.forEach((item) => {
-      const block = document.createElement('div');
-      block.className = 'period-block';
-
-      if (item.isBreak) {
-        block.innerHTML = `
-          <div class="period-row">
-            <span class="period-icon">${item.icon}</span>
-            <input type="text" class="time-input" value="${item.label}">
-            <div class="rule-wrapper">
-              <input type="text" class="break-banner" value="${item.banner}">
-            </div>
-            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Break">✕</button>
-          </div>`;
-      } else {
-        const langAttr = item.lang ? `data-translit="${item.lang}"` : '';
-        block.innerHTML = `
-          <div class="period-row">
-            <span class="period-icon">${item.icon}</span>
-            <input type="text" class="time-input" value="${item.label}">
-            <div class="rule-lines-stack">
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div>
-                <div contenteditable="true" spellcheck="false" class="rule-input-full period-text line-1-text" ${langAttr} style="top: ${currentTop}px; font-family: ${currentFont};"></div>
-              </div>
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div>
-                <div contenteditable="true" spellcheck="false" class="rule-input-full period-text line-2-text" ${langAttr} style="top: ${currentTop}px; font-family: ${currentFont};"></div>
-              </div>
-            </div>
-            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
-          </div>`;
-      }
-      container.appendChild(block);
-    });
-
-    bindTransliteration();
-  }
-
-  function bindTransliteration() {
-    document.querySelectorAll('[data-translit]').forEach(el => {
-      el.removeEventListener('keydown', handleTranslitKey);
-      el.addEventListener('keydown', handleTranslitKey);
-    });
-  }
-
-  async function handleTranslitKey(e) {
-    if (e.key === ' ' || e.key === 'Enter') {
-      const lang = this.getAttribute('data-translit');
-      if (!lang) return;
-
-      const sel = window.getSelection();
-      if (!sel.rangeCount) return;
-      const range = sel.getRangeAt(0);
-      const textNode = range.startContainer;
-
-      if (textNode.nodeType === Node.TEXT_NODE) {
-        const textBeforeCursor = textNode.textContent.substring(0, range.startOffset);
-        const words = textBeforeCursor.split(/\s+/);
-        const lastWord = words[words.length - 1];
-
-        if (lastWord && /^[a-zA-Z]+$/.test(lastWord)) {
-          e.preventDefault();
-          try {
-            const res = await fetch(`https://inputtools.google.com/request?text=${lastWord}&itc=${lang}-t-i0-und&num=1`);
-            const data = await res.json();
-            if (data && data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1][0]) {
-              const convertedWord = data[1][0][1][0];
-              const beforeWord = textBeforeCursor.substring(0, textBeforeCursor.length - lastWord.length);
-              const textAfterCursor = textNode.textContent.substring(range.startOffset);
-              
-              textNode.textContent = beforeWord + convertedWord + (e.key === ' ' ? ' ' : '\n') + textAfterCursor;
-              
-              const newPos = (beforeWord + convertedWord + (e.key === ' ' ? ' ' : '\n')).length;
-              const newRange = document.createRange();
-              newRange.setStart(textNode, newPos);
-              newRange.collapse(true);
-              sel.removeAllRanges();
-              sel.addRange(newRange);
-              triggerAutoSave();
-              return;
-            }
-          } catch(err) {
-            console.error("Transliteration Error:", err);
-          }
-        }
-      }
+  window.openDiary = function() {
+    const welcome = document.getElementById('welcome-screen');
+    if (welcome) {
+      welcome.style.opacity = '0';
+      setTimeout(() => {
+        welcome.style.display = 'none';
+        const mainContainer = document.getElementById('main-app-container');
+        if (mainContainer) mainContainer.style.display = 'flex';
+        renderScheduleForClass(currentSelectedClass);
+        loadDiaryDataFromLocalStorage(currentSelectedClass);
+      }, 400);
     }
   }
 
-  function getDiaryPath(cls, dateStr) {
-    let cleanCls = (cls || '10').toString().trim().replace(/[^a-zA-Z0-9]/g, '');
-    let cleanDate = '';
-    if (dateStr && dateStr.trim() !== '') {
-      cleanDate = dateStr.trim().replace(/[\/\.]/g, '-');
-    } else {
-      const today = new Date();
-      cleanDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-    }
-    return `diaries_v2/${cleanCls}/${cleanDate}`;
+  window.toggleMenu = function(show) {
+    const modal = document.getElementById('settingsModal');
+    if (modal) modal.style.display = show ? 'flex' : 'none';
   }
-
-  function updateStatus(status) {
-    const badge = document.getElementById('save-status-badge');
-    if (!badge) return;
-    if (status === 'saving') {
-      badge.textContent = '🟡 Saving...';
-      badge.style.color = '#eab308';
-      badge.style.borderColor = '#eab308';
-    } else if (status === 'saved') {
-      badge.textContent = '🟢 Saved';
-      badge.style.color = '#10b981';
-      badge.style.borderColor = '#10b981';
-    } else if (status === 'error') {
-      badge.textContent = '🔴 Sync Error';
-      badge.style.color = '#ef4444';
-      badge.style.borderColor = '#ef4444';
-    }
-  }
-
-  function autoSaveDiaryDataForClass(targetClass) {
-    if (isReceivingData) return;
-    if (!targetClass) targetClass = document.getElementById('diary-class').value;
-    
-    const dateVal = document.getElementById('diary-date').textContent.trim();
-    const diaryPath = getDiaryPath(targetClass, dateVal);
-    updateStatus('saving');
-
-    const saveData = {
-      diaryClass: targetClass,
-      diaryDay: document.getElementById('diary-day').textContent.trim() || '',
-      diaryDate: dateVal || '',
-      spaceText: document.getElementById('space-textarea').value || '',
-      dedicatedText: document.getElementById('dedicated-input').value || '',
-      remarksText: document.getElementById('remarks-text').value || '',
-      topRightImg: document.getElementById('topRightImgPreview')?.src || '',
-      hasTopRightImg: document.getElementById('topRightPhotoBox')?.classList.contains('has-image') || false,
-      spaceMedia: document.getElementById('space-media-container').innerHTML || '',
-      sigImg: document.getElementById('sig-preview')?.src || '',
-      logoImg: document.getElementById('logo-img')?.src || '',
-      announcementHeight: document.getElementById('announcement-box').style.height || '40px',
-      updatedAt: Date.now(),
-      periods: []
-    };
-
-    document.querySelectorAll('.period-block').forEach((block) => {
-      const icon = block.querySelector('.period-icon')?.textContent || '';
-      const timeInput = block.querySelector('.time-input')?.value || '';
-      const line1Text = block.querySelector('.line-1-text')?.innerHTML || '';
-      const line2Text = block.querySelector('.line-2-text')?.innerHTML || '';
-      const breakBanner = block.querySelector('.break-banner')?.value || '';
-      saveData.periods.push({
-        icon,
-        timeInput,
-        line1Text,
-        line2Text,
-        breakBanner,
-        isBreak: !!block.querySelector('.break-banner')
-      });
-    });
-
-    try {
-      localStorage.setItem(`saved_diary_v2_${targetClass}`, JSON.stringify(saveData));
-    } catch(e) {}
-
-    set(ref(db, diaryPath), saveData)
-      .then(() => { updateStatus('saved'); })
-      .catch((err) => { console.error("Firebase write error:", err); updateStatus('error'); });
-  }
-
-  window.triggerAutoSave = function() {
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => {
-      autoSaveDiaryDataForClass(document.getElementById('diary-class').value);
-    }, 250);
-  };
-
-  function listenToDiaryChanges(targetClass) {
-    const dateVal = document.getElementById('diary-date').textContent.trim();
-    const diaryPath = getDiaryPath(targetClass, dateVal);
-
-    if (currentDbRef) off(currentDbRef);
-    currentDbRef = ref(db, diaryPath);
-    
-    onValue(currentDbRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const active = document.activeElement;
-        const userIsTyping = active && (active.isContentEditable || active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
-        if (userIsTyping) return;
-
-        isReceivingData = true;
-        applyLoadedData(snapshot.val());
-        setTimeout(() => { isReceivingData = false; }, 200);
-      } else {
-        document.querySelectorAll('.line-1-text, .line-2-text').forEach(el => el.innerHTML = '');
-        document.getElementById('space-textarea').value = '';
-        document.getElementById('space-media-container').innerHTML = '';
-        document.getElementById('announcement-box').style.height = '40px';
-        document.getElementById('height-slider').value = '40';
-        document.getElementById('dedicated-input').value = '';
-        document.getElementById('remarks-text').value = '';
-        
-        const logoImg = document.getElementById('logo-img');
-        if (logoImg) {
-          logoImg.src = '';
-          logoImg.style.display = 'none';
-        }
-      }
-      updateStatus('saved');
-    });
-  }
-
-  function applyLoadedData(saveData) {
-    if (!saveData) return;
-
-    if (saveData.diaryDay) document.getElementById('diary-day').textContent = saveData.diaryDay;
-    if (saveData.diaryDate) document.getElementById('diary-date').textContent = saveData.diaryDate;
-    if (saveData.spaceText !== undefined) document.getElementById('space-textarea').value = saveData.spaceText;
-    if (saveData.dedicatedText !== undefined) document.getElementById('dedicated-input').value = saveData.dedicatedText;
-    if (saveData.remarksText !== undefined) document.getElementById('remarks-text').value = saveData.remarksText;
-
-    if (saveData.spaceMedia !== undefined && saveData.spaceMedia.trim() !== '') {
-      document.getElementById('space-media-container').innerHTML = saveData.spaceMedia;
-    }
-
-    if (saveData.announcementHeight) {
-      const box = document.getElementById('announcement-box');
-      box.style.height = saveData.announcementHeight;
-      const slider = document.getElementById('height-slider');
-      if(slider) slider.value = parseInt(saveData.announcementHeight);
-      toggleNotebookLines(parseInt(saveData.announcementHeight));
-    }
-
-    const logoImg = document.getElementById('logo-img');
-    if (saveData.logoImg && saveData.logoImg.length > 5) {
-      if (logoImg) {
-        logoImg.src = saveData.logoImg;
-        logoImg.style.display = 'block';
-      }
-    } else {
-      if (logoImg) {
-        logoImg.src = '';
-        logoImg.style.display = 'none';
-      }
-    }
-
-    if (saveData.topRightImg && saveData.topRightImg.length > 5) {
-      const img = document.getElementById('topRightImgPreview');
-      img.src = saveData.topRightImg; 
-      img.style.display = 'block';
-      document.getElementById('topRightPhotoLabel').style.display = 'none';
-      document.getElementById('topRightRemoveBtn').style.display = 'flex';
-      document.getElementById('topRightPhotoBox').classList.add('has-image');
-    }
-
-    if (saveData.sigImg) {
-      document.getElementById('sig-preview').src = saveData.sigImg;
-      document.getElementById('sig-preview').style.display = 'block';
-    } else {
-      document.getElementById('sig-preview').style.display = 'none';
-    }
-
-    if (saveData.periods && saveData.periods.length > 0) {
-      const existing = document.querySelectorAll('.period-block');
-      if (existing.length === saveData.periods.length) {
-        saveData.periods.forEach((pData, idx) => {
-          const blk = existing[idx];
-          if (!pData.isBreak) {
-            const l1 = blk.querySelector('.line-1-text');
-            const l2 = blk.querySelector('.line-2-text');
-            if (l1) l1.innerHTML = pData.line1Text || '';
-            if (l2) l2.innerHTML = pData.line2Text || '';
-          }
-        });
-      } else {
-        renderScheduleForClass(saveData.diaryClass || currentSelectedClass);
-        setTimeout(() => { applyLoadedData(saveData); }, 50);
-      }
-    }
-  }
-
-  window.handleClassChange = function(newClass) {
-    autoSaveDiaryDataForClass(currentSelectedClass);
-    currentSelectedClass = newClass;
-    
-    const page = document.getElementById('diary-container');
-    if (page) {
-      page.classList.remove('book-flip-anim');
-      void page.offsetWidth;
-      page.classList.add('book-flip-anim');
-    }
-
-    renderScheduleForClass(newClass);
-    listenToDiaryChanges(newClass);
-  };
 
   window.applyTheme = function(themeKey) {
     const t = themes[themeKey] || themes['bv-classic'];
@@ -441,72 +252,64 @@
     document.documentElement.style.setProperty('--line-top', t.lineTop);
     document.documentElement.style.setProperty('--line-bot', t.lineBot);
     document.documentElement.style.setProperty('--border-color', t.primary);
-  };
-
-  window.changeFontColor = function(color) { document.documentElement.style.setProperty('--font-color-main', color); };
-  window.changeBreakColor = function(color) { document.documentElement.style.setProperty('--break-bg', color); };
-  window.formatSelection = function(command) { document.execCommand(command, false, null); };
-  window.applySelectedColor = function(color) { document.execCommand('foreColor', false, color); };
-  window.changeHeaderColor = function(variableName, color) { document.documentElement.style.setProperty(variableName, color); };
-
-  window.adjustAnnouncementHeight = function(val) {
-    const box = document.getElementById('announcement-box');
-    const heightPx = val + 'px';
-    if(box) {
-      box.style.height = heightPx;
-    }
-    toggleNotebookLines(val);
-    triggerAutoSave();
-  };
-
-  function toggleNotebookLines(val) {
-    const box = document.getElementById('announcement-box');
-    if (val > 80) {
-      box.classList.add('with-lines');
-    } else {
-      box.classList.remove('with-lines');
-    }
   }
 
-  window.changeActivePeriodIcon = function(iconChar) {
-    if (!iconChar || !activeBlock) return;
-    const iconSpan = activeBlock.querySelector('.period-icon');
-    if (iconSpan) {
-      iconSpan.textContent = iconChar;
-      triggerAutoSave();
+  function renderScheduleForClass(clsValue) {
+    const container = document.getElementById('schedule-container');
+    if (!container) return;
+    container.innerHTML = ""; 
+
+    let preset = schedulePresets['HIGH_SCHOOL'];
+    if (clsValue === 'BV1' || clsValue === 'BV2') {
+      preset = schedulePresets['BV1_BV2'];
     }
-  };
 
-  window.moveText = function(step) {
-    currentTop += step;
-    document.querySelectorAll('.rule-input-full').forEach(input => { 
-      input.style.top = currentTop + 'px'; 
+    preset.forEach((item) => {
+      const block = document.createElement('div');
+      block.className = 'period-block';
+
+      if (item.isBreak) {
+        block.innerHTML = `
+          <div class="period-row">
+            <span class="period-icon">${item.icon}</span>
+            <input type="text" class="time-input" value="${item.label}" oninput="autoSaveDiaryData()">
+            <div class="rule-wrapper">
+              <input type="text" class="break-banner" value="${item.banner}" oninput="autoSaveDiaryData()">
+            </div>
+            <button class="delete-period-btn" onclick="deletePeriod(this)">✕</button>
+          </div>`;
+      } else {
+        block.innerHTML = `
+          <div class="period-row">
+            <span class="period-icon">${item.icon}</span>
+            <input type="text" class="time-input" value="${item.label}" oninput="autoSaveDiaryData()">
+            <div class="rule-lines-stack">
+              <div class="rule-wrapper rule-single">
+                <div class="rule-line line-1"></div>
+                <div contenteditable="true" class="rule-input-full period-text" oninput="autoSaveDiaryData()"></div>
+              </div>
+            </div>
+            <button class="delete-period-btn" onclick="deletePeriod(this)">✕</button>
+          </div>`;
+      }
+      container.appendChild(block);
     });
-  };
+  }
 
-  window.changeFontSize = function(size) {
-    document.querySelectorAll('.rule-input-full').forEach(input => { input.style.fontSize = size; });
-  };
-
-  window.changeRuling = function(rulingClass) {
-    document.querySelectorAll('.rule-wrapper').forEach(wrapper => {
-      wrapper.classList.remove('rule-single', 'rule-double', 'rule-four');
-      if (wrapper.querySelector('.rule-input-full')) wrapper.classList.add(rulingClass);
-    });
-  };
+  window.handleClassChange = function(newClass) {
+    autoSaveDiaryData();
+    currentSelectedClass = newClass;
+    renderScheduleForClass(newClass);
+    loadDiaryDataFromLocalStorage(newClass);
+  }
 
   window.deletePeriod = function(button) {
     const block = button.closest('.period-block');
-    if (block) { 
-      block.remove(); 
-      triggerAutoSave(); 
-    }
-  };
+    if (block) { block.remove(); autoSaveDiaryData(); }
+  }
 
   window.addNewPeriod = function(type, withSubjectBox) {
     const container = document.getElementById('schedule-container');
-    const rulingStyle = document.getElementById('ruling-select')?.value || 'rule-single';
-    const currentFont = document.getElementById('font-select')?.value || "'Comic Neue', sans-serif";
     const block = document.createElement('div');
     block.className = 'period-block';
 
@@ -514,424 +317,118 @@
       block.innerHTML = `
         <div class="period-row">
           <span class="period-icon">🍎</span>
-          <input type="text" class="time-input" value="Time Slot -">
+          <input type="text" class="time-input" value="Break Time" oninput="autoSaveDiaryData()">
           <div class="rule-wrapper">
-            <input type="text" class="break-banner" value="— BREAK —">
+            <input type="text" class="break-banner" value="— BREAK —" oninput="autoSaveDiaryData()">
           </div>
-          <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Break">✕</button>
+          <button class="delete-period-btn" onclick="deletePeriod(this)">✕</button>
         </div>`;
     } else {
-      if (withSubjectBox) {
-        block.innerHTML = `
-          <div class="period-row">
-            <span class="period-icon">📝</span>
-            <input type="text" class="time-input" value="SUBJECT :">
-            <div class="rule-lines-stack">
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div>
-                <div contenteditable="true" spellcheck="false" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
-              </div>
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div>
-                <div contenteditable="true" spellcheck="false" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
-              </div>
+      block.innerHTML = `
+        <div class="period-row">
+          <span class="period-icon">📝</span>
+          <input type="text" class="time-input" value="NEW SUBJECT :" oninput="autoSaveDiaryData()">
+          <div class="rule-lines-stack">
+            <div class="rule-wrapper rule-single">
+              <div class="rule-line line-1"></div>
+              <div contenteditable="true" class="rule-input-full period-text" oninput="autoSaveDiaryData()"></div>
             </div>
-            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
-          </div>`;
-      } else {
-        block.innerHTML = `
-          <div class="period-row">
-            <div style="width: 140px; flex-shrink: 0;"></div>
-            <div class="rule-lines-stack">
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div>
-                <div contenteditable="true" spellcheck="false" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
-              </div>
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div>
-                <div contenteditable="true" spellcheck="false" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};"></div>
-              </div>
-            </div>
-            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
-          </div>`;
-      }
+          </div>
+          <button class="delete-period-btn" onclick="deletePeriod(this)">✕</button>
+        </div>`;
     }
     container.appendChild(block);
-    bindTransliteration();
-    triggerAutoSave();
-  };
-
-  window.insertEmojiFromSelect = function(emoji) {
-    if (!emoji) return;
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-      const range = sel.getRangeAt(0);
-      range.deleteContents();
-      const textNode = document.createTextNode(emoji);
-      range.insertNode(textNode);
-      range.setStartAfter(textNode);
-      range.setEndAfter(textNode);
-      sel.removeAllRanges(); 
-      sel.addRange(range);
-    } else {
-      document.getElementById('space-textarea').value += emoji;
-    }
-    triggerAutoSave();
-  };
-
-  window.updateDedicationTopic = function(val) {
-    const inputEl = document.getElementById('dedicated-input');
-    if(inputEl) {
-      let cleanVal = val.replace(/"/g, '').trim();
-      inputEl.value = cleanVal !== "" ? `"${cleanVal}"` : "";
-    }
-    triggerAutoSave();
-  };
-
-  window.changeDedicationFont = function(fontFamily) {
-    const inputEl = document.getElementById('dedicated-input');
-    if(inputEl) inputEl.style.fontFamily = fontFamily;
-    triggerAutoSave();
-  };
-
-  window.changeDedicationAnimation = function(animClass) {
-    const inputEl = document.getElementById('dedicated-input');
-    if(inputEl) inputEl.className = 'remark-input ' + animClass;
-    triggerAutoSave();
-  };
-
-  window.changeDedicationTextColor = function(color) {
-    const inputEl = document.getElementById('dedicated-input');
-    if(inputEl) inputEl.style.color = color;
-    triggerAutoSave();
-  };
-
-  window.apply3DEffectIndex = function(indexStr) {
-    const idx = parseInt(indexStr);
-    const inputEl = document.getElementById('dedicated-input');
-    if (idx === 0) {
-      if(inputEl) inputEl.style.textShadow = 'none';
-      return;
-    }
-    const shadows = [
-      '2px 2px 0px #0083a8, 4px 4px 5px rgba(0,0,0,0.3)',
-      '3px 3px 0px #ff4757, 6px 6px 10px rgba(0,0,0,0.4)',
-      '2px 2px 0px #2ed573, 4px 4px 8px rgba(46,213,115,0.5)',
-      '3px 3px 0px #ffa502, 5px 5px 12px rgba(255,165,2,0.6)'
-    ];
-    let shadowVal = shadows[(idx - 1) % shadows.length];
-    if(inputEl) inputEl.style.textShadow = shadowVal;
-  };
-
-  window.triggerTopRightUpload = function() { document.getElementById('topRightInput').click(); };
-  window.loadTopRightPhoto = function(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = document.getElementById('topRightImgPreview');
-        img.src = e.target.result; 
-        img.style.display = 'block';
-        document.getElementById('topRightPhotoLabel').style.display = 'none';
-        document.getElementById('topRightRemoveBtn').style.display = 'flex';
-        document.getElementById('topRightPhotoBox').classList.add('has-image');
-        triggerAutoSave();
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  window.removeTopRightPhoto = function(event) {
-    if(event) event.stopPropagation();
-    const img = document.getElementById('topRightImgPreview');
-    img.src = ''; 
-    img.style.display = 'none';
-    document.getElementById('topRightPhotoLabel').style.display = 'flex';
-    document.getElementById('topRightRemoveBtn').style.display = 'none';
-    document.getElementById('topRightPhotoBox').classList.remove('has-image');
-    triggerAutoSave();
-  };
-
-  window.handleExport = function(type) {
-    if (type === 'pdf') {
-      window.print();
-    } else if (type === 'pdf-to-snap') {
-      takeUltraHDSnap();
-    }
-  };
-
-  function takeUltraHDSnap() {
-    const container = document.getElementById('diary-container');
-    container.classList.add('snap-mode');
-    document.querySelectorAll('.delete-period-btn, .top-right-remove-btn, .media-del-btn').forEach(btn => btn.style.display = 'none');
-    
-    let clsName = document.getElementById('diary-class').value;
-    let dateStr = document.getElementById('diary-date').textContent.trim().replace(/[\/\.]/g, '-');
-    if(!dateStr) dateStr = '10-11-2026';
-    let fileName = `ABC_DIARY_${clsName}_${dateStr}.jpeg`;
-
-    setTimeout(() => {
-      html2canvas(container, { 
-        scale: 3, 
-        useCORS: true, 
-        backgroundColor: "#ffffff",
-        scrollX: 0,
-        scrollY: 0,
-        onclone: (clonedDoc) => {
-          const clonedPage = clonedDoc.getElementById('diary-container');
-          if (clonedPage) {
-            clonedPage.style.transform = 'none';
-            clonedPage.style.margin = '0 auto';
-            clonedPage.style.boxShadow = 'none';
-            clonedPage.style.width = '780px';
-            clonedPage.style.maxWidth = '780px';
-            clonedPage.style.height = 'auto';
-            clonedPage.style.minHeight = 'auto';
-            clonedPage.style.position = 'relative';
-          }
-        }
-      }).then(canvas => {
-        let link = document.createElement('a');
-        link.download = fileName;
-        link.href = canvas.toDataURL('image/jpeg', 0.95);
-        link.click();
-        container.classList.remove('snap-mode');
-        document.querySelectorAll('.delete-period-btn').forEach(btn => btn.style.display = 'flex');
-      });
-    }, 250);
+    autoSaveDiaryData();
   }
 
-  window.changeFontFamily = function(font) {
-    document.querySelectorAll('.rule-input-full, .remark-input, .space-text-input').forEach(input => input.style.fontFamily = font);
-  };
+  // --- LocalStorage Save & Load Functions ---
+  window.autoSaveDiaryData = function() {
+    const diaryData = {
+      dedication: document.getElementById('dedicated-input')?.value || '',
+      periods: []
+    };
 
-  window.changeLogo = function(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const logoUrl = e.target.result;
-        const logoImg = document.getElementById('logo-img');
-        if (logoImg) { 
-          logoImg.src = logoUrl; 
-          logoImg.style.display = 'block'; 
+    document.querySelectorAll('.period-block').forEach(block => {
+      const timeInput = block.querySelector('.time-input')?.value || '';
+      const textInput = block.querySelector('.rule-input-full')?.innerHTML || '';
+      const breakBanner = block.querySelector('.break-banner')?.value || '';
+      diaryData.periods.push({ timeInput, textInput, breakBanner });
+    });
+
+    localStorage.setItem('abc_diary_class_' + currentSelectedClass, JSON.stringify(diaryData));
+  }
+
+  function loadDiaryDataFromLocalStorage(cls) {
+    const saved = localStorage.getItem('abc_diary_class_' + cls);
+    if (!saved) return;
+    try {
+      const data = JSON.parse(saved);
+      const dedInput = document.getElementById('dedicated-input');
+      if (dedInput) dedInput.value = data.dedication || '';
+
+      if (data.periods && data.periods.length > 0) {
+        const container = document.getElementById('schedule-container');
+        if (container) {
+          container.innerHTML = '';
+          data.periods.forEach(p => {
+            const block = document.createElement('div');
+            block.className = 'period-block';
+            if (p.breakBanner !== undefined && p.breakBanner !== '') {
+              block.innerHTML = `
+                <div class="period-row">
+                  <span class="period-icon">🍎</span>
+                  <input type="text" class="time-input" value="${p.timeInput}" oninput="autoSaveDiaryData()">
+                  <div class="rule-wrapper">
+                    <input type="text" class="break-banner" value="${p.breakBanner}" oninput="autoSaveDiaryData()">
+                  </div>
+                  <button class="delete-period-btn" onclick="deletePeriod(this)">✕</button>
+                </div>`;
+            } else {
+              block.innerHTML = `
+                <div class="period-row">
+                  <span class="period-icon">📝</span>
+                  <input type="text" class="time-input" value="${p.timeInput}" oninput="autoSaveDiaryData()">
+                  <div class="rule-lines-stack">
+                    <div class="rule-wrapper rule-single">
+                      <div class="rule-line line-1"></div>
+                      <div contenteditable="true" class="rule-input-full period-text" oninput="autoSaveDiaryData()">${p.textInput}</div>
+                    </div>
+                  </div>
+                  <button class="delete-period-btn" onclick="deletePeriod(this)">✕</button>
+                </div>`;
+            }
+            container.appendChild(block);
+          });
         }
-        triggerAutoSave();
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  window.insertSpaceMedia = function(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const container = document.getElementById('space-media-container');
-        const isVideo = file.type.startsWith('video/');
-        
-        let htmlContent = '';
-        if (isVideo) {
-          htmlContent = `<div style="position:relative; display:inline-block; margin-top:2px; max-height:100px; width:100%; text-align:center;">
-                           <video src="${e.target.result}" controls style="max-height:90px; max-width:100%; border-radius:4px;"></video>
-                           <button class="media-del-btn" onclick="removeSpaceMedia(this)">✕</button>
-                         </div>`;
-        } else {
-          htmlContent = `<div style="position:relative; display:inline-block; margin-top:2px; max-height:100px; width:100%; text-align:center;">
-                           <img src="${e.target.result}" style="max-height:90px; max-width:100%; object-fit:contain; border-radius:4px;" alt="Media">
-                           <button class="media-del-btn" onclick="removeSpaceMedia(this)">✕</button>
-                         </div>`;
-        }
-        container.innerHTML = htmlContent;
-        triggerAutoSave();
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  window.removeSpaceMedia = function(btn) {
-    const parent = btn.closest('div');
-    if(parent) parent.innerHTML = '';
-    triggerAutoSave();
-  };
-
-  window.changeBg = function(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('diary-container').style.backgroundImage = `url('${e.target.result}')`;
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  window.loadSignature = function(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('sig-preview').src = e.target.result;
-        document.getElementById('sig-preview').style.display = 'block';
-        triggerAutoSave();
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  window.clearSavedData = function() {
-    const activeClass = document.getElementById('diary-class').value;
-    const dateVal = document.getElementById('diary-date').textContent.trim();
-    const diaryPath = getDiaryPath(activeClass, dateVal);
-    
-    if (confirm(`Clear all notes for Class ${activeClass} on date ${dateVal}?`)) {
-      remove(ref(db, diaryPath));
-      renderScheduleForClass(activeClass);
-      document.getElementById('space-textarea').value = '';
-      document.getElementById('space-media-container').innerHTML = '';
-      document.getElementById('announcement-box').style.height = '40px';
-      document.getElementById('height-slider').value = '40';
-      document.getElementById('dedicated-input').value = '';
-      document.getElementById('remarks-text').value = '';
-      
-      const logoImg = document.getElementById('logo-img');
-      if (logoImg) {
-        logoImg.src = '';
-        logoImg.style.display = 'none';
       }
+    } catch(e) { console.error(e); }
+  }
 
-      const topRightImg = document.getElementById('topRightImgPreview');
-      topRightImg.src = '';
-      topRightImg.style.display = 'none';
-      document.getElementById('topRightPhotoLabel').style.display = 'flex';
-      document.getElementById('topRightRemoveBtn').style.display = 'none';
-      document.getElementById('topRightPhotoBox').classList.remove('has-image');
+  // --- Absolute Removal of Cross Marks in html2canvas ---
+  window.takeSnap = function() {
+    const deleteBtns = document.querySelectorAll('.delete-period-btn, .top-right-remove-btn');
+    deleteBtns.forEach(btn => btn.style.display = 'none');
 
-      document.getElementById('sig-preview').style.display = 'none';
-      updateStatus('saved');
-    }
-  };
+    const captureElement = document.getElementById('capture-area');
+    html2canvas(captureElement, { scale: 2, useCORS: true }).then(canvas => {
+      deleteBtns.forEach(btn => btn.style.display = 'flex');
+      const link = document.createElement('a');
+      link.download = `ABC_Diary_Class_${currentSelectedClass}.jpg`;
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      link.click();
+    }).catch(err => {
+      deleteBtns.forEach(btn => btn.style.display = 'flex');
+      alert('Snapshot error: ' + err);
+    });
+  }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const select3d = document.getElementById('3d-select');
-    if(select3d) {
-      select3d.innerHTML = '<option value="0">0. Plain Normal Color</option>';
-      for (let i = 1; i <= 200; i++) {
-        let opt = document.createElement('option');
-        opt.value = i.toString(); opt.text = `${i}. 3D Style Variant ${i}`;
-        select3d.appendChild(opt);
-      }
-    }
-
-    const fontList = ['Comic Neue', 'Fredoka', 'Nunito', 'Poppins', 'Quicksand', 'Roboto', 'Open Sans', 'Montserrat', 'Lato', 'Oswald', 'Pacifico', 'Caveat', 'Lobster', 'Dancing Script'];
-    const fontSelect = document.getElementById('font-select');
-    const dedFontSelect = document.getElementById('dedication-font-select');
-    
-    if(fontSelect) {
-      fontSelect.innerHTML = '';
-      fontList.forEach((fontName, idx) => {
-        let opt = document.createElement('option');
-        opt.value = `'${fontName}', sans-serif`; opt.text = `${idx+1}. ${fontName}`;
-        fontSelect.appendChild(opt);
-      });
-    }
-
-    if(dedFontSelect) {
-      dedFontSelect.innerHTML = '';
-      fontList.forEach((fontName, idx) => {
-        let opt = document.createElement('option');
-        opt.value = `'${fontName}', cursive, sans-serif`; opt.text = `${idx+1}. ${fontName}`;
-        dedFontSelect.appendChild(opt);
-      });
-    }
-
-    const emojiBaseList = ['⭐', '🌟', '✨', '📌', '🔔', '📢', '🎉', '🎓', '🎨', '✏️', '📚', '📝', '💯', '🏆', '🥇', '🍎', '😴', '🌈', '❤️', '😊'];
-    const emojiSelect = document.getElementById('emoji-select');
-    if(emojiSelect) {
-      emojiSelect.innerHTML = '<option value="" disabled selected>Emoji...</option>';
-      emojiBaseList.forEach(em => {
-        let opt = document.createElement('option'); opt.value = em; opt.text = em;
-        emojiSelect.appendChild(opt);
-      });
-    }
-
-    const periodIconSelect = document.getElementById('period-icon-select');
-    if(periodIconSelect) {
-      periodIconSelect.innerHTML = '<option value="" disabled selected>Icon...</option>';
-      ['📚', '📖', '✏️', '🔢', '🧪', '🤖', '🎙️', '📓', '🍎', '🍱', '😴', '🎨', '💡'].forEach(ic => {
-        let opt = document.createElement('option'); opt.value = ic; opt.text = ic;
-        periodIconSelect.appendChild(opt);
-      });
-    }
-
-    const today = new Date();
-    const formattedDate = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
-    const dayName = today.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
-
-    document.getElementById('diary-date').textContent = formattedDate;
-    document.getElementById('diary-day').textContent = dayName;
-
-    const containerEl = document.getElementById('diary-container');
-    if(containerEl) {
-      ['input', 'keyup', 'change', 'blur', 'focusout'].forEach(evt => {
-        containerEl.addEventListener(evt, triggerAutoSave, true);
-      });
-    }
+  window.addEventListener('DOMContentLoaded', () => {
+    renderScheduleForClass(currentSelectedClass);
+    loadDiaryDataFromLocalStorage(currentSelectedClass);
   });
 </script>
-
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Fredoka:wght@600;700&family=Nunito:wght@700;800;900&family=Poppins:wght@600;700&display=swap');
-
-  @page { size: auto; margin: 0; }
-
-  :root {
-    --bg-page: #1e293b;
-    --card-bg: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-    --primary: #0083a8;
-    --primary-dark: #005f7a;
-    --time-bg: #e6f7ff;
-    --break-bg: linear-gradient(135deg, #ff7675, #d63031);
-    --border-color: #0083a8;
-    --line-top: #38bdf8;
-    --line-bot: #66bb6a;
-    --font-color-main: #0f172a;
-    --space-border-color: #0083a8;
-    --space-border-style: dashed;
-    --space-border-width: 2px;
-    --class-color: #8e44ad;
-    --day-color: #d32f2f;
-    --date-color: #27ae60;
-  }
-
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0; padding: 6px; background: radial-gradient(circle at 50% 20%, #334155, #0f172a);
-    font-family: 'Nunito', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-  }
-
-  #welcome-screen {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(0, 131, 168, 0.95)); backdrop-filter: blur(8px);
-    display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.3s;
-  }
-  .welcome-card {
-    background: #ffffff; padding: 35px 25px; border-radius: 24px;
-    box-shadow: 0px 25px 60px rgba(0,0,0,0.4); text-align: center; max-width: 360px; width: 90%;
-  }
-  .enter-diary-btn {
-    background: linear-gradient(135deg, #10b981, #059669); color: white; border: none;
-    padding: 12px 28px; border-radius: 30px; font-size: 15px; font-weight: 800; cursor: pointer;
-    box-shadow: 0px 10px 20px rgba(16, 185, 129, 0.3);
-  }
-
-  #main-app-container { display: none; width: 100%; flex-direction: column; align-items: center; }
-
-  .control-bar {
-    width: 100%; max-width: 780px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
-    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 6px 12px; border-radius: 10px;
-    margin-bottom: 5px; box-shadow: 0px 6px 15px rgba(0,0,0,0.25); gap: 6px;
+</body>
+</html>
   }
   .control-group { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #2c3e50; }
   .save-badge {
