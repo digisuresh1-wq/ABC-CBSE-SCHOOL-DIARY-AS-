@@ -6,425 +6,768 @@
 <title>ABC CBSE(AS) Diary - Interactive School Diary by SURESHKUMAR AVULA</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Fredoka:wght@600;700&family=Nunito:wght@700;800;900&family=Poppins:wght@600;700&family=Quicksand:wght@700&family=Roboto:wght@700&family=Open+Sans:wght@700&family=Montserrat:wght@700&family=Lato:wght@700&family=Oswald:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Pacifico&family=Caveat:wght@700&family=Kalam:wght@700&family=Lobster&family=Dancing+Script:wght@700&display=swap');
-​@page {
-size: A4 portrait;
-margin: 0;
-}
-​:root {
---bg-page: #2c3e50;
---card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(244, 251, 253, 0.92) 100%);
---primary: #0083a8;
---primary-dark: #005f7a;
---accent-red: #d32f2f;
---time-bg: #e6f7ff;
---break-bg: linear-gradient(145deg, #ff7675, #d63031);
---border-color: #0083a8;
-​/* Ruling Colors */
---line-top: #29b6f6;
---line-mid1: #ef5350;
---line-mid2: #ef5350;
---line-bot: #66bb6a;
-​/* Text Variables */
---font-color-main: #1a252f;
---space-text-color: #1a252f;
---space-border-color: #0083a8;
---space-border-style: dashed;
---space-border-width: 2px;
-​/* Distinct Colors for Class, Day, Date */
---class-color: #8e44ad;
---day-color: #d32f2f;
---date-color: #27ae60;
-}
-​{
-box-sizing: border-box;
-}
-​body {
-margin: 0;
-padding: 10px;
-background-color: var(--bg-page);
-font-family: 'Nunito', sans-serif;
-display: flex;
-flex-direction: column;
-align-items: center;
-transition: all 0.3s ease;
-overflow-x: hidden;
-width: 100vw;
-}
-​/* Control Panel Styling - Mobile Responsive Grid */
-.control-bar {
-width: 210mm;
-max-width: 100%;
-display: flex;
-flex-wrap: wrap;
-justify-content: flex-start;
-align-items: center;
-background: #ffffff;
-padding: 12px;
-border-radius: 12px;
-margin-bottom: 12px;
-box-shadow: 0px 4px 15px rgba(0,0,0,0.25);
-gap: 8px;
-}
-​.control-group {
-display: flex;
-align-items: center;
-gap: 6px;
-font-size: 12px;
-font-weight: 800;
-color: #2c3e50;
-flex-wrap: wrap;
-}
-​.control-select, .control-color {
-padding: 6px 8px;
-border-radius: 6px;
-border: 1.5px solid var(--primary);
-font-family: 'Nunito', sans-serif;
-font-weight: 700;
-outline: none;
-cursor: pointer;
-font-size: 12px;
-min-height: 34px;
-}
-​.control-select {
-max-width: 140px;
-}
-​.export-dropdown {
-background: linear-gradient(145deg, #2ed573, #26af5f);
-color: #ffffff;
-font-family: 'Fredoka', sans-serif;
-font-size: 12px;
-font-weight: 700;
-border: none;
-border-radius: 20px;
-padding: 6px 12px;
-cursor: pointer;
-outline: none;
-min-height: 34px;
-}
-​.btn-pos {
-background: #f39c12;
-color: #fff;
-border: none;
-padding: 6px 10px;
-border-radius: 6px;
-cursor: pointer;
-font-weight: bold;
-font-size: 12px;
-transition: 0.2s;
-min-height: 34px;
-}
-.btn-pos:hover { background: #d35400; }
-​.btn-add-period {
-background: linear-gradient(145deg, #27ae60, #2ea043);
-color: #fff;
-border: none;
-padding: 6px 12px;
-border-radius: 20px;
-cursor: pointer;
-font-weight: bold;
-font-size: 12px;
-display: flex;
-align-items: center;
-gap: 4px;
-box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
-min-height: 34px;
-}
-.btn-add-period:hover { background: #218c4a; }
-​.btn-clear {
-background: linear-gradient(145deg, #e74c3c, #c0392b);
-color: #fff;
-border: none;
-padding: 6px 12px;
-border-radius: 20px;
-cursor: pointer;
-font-weight: bold;
-font-size: 12px;
-box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
-min-height: 34px;
-}
-.btn-clear:hover { background: #a93226; }
-​.btn-action {
-color: #ffffff;
-font-family: 'Fredoka', sans-serif;
-font-size: 12px;
-font-weight: 700;
-padding: 6px 12px;
-border: none;
-border-radius: 20px;
-cursor: pointer;
-display: flex;
-align-items: center;
-gap: 4px;
-min-height: 34px;
-}
-​.btn-fmt {
-background: #2980b9;
-color: #fff;
-border: none;
-border-radius: 4px;
-padding: 4px 8px;
-font-weight: bold;
-cursor: pointer;
-font-size: 12px;
-min-height: 34px;
-}
-.btn-fmt:hover { background: #1c5980; }
-​.btn-bg { background: linear-gradient(145deg, #ffa502, #e1b12c); }
-.btn-img { background: linear-gradient(145deg, #9b59b6, #8e44ad); }
-​/* Main Printable Container Wrapper */
-.diary-wrapper {
-width: 210mm;
-max-width: 100%;
-display: flex;
-justify-content: center;
-}
-​/* Main Printable Container with Default Background */
-.diary-page {
-width: 210mm;
-min-height: 297mm;
-box-sizing: border-box;
-background-image: url('https://abchighschool.com/public/uploads/pages/1684751693_3e8fefe868b425805ef9.jpeg');
-background-size: cover !important;
-background-repeat: no-repeat !important;
-background-position: center !important;
-padding: 60px 50px 40px 50px;
-position: relative;
-background-color: #ffffff;
-transition: all 0.3s ease;
-}
-​.inner-container {
-width: 100%;
-height: 100%;
-box-sizing: border-box;
-display: flex;
-flex-direction: column;
-border: 3.5px solid var(--border-color);
-padding: 16px 18px;
-background: var(--card-bg);
-border-radius: 16px;
-box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
-}
-​input, textarea, select {
-font-family: inherit;
-border: none;
-outline: none;
-background: transparent;
-color: var(--font-color-main);
-}
-​/* Header Section Grid */
-.header {
-display: grid;
-grid-template-columns: 165px 1fr 140px;
-align-items: center;
-margin-bottom: 12px;
-width: 100%;
-gap: 12px;
-}
-​.info-box {
-border: 2.5px solid var(--primary);
-border-radius: 12px;
-padding: 8px 12px;
-background: rgba(255, 255, 255, 0.95);
-width: 160px;
-min-height: 85px;
-box-shadow: 0px 3px 0px var(--primary-dark);
-display: flex;
-flex-direction: column;
-justify-content: space-around;
-gap: 6px;
-}
-​.info-row {
-font-family: 'Fredoka', sans-serif;
-font-size: 14px;
-font-weight: 700;
-display: flex;
-align-items: center;
-justify-content: space-between;
-}
-​.info-row span { white-space: nowrap; }
-​.info-row.class-row { color: var(--class-color); }
-.info-row.class-row .info-select { color: var(--class-color); border-bottom-color: var(--class-color); }
-​.info-row.day-row { color: var(--day-color); }
-.info-row.day-row .info-input { color: var(--day-color); border-bottom-color: var(--day-color); }
-​.info-row.date-row { color: var(--date-color); }
-.info-row.date-row .info-input { color: var(--date-color); border-bottom-color: var(--date-color); }
-​.info-input, .info-select {
-font-weight: 800;
-width: 85px;
-font-size: 13.5px;
-text-transform: uppercase;
-border-bottom: 2px solid;
-padding-left: 2px;
-}
-​.logo-container-center {
-display: flex;
-justify-content: center;
-align-items: center;
-width: 100%;
-height: 85px;
-padding: 0 5px;
-overflow: hidden;
-margin: 0 auto;
-text-align: center;
-}
-​.center-logo-banner {
-max-height: 80px;
-max-width: 100%;
-width: auto;
-height: auto;
-object-fit: contain;
-cursor: pointer;
-margin: 0 auto;
-display: block;
-}
-​.top-right-photo-box {
-width: 140px;
-height: 85px;
-border: 2px dashed var(--primary);
-border-radius: 10px;
-background: rgba(255, 255, 255, 0.95);
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-position: relative;
-overflow: hidden;
-cursor: pointer;
-transition: all 0.2s;
-}
-​.top-right-photo-box span {
-font-size: 11px;
-font-weight: 800;
-color: var(--primary);
-text-align: center;
-}
-​.top-right-preview-img {
-width: 100%;
-height: 100%;
-object-fit: cover;
-display: none;
-position: absolute;
-top: 0;
-left: 0;
-}
-​.top-right-remove-btn {
-position: absolute;
-top: 2px;
-right: 2px;
-background: #e74c3c;
-color: #ffffff;
-border: none;
-border-radius: 50%;
-width: 18px;
-height: 18px;
-font-size: 11px;
-cursor: pointer;
-display: none;
-align-items: center;
-justify-content: center;
-font-weight: bold;
-z-index: 5;
-}
-​.schedule-container {
-display: flex;
-flex-direction: column;
-gap: 6px;
-width: 100%;
-}
-​.period-block {
-display: flex;
-flex-direction: column;
-position: relative;
-width: 100%;
-}
-​.period-row {
-display: flex;
-align-items: center;
-position: relative;
-width: 100%;
-}
-​.time-input {
-width: 145px;
-font-weight: 900;
-font-size: 12.5px;
-color: var(--primary);
-padding: 4px 6px;
-background: var(--time-bg);
-border-radius: 6px;
-flex-shrink: 0;
-}
-​.period-icon { font-size: 16px; margin-right: 6px; flex-shrink: 0; cursor: pointer; }
-​.rule-lines-stack {
-display: flex;
-flex-direction: column;
-flex-grow: 1;
-gap: 2px;
-}
-​.rule-wrapper {
-position: relative;
-height: 28px;
-overflow: hidden;
-margin-left: 6px;
-flex-grow: 1;
-}
-​.rule-line { position: absolute; left: 0; width: 100%; pointer-events: none; }
-​/* SINGLE RULE DEFAULT STYLING */
-.rule-single .line-1 { top: 20px; border-bottom: 1.5px solid var(--line-top); }
-.rule-single .line-2, .rule-single .line-3, .rule-single .line-4 { display: none; }
-​.rule-double .line-1 { top: 6px; border-bottom: 1.5px solid var(--line-top); }
-.rule-double .line-2 { top: 22px; border-bottom: 1.5px solid var(--line-bot); }
-.rule-double .line-3, .rule-double .line-4 { display: none; }
-​.rule-four .line-1 { top: 3px; border-bottom: 1px solid var(--line-top); }
-.rule-four .line-2 { top: 10px; border-bottom: 1px dashed var(--line-mid1); }
-.rule-four .line-3 { top: 17px; border-bottom: 1px dashed var(--line-mid2); }
-.rule-four .line-4 { top: 24px; border-bottom: 1px solid var(--line-bot); }
-​.rule-input-full {
-position: absolute;
-top: -2px;
-left: 0;
-width: 100%;
-height: 26px;
-font-family: 'Comic Neue', sans-serif;
-font-size: 18px;
-line-height: 22px;
-color: var(--font-color-main);
-font-weight: 700;
-padding: 0 6px;
-z-index: 2;
-outline: none;
-white-space: nowrap;
-overflow: hidden;
-}
-​.break-banner {
-position: absolute;
-top: 2px;
-left: 0;
-width: 100%;
-height: 32px;
-text-align: center;
-font-family: 'Fredoka', sans-serif;
-font-size: 14px;
-font-weight: 700;
-color: #ffffff;
-letter-spacing: 2px;
-line-height: 32px;
-z-index: 2;
-background: var(--break-bg);
-border-radius: 8px;
-}
-​.delete-period-btn {
-background: #ff4757;
-color: #ffffff;
-border: none;
-border-radius: 50%;
-width: 22px;
-height: 22px;
-font-size: 12px;
-font-weight: bold;
-cursor: pointer;
-margin-left: 6px;
-display: flex;
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Fredoka:wght@600;700&family=Nunito:wght@700;800;900&family=Poppins:wght@600;700&family=Quicksand:wght@700&family=Roboto:wght@700&family=Open+Sans:wght@700&family=Montserrat:wght@700&family=Lato:wght@700&family=Oswald:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Pacifico&family=Caveat:wght@700&family=Kalam:wght@700&family=Lobster&family=Dancing+Script:wght@700&display=swap');
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  :root {
+    --bg-page: #2c3e50;
+    --card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(244, 251, 253, 0.92) 100%);
+    --primary: #0083a8;
+    --primary-dark: #005f7a;
+    --accent-red: #d32f2f;
+    --time-bg: #e6f7ff;
+    --break-bg: linear-gradient(145deg, #ff7675, #d63031);
+    --border-color: #0083a8;
+    
+    /* Ruling Colors */
+    --line-top: #29b6f6;
+    --line-mid1: #ef5350;
+    --line-mid2: #ef5350;
+    --line-bot: #66bb6a;
+
+    /* Text Variables */
+    --font-color-main: #1a252f;
+    --space-text-color: #1a252f;
+    --space-border-color: #0083a8;
+    --space-border-style: dashed;
+    --space-border-width: 2px;
+
+    /* Distinct Colors for Class, Day, Date */
+    --class-color: #8e44ad;
+    --day-color: #d32f2f;
+    --date-color: #27ae60;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 10px;
+    background-color: var(--bg-page);
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+    overflow-x: hidden;
+    width: 100vw;
+  }
+
+  /* Control Panel Styling - Mobile Responsive Grid */
+  .control-bar {
+    width: 210mm;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.25);
+    gap: 8px;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #2c3e50;
+    flex-wrap: wrap;
+  }
+
+  .control-select, .control-color {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1.5px solid var(--primary);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    outline: none;
+    cursor: pointer;
+    font-size: 12px;
+    min-height: 34px;
+  }
+
+  .control-select {
+    max-width: 140px;
+  }
+
+  .export-dropdown {
+    background: linear-gradient(145deg, #2ed573, #26af5f);
+    color: #ffffff;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+    outline: none;
+    min-height: 34px;
+  }
+
+  .btn-pos {
+    background: #f39c12;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: 0.2s;
+    min-height: 34px;
+  }
+  .btn-pos:hover { background: #d35400; }
+
+  .btn-add-period {
+    background: linear-gradient(145deg, #27ae60, #2ea043);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
+    min-height: 34px;
+  }
+  .btn-add-period:hover { background: #218c4a; }
+
+  .btn-clear {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
+    min-height: 34px;
+  }
+  .btn-clear:hover { background: #a93226; }
+
+  .btn-action {
+    color: #ffffff;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 34px;
+  }
+
+  .btn-fmt {
+    background: #2980b9;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+    min-height: 34px;
+  }
+  .btn-fmt:hover { background: #1c5980; }
+
+  .btn-bg { background: linear-gradient(145deg, #ffa502, #e1b12c); }
+  .btn-img { background: linear-gradient(145deg, #9b59b6, #8e44ad); }
+
+  /* Main Printable Container Wrapper */
+  .diary-wrapper {
+    width: 210mm;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Main Printable Container with Default Background */
+  .diary-page {
+    width: 210mm;
+    min-height: 297mm;
+    box-sizing: border-box;
+    background-image: url('https://abchighschool.com/public/uploads/pages/1684751693_3e8fefe868b425805ef9.jpeg');
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    padding: 60px 50px 40px 50px;
+    position: relative;
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+  }
+
+  .inner-container {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    border: 3.5px solid var(--border-color);
+    padding: 16px 18px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  input, textarea, select {
+    font-family: inherit;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--font-color-main);
+  }
+
+  /* Header Section Grid */
+  .header {
+    display: grid;
+    grid-template-columns: 165px 1fr 140px;
+    align-items: center;
+    margin-bottom: 12px;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .info-box {
+    border: 2.5px solid var(--primary);
+    border-radius: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    width: 160px;
+    min-height: 85px;
+    box-shadow: 0px 3px 0px var(--primary-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 6px;
+  }
+
+  .info-row {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .info-row span { white-space: nowrap; }
+
+  .info-row.class-row { color: var(--class-color); }
+  .info-row.class-row .info-select { color: var(--class-color); border-bottom-color: var(--class-color); }
+
+  .info-row.day-row { color: var(--day-color); }
+  .info-row.day-row .info-input { color: var(--day-color); border-bottom-color: var(--day-color); }
+
+  .info-row.date-row { color: var(--date-color); }
+  .info-row.date-row .info-input { color: var(--date-color); border-bottom-color: var(--date-color); }
+
+  .info-input, .info-select {
+    font-weight: 800;
+    width: 85px;
+    font-size: 13.5px;
+    text-transform: uppercase;
+    border-bottom: 2px solid;
+    padding-left: 2px;
+  }
+
+  .logo-container-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 85px;
+    padding: 0 5px;
+    overflow: hidden;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .center-logo-banner {
+    max-height: 80px;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .top-right-photo-box {
+    width: 140px;
+    height: 85px;
+    border: 2px dashed var(--primary);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .top-right-photo-box span {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--primary);
+    text-align: center;
+  }
+
+  .top-right-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .top-right-remove-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #e74c3c;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    z-index: 5;
+  }
+
+  .schedule-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .period-block { 
+    display: flex; 
+    flex-direction: column; 
+    position: relative;
+    width: 100%;
+  }
+
+  .period-row { 
+    display: flex; 
+    align-items: center; 
+    position: relative;
+    width: 100%;
+  }
+
+  .time-input {
+    width: 145px;
+    font-weight: 900;
+    font-size: 12.5px;
+    color: var(--primary);
+    padding: 4px 6px;
+    background: var(--time-bg);
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .period-icon { font-size: 16px; margin-right: 6px; flex-shrink: 0; cursor: pointer; }
+
+  .rule-lines-stack {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 2px;
+  }
+
+  .rule-wrapper {
+    position: relative;
+    height: 28px;
+    overflow: hidden;
+    margin-left: 6px;
+    flex-grow: 1;
+  }
+
+  .rule-line { position: absolute; left: 0; width: 100%; pointer-events: none; }
+
+  /* SINGLE RULE DEFAULT STYLING */
+  .rule-single .line-1 { top: 20px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-single .line-2, .rule-single .line-3, .rule-single .line-4 { display: none; }
+
+  .rule-double .line-1 { top: 6px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-double .line-2 { top: 22px; border-bottom: 1.5px solid var(--line-bot); }
+  .rule-double .line-3, .rule-double .line-4 { display: none; }
+
+  .rule-four .line-1 { top: 3px; border-bottom: 1px solid var(--line-top); }
+  .rule-four .line-2 { top: 10px; border-bottom: 1px dashed var(--line-mid1); }
+  .rule-four .line-3 { top: 17px; border-bottom: 1px dashed var(--line-mid2); }
+  .rule-four .line-4 { top: 24px; border-bottom: 1px solid var(--line-bot); }
+
+  .rule-input-full {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    width: 100%;
+    height: 26px;
+    font-family: 'Comic Neue', sans-serif;
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--font-color-main);
+    font-weight: 700;
+    padding: 0 6px;
+    z-index: 2;
+    outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .break-banner {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 2px;
+    line-height: 32px;
+    z-index: 2;
+    background: var(--break-bg);
+    border-radius: 8px;
+  }
+
+  .delete-period-btn {
+    background: #ff4757;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: 0.2s;
+    flex-shrink: 0;
+  }
+
+  .delete-period-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  .compact-space-container {
+    height: 45px;
+    min-height: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 6px 0;
+    resize: vertical;
+    overflow: hidden;
+    border-width: var(--space-border-width);
+    border-style: var(--space-border-style);
+    border-color: var(--space-border-color);
+    border-radius: 8px;
+  }
+
+  .space-text-input {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    font-family: 'Comic Neue', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--font-color-main);
+    padding: 6px 10px;
+    z-index: 1;
+    line-height: 1.4;
+  }
+
+  .space-inserted-img {
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: none;
+    border-radius: 8px;
+    position: absolute;
+    z-index: 2;
+  }
+
+  .remove-img-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    z-index: 10;
+  }
+
+  .footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 5px;
+  }
+
+  .remark-row {
+    display: flex;
+    align-items: flex-end;
+    font-weight: 800;
+    font-size: 12px;
+    color: var(--primary);
+  }
+
+  .remark-label { white-space: nowrap; margin-right: 6px; }
+
+  .remark-input {
+    flex-grow: 1;
+    border-bottom: 2px solid var(--primary);
+    font-size: 15px;
+    color: var(--font-color-main);
+    font-weight: 700;
+    padding-left: 6px;
+  }
+
+  .signatures {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 8px;
+    padding: 0 10px;
+    font-weight: 800;
+    font-size: 12px;
+    color: var(--primary);
+  }
+
+  .signature-box { display: flex; flex-direction: column; align-items: center; }
+
+  .signature-preview {
+    height: 35px;
+    max-width: 140px;
+    object-fit: contain;
+    margin-bottom: 2px;
+    display: none;
+  }
+
+  .upload-btn {
+    font-size: 11px;
+    background: linear-gradient(145deg, #00a8ff, #0097e6);
+    color: #ffffff;
+    padding: 3px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .transparent-copyright {
+    margin-top: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 820px) {
+    body { padding: 4px; }
+    
+    .control-bar { 
+      width: 100%; 
+      padding: 8px; 
+      justify-content: space-between;
+      border-radius: 8px;
+    }
+
+    .control-group {
+      font-size: 11px;
+    }
+
+    .control-select {
+      max-width: 105px;
+      font-size: 11px;
+      padding: 4px;
+    }
+
+    .diary-wrapper {
+      width: 100%;
+      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+    }
+
+    .diary-page {
+      transform: scale(0.46);
+      transform-origin: top center;
+      margin-bottom: -155mm;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .diary-page {
+      transform: scale(0.38);
+      transform-origin: top center;
+      margin-bottom: -180mm;
+    }
+  }
+
+  @media print, .snap-mode {
+    body { background: none !important; padding: 0 !important; margin: 0 !important; }
+    .control-bar, .upload-btn, .remove-img-btn, .transparent-copyright, .top-right-remove-btn, .delete-period-btn { display: none !important; }
+    .compact-space-container { resize: none !important; }
+    
+    textarea::placeholder, input::placeholder {
+      color: transparent !important;
+      opacity: 0 !important;
+      -webkit-print-color-adjust: exact !important;
+    }
+
+    .top-right-photo-box:not(.has-image) {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+
+    .top-right-photo-box.has-image {
+      border: none !important;
+      background: transparent !important;
+    }
+
+    .top-right-photo-box span {
+      display: none !important;
+    }
+
+    .diary-wrapper {
+      width: 210mm !important;
+    }
+
+    .diary-page { 
+      width: 210mm !important; 
+      min-height: 297mm !important; 
+      box-shadow: none !important; 
+      padding: 60px 50px 40px 50px !important;
+      transform: none !important;
+      margin-bottom: 0 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .inner-container { box-shadow: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="control-bar">
+  <div class="control-group">
+    <label>🎨 Theme:</label>
+    <select class="control-select" onchange="applyTheme(this.value)">
+      <option value="bv-classic" selected>1. BV Ocean Blue</option>
+      <option value="royal-purple">2. Royal Purple</option>
+      <option value="fresh-mint">3. Fresh Mint Green</option>
+      <option value="sunset-orange">4. Sunset Coral</option>
+      <option value="golden-amber">5. Golden Amber</option>
+      <option value="dark-slate">6. Dark Slate</option>
+      <option value="cherry-blossom">7. Cherry Pink</option>
+      <option value="teal-sky">8. Vibrant Teal</option>
+      <option value="chocolate-warmth">9. Chocolate</option>
+      <option value="forest-emerald">10. Emerald</option>
+      <option value="lavender-dream">11. Lavender</option>
+      <option value="sunshine-yellow">12. Sunshine</option>
+      <option value="ruby-red">13. Ruby Red</option>
+      <option value="corporate-grey">14. Corporate</option>
+      <option value="pastel-rainbow">15. Pastel</option>
+      <option value="midnight-blue">16. Midnight Blue</option>
+      <option value="rose-gold">17. Rose Gold</option>
+      <option value="cyan-breeze">18. Cyan Breeze</option>
+      <option value="vintage-cream">19. Vintage Cream</option>
+      <option value="neon-cyber">20. Neon Modern</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>📏 Ruling:</label>
+    <select class="control-select" id="ruling-select" onchange="changeRuling(this.value)">
+      <option value="rule-single" selected>Single Line (Default)</option>
+      <option value="rule-double">Double Line</option>
+      <option value="rule-four">Four Line</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>🔤 Font:</label>
+    <select class="control-select" id="font-select" onchange="changeFontFamily(this.value)"></select>
+  </div>
+
+  <div class="control-group">
+    <label>📏 Size:</label>
+    <select class="control-select" onchange="changeFontSize(this.value)">
+      <option value="15px">15px</option>
+      <option value="16px">16px</option>
+      <option value="18px" selected>18px (Default)</option>
+      <option value="20px">20px</option>
+      <option value="22px">22px</option>
+      <option value="24px">24px</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>🎭 3D Style:</label>
+    <select class="control-select" id="3d-select" onchange="apply3DEffectIndex(this.value)"></select>
+  </div>
+
+  <div class="control-group">
+    <label>🎨 Main Color:</label>
+    <input type="color" class="control-color" value="#1a252f" onchange="changeFontColor(this.value)" title="Change All Text Color">
+  </div>
+
+  <div class="control-group">
+    <label>🍎 Break Color:</label>
+    <input type="color" class="control-color" value="#ff7675" onchange="changeBreakColor(this.value)" titlex;
 align-items: center;
 justify-content: center;
 opacity: 0.6;
