@@ -227,12 +227,12 @@
     justify-content: center;
   }
 
-  /* Main Printable Container with Default Background */
+  /* Main Printable Container with Default Locked Background */
   .diary-page {
     width: 210mm;
     min-height: 297mm;
     box-sizing: border-box;
-    background-image: url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/school-bg.jpeg?raw=true') !important;
+    background-image: url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg') !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
@@ -690,7 +690,7 @@
       padding: 60px 50px 40px 50px !important;
       transform: none !important;
       margin-bottom: 0 !important;
-      background-image: url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/school-bg.jpeg?raw=true') !important;
+      background-image: url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg') !important;
       background-size: cover !important;
       background-repeat: no-repeat !important;
       background-position: center !important;
@@ -887,8 +887,9 @@
           </div>
         </div>
 
+        <!-- Default Locked School Logo Banner using raw.githubusercontent -->
         <div class="logo-container-center">
-          <img src="https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/ABC%20School%20Full%20Logo.png?raw=true" id="logo-img" class="center-logo-banner" alt="ABC High School Logo" crossorigin="anonymous">
+          <img src="https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/ABC%20School%20Full%20Logo.png" id="logo-img" class="center-logo-banner" alt="ABC High School Logo" crossorigin="anonymous">
         </div>
 
         <div class="top-right-photo-box" id="topRightPhotoBox" onclick="triggerTopRightUpload()">
@@ -1326,40 +1327,6 @@
     periodIconSelect.appendChild(option);
   }
 
-  function triggerTopRightUpload() { document.getElementById('topRightInput').click(); }
-
-  function loadTopRightPhoto(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const imgUrl = URL.createObjectURL(file);
-      const img = document.getElementById('topRightImgPreview');
-      const box = document.getElementById('topRightPhotoBox');
-      const label = document.getElementById('topRightPhotoLabel');
-      const removeBtn = document.getElementById('topRightRemoveBtn');
-
-      img.src = imgUrl;
-      img.style.display = 'block';
-      label.style.display = 'none';
-      removeBtn.style.display = 'flex';
-      box.classList.add('has-image');
-    }
-  }
-
-  function removeTopRightPhoto(event) {
-    event.stopPropagation();
-    const img = document.getElementById('topRightImgPreview');
-    const box = document.getElementById('topRightPhotoBox');
-    const label = document.getElementById('topRightPhotoLabel');
-    const removeBtn = document.getElementById('topRightRemoveBtn');
-
-    img.src = '';
-    img.style.display = 'none';
-    label.style.display = 'block';
-    removeBtn.style.display = 'none';
-    box.classList.remove('has-image');
-    document.getElementById('topRightInput').value = '';
-  }
-
   function getFormattedTimestamp() {
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, '0');
@@ -1380,28 +1347,13 @@
 
   function takeSnap() {
     const container = document.getElementById('diary-container');
-    const photoBox = document.getElementById('topRightPhotoBox');
     container.classList.add('snap-mode');
-
-    if (!photoBox.classList.contains('has-image')) {
-      photoBox.style.display = 'none';
-      photoBox.style.visibility = 'hidden';
-      photoBox.style.border = 'none';
-    }
 
     html2canvas(container, { 
       scale: 3,
       useCORS: true,
       allowTaint: true,
-      backgroundColor: "#ffffff",
-      onclone: (clonedDoc) => {
-        const clonedPhotoBox = clonedDoc.getElementById('topRightPhotoBox');
-        if (clonedPhotoBox && !clonedPhotoBox.classList.contains('has-image')) {
-          clonedPhotoBox.style.display = 'none';
-          clonedPhotoBox.style.border = 'none';
-          clonedPhotoBox.style.background = 'transparent';
-        }
-      }
+      backgroundColor: "#ffffff"
     }).then(canvas => {
       let link = document.createElement('a');
       let cls = document.getElementById('diary-class').value;
@@ -1411,11 +1363,6 @@
       link.click();
       
       container.classList.remove('snap-mode');
-      if (!photoBox.classList.contains('has-image')) {
-        photoBox.style.display = 'flex';
-        photoBox.style.visibility = 'visible';
-        photoBox.style.border = '2px dashed var(--primary)';
-      }
     });
   }
 
@@ -1531,8 +1478,6 @@
     if (!targetClass) targetClass = currentSelectedClass;
     const saveData = {
       diaryClass: targetClass,
-      diaryDay: document.getElementById('diary-day').value,
-      diaryDate: document.getElementById('diary-date').value,
       spaceText: document.getElementById('space-textarea').value,
       dedicatedText: document.getElementById('dedicated-text').value,
       remarksText: document.getElementById('remarks-text').value,
@@ -1558,28 +1503,25 @@
   }
 
   function autoLoadDiaryDataForClass(targetClass) {
-    const rawData = localStorage.getItem(`abc_diary_save_${targetClass}`);
-    
+    // Always set fresh current system Date and Day on load/class change
     const now = new Date();
     const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-    const currentDayName = days[now.getDay()];
+    document.getElementById('diary-day').value = days[now.getDay()];
+    
     const dd = String(now.getDate()).padStart(2, '0');
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const yy = String(now.getFullYear()).slice(-2);
-    const currentDateStr = `${dd}/${mm}/${yy}`;
+    document.getElementById('diary-date').value = `${dd}/${mm}/${yy}`;
 
-    document.getElementById('diary-day').value = currentDayName;
-    document.getElementById('diary-date').value = currentDateStr;
     document.getElementById('space-textarea').value = '';
     document.getElementById('dedicated-text').value = '';
     document.getElementById('remarks-text').value = '';
 
+    const rawData = localStorage.getItem(`abc_diary_save_${targetClass}`);
     if (!rawData) return;
 
     try {
       const saveData = JSON.parse(rawData);
-      if (saveData.diaryDay) document.getElementById('diary-day').value = saveData.diaryDay;
-      if (saveData.diaryDate) document.getElementById('diary-date').value = saveData.diaryDate;
       if (saveData.spaceText !== undefined) document.getElementById('space-textarea').value = saveData.spaceText;
       if (saveData.dedicatedText !== undefined) document.getElementById('dedicated-text').value = saveData.dedicatedText;
       if (saveData.remarksText !== undefined) document.getElementById('remarks-text').value = saveData.remarksText;
@@ -1620,8 +1562,6 @@
     if (confirm(`Are you sure you want to clear all saved notes for class ${activeClass}?`)) {
       localStorage.removeItem(`abc_diary_save_${activeClass}`);
       renderScheduleForClass(activeClass);
-      document.getElementById('diary-day').value = '';
-      document.getElementById('diary-date').value = '';
       document.getElementById('space-textarea').value = '';
       document.getElementById('dedicated-text').value = '';
       document.getElementById('remarks-text').value = '';
