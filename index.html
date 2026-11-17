@@ -823,7 +823,8 @@
   <div class="control-group">
     <button class="btn-add-period" onclick="addNewPeriod('period', false)">➕ Line Only</button>
     <button class="btn-add-period" style="background: linear-gradient(145deg, #2980b9, #1f618d);" onclick="addNewPeriod('period', true)">🏷️ Line + Subject</button>
-    <button class="btn-remove-period" onclick="removeActivePeriod()">❌ Remove Period</button>
+    <button class="btn-remove-period" onclick="removeActivePeriod()">❌ Remove Active Line</button>
+    <button class="btn-remove-period" style="background: linear-gradient(145deg, #c0392b, #962d22);" onclick="removeLastPeriod()">❌ Remove Last Line</button>
     <button class="btn-add-period" style="background: linear-gradient(145deg, #e67e22, #d35400);" onclick="addNewPeriod('break', false)">🍎 Add Break</button>
     <button class="btn-clear" onclick="clearSavedData()">🧹 Clear Class Data</button>
   </div>
@@ -1012,6 +1013,7 @@
       { icon: '✏️', label: 'ENGLISH :', isBreak: false },
       { icon: '🔢', label: 'MATHS :', isBreak: false },
       { icon: '🧪', label: 'P.S. :', isBreak: false },
+      { icon: '⚗️', label: 'CHEMISTRY :', isBreak: false },
       { icon: '🔬', label: 'N.S. :', isBreak: false },
       { icon: '🌍', label: 'SOCIAL :', isBreak: false },
       { icon: '🤖', label: 'A.I. :', isBreak: false }
@@ -1133,14 +1135,18 @@
       activeBlock = null;
       autoSaveDiaryData();
     } else {
-      const container = document.getElementById('schedule-container');
-      const blocks = container.querySelectorAll('.period-block');
-      if (blocks.length > 0) {
-        blocks[blocks.length - 1].remove();
-        autoSaveDiaryData();
-      } else {
-        alert('Please click on a period line first or no periods left to remove!');
-      }
+      alert('Please click/focus on a specific line/subject row first to remove it!');
+    }
+  }
+
+  function removeLastPeriod() {
+    const container = document.getElementById('schedule-container');
+    const blocks = container.querySelectorAll('.period-block');
+    if (blocks.length > 0) {
+      blocks[blocks.length - 1].remove();
+      autoSaveDiaryData();
+    } else {
+      alert('No periods left to remove!');
     }
   }
 
@@ -1503,7 +1509,7 @@
   }
 
   function autoLoadDiaryDataForClass(targetClass) {
-    // Always set fresh current system Date and Day on load/class change
+    // Always load current system Date and Day on load/class change
     const now = new Date();
     const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
     document.getElementById('diary-day').value = days[now.getDay()];
