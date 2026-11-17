@@ -175,6 +175,23 @@
   }
   .btn-add-period:hover { background: #218c4a; }
 
+  .btn-remove-period {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
+    min-height: 34px;
+  }
+  .btn-remove-period:hover { background: #a93226; }
+
   .btn-clear {
     background: linear-gradient(145deg, #e74c3c, #c0392b);
     color: #fff;
@@ -189,21 +206,6 @@
   }
   .btn-clear:hover { background: #a93226; }
 
-  .btn-action {
-    color: #ffffff;
-    font-family: 'Fredoka', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    min-height: 34px;
-  }
-
   .btn-fmt {
     background: #2980b9;
     color: #fff;
@@ -216,21 +218,6 @@
     min-height: 34px;
   }
   .btn-fmt:hover { background: #1c5980; }
-
-  .btn-translate {
-    background: linear-gradient(145deg, #e67e22, #d35400);
-    color: #ffffff;
-    font-family: 'Fredoka', sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-    border: none;
-    border-radius: 12px;
-    padding: 2px 6px;
-    cursor: pointer;
-    margin-left: 4px;
-    vertical-align: middle;
-  }
-  .btn-translate:hover { background: #b96a1b; }
 
   /* Main Printable Container Wrapper */
   .diary-wrapper {
@@ -245,7 +232,7 @@
     width: 210mm;
     min-height: 297mm;
     box-sizing: border-box;
-    background-image: url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/school-bg.jpeg?raw=true');
+    background-image: url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/school-bg.jpeg?raw=true') !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
@@ -514,26 +501,6 @@
     print-color-adjust: exact !important;
   }
 
-  .delete-period-btn {
-    background: #ff4757;
-    color: #ffffff;
-    border: none;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-left: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.6;
-    transition: 0.2s;
-    flex-shrink: 0;
-  }
-  .delete-period-btn:hover { opacity: 1; transform: scale(1.1); }
-
   .compact-space-container {
     height: 55px;
     min-height: 0px;
@@ -690,7 +657,7 @@
 
   @media print, .snap-mode {
     body { background: none !important; padding: 0 !important; margin: 0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .settings-toggle-bar, .control-bar, .upload-btn, .remove-img-btn, .transparent-copyright, .top-right-remove-btn, .delete-period-btn, .btn-translate, .announcement-upload-row { display: none !important; }
+    .settings-toggle-bar, .control-bar, .upload-btn, .remove-img-btn, .transparent-copyright, .top-right-remove-btn, .announcement-upload-row { display: none !important; }
     .compact-space-container { resize: none !important; }
     
     textarea::placeholder, input::placeholder {
@@ -856,6 +823,7 @@
   <div class="control-group">
     <button class="btn-add-period" onclick="addNewPeriod('period', false)">➕ Line Only</button>
     <button class="btn-add-period" style="background: linear-gradient(145deg, #2980b9, #1f618d);" onclick="addNewPeriod('period', true)">🏷️ Line + Subject</button>
+    <button class="btn-remove-period" onclick="removeActivePeriod()">❌ Remove Period</button>
     <button class="btn-add-period" style="background: linear-gradient(145deg, #e67e22, #d35400);" onclick="addNewPeriod('break', false)">🍎 Add Break</button>
     <button class="btn-clear" onclick="clearSavedData()">🧹 Clear Class Data</button>
   </div>
@@ -901,8 +869,8 @@
               <option value="5F">5F</option>
               <option value="5G">5G</option>
               <option value="6F">6F</option>
-              <option value="6G" selected>6G</option>
-              <option value="7F">7F</option>
+              <option value="6G">6G</option>
+              <option value="7F" selected>7F</option>
               <option value="7G">7G</option>
               <option value="8">8</option>
               <option value="9">9</option>
@@ -920,7 +888,7 @@
         </div>
 
         <div class="logo-container-center">
-          <img src="https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/ABC%20School%20Full%20Logo.png?raw=true" id="logo-img" class="center-logo-banner" alt="ABC High School Logo">
+          <img src="https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/ABC%20School%20Full%20Logo.png?raw=true" id="logo-img" class="center-logo-banner" alt="ABC High School Logo" crossorigin="anonymous">
         </div>
 
         <div class="top-right-photo-box" id="topRightPhotoBox" onclick="triggerTopRightUpload()">
@@ -976,7 +944,7 @@
 <script>
   let currentTop = -2;
   let activeBlock = null;
-  let currentSelectedClass = '6G';
+  let currentSelectedClass = '7F';
   let saveTimeout = null;
 
   function toggleSettingsPanel() {
@@ -1030,22 +998,22 @@
       { icon: '🎙️', label: '3.00 - 3.15 :', isBreak: false }
     ],
     'PRIMARY_1_5': [
-      { icon: '✏️', label: 'ENGLISH :', isBreak: false, isLang: false },
-      { icon: '📚', label: 'TELUGU :', isBreak: false, isLang: 'te' },
-      { icon: '📖', label: 'HINDI :', isBreak: false, isLang: 'hi' },
-      { icon: '🌱', label: 'EVS :', isBreak: false, isLang: false },
-      { icon: '💡', label: 'G.K. :', isBreak: false, isLang: false },
-      { icon: '🔢', label: 'MATHS :', isBreak: false, isLang: false }
+      { icon: '✏️', label: 'ENGLISH :', isBreak: false },
+      { icon: '📚', label: 'TELUGU :', isBreak: false },
+      { icon: '📖', label: 'HINDI :', isBreak: false },
+      { icon: '🌱', label: 'EVS :', isBreak: false },
+      { icon: '💡', label: 'G.K. :', isBreak: false },
+      { icon: '🔢', label: 'MATHS :', isBreak: false }
     ],
     'HIGH_SCHOOL': [
-      { icon: '📚', label: 'TELUGU :', isBreak: false, isLang: 'te' },
-      { icon: '📖', label: 'HINDI :', isBreak: false, isLang: 'hi' },
-      { icon: '✏️', label: 'ENGLISH :', isBreak: false, isLang: false },
-      { icon: '🔢', label: 'MATHS :', isBreak: false, isLang: false },
-      { icon: '🧪', label: 'P.S. :', isBreak: false, isLang: false },
-      { icon: '🔬', label: 'N.S. :', isBreak: false, isLang: false },
-      { icon: '🌍', label: 'SOCIAL :', isBreak: false, isLang: false },
-      { icon: '🤖', label: 'A.I. :', isBreak: false, isLang: false }
+      { icon: '📚', label: 'TELUGU :', isBreak: false },
+      { icon: '📖', label: 'HINDI :', isBreak: false },
+      { icon: '✏️', label: 'ENGLISH :', isBreak: false },
+      { icon: '🔢', label: 'MATHS :', isBreak: false },
+      { icon: '🧪', label: 'P.S. :', isBreak: false },
+      { icon: '🔬', label: 'N.S. :', isBreak: false },
+      { icon: '🌍', label: 'SOCIAL :', isBreak: false },
+      { icon: '🤖', label: 'A.I. :', isBreak: false }
     ]
   };
 
@@ -1072,26 +1040,18 @@
 
       if (item.isBreak) {
         block.innerHTML = `
-          <div class="period-row">
+          <div class="period-row" onclick="setActiveBlock(this)">
             <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
             <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)">
             <div class="rule-wrapper">
               <input type="text" class="break-banner" value="${item.banner}" onfocus="setActiveBlock(this)">
             </div>
-            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Break">✕</button>
           </div>`;
       } else {
-        let translateBtnHtml = '';
-        if (item.isLang === 'te') {
-          translateBtnHtml = `<button class="btn-translate" onclick="triggerGoogleTranslate(this, 'te')" title="Translate to Telugu">🇮🇳 Translate</button>`;
-        } else if (item.isLang === 'hi') {
-          translateBtnHtml = `<button class="btn-translate" onclick="triggerGoogleTranslate(this, 'hi')" title="Translate to Hindi">🇮🇳 Translate</button>`;
-        }
-
         block.innerHTML = `
-          <div class="period-row">
+          <div class="period-row" onclick="setActiveBlock(this)">
             <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
-            <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)"> ${translateBtnHtml}
+            <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)">
             <div class="rule-lines-stack">
               <div class="rule-wrapper ${rulingStyle}">
                 <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
@@ -1102,34 +1062,10 @@
                 <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
               </div>
             </div>
-            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
           </div>`;
       }
       container.appendChild(block);
     });
-  }
-
-  async function triggerGoogleTranslate(btn, targetLang) {
-    const row = btn.closest('.period-row');
-    const editable = row.querySelector('.line-1-text');
-    if (!editable) return;
-    const text = editable.innerText.trim();
-    if (!text) {
-      alert('Please type English text first to translate!');
-      return;
-    }
-    try {
-      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=` + encodeURIComponent(text));
-      const data = await res.json();
-      if (data && data[0]) {
-        let translated = data[0].map(item => item[0]).join('');
-        editable.innerText = translated;
-        autoSaveDiaryData();
-      }
-    } catch(e) {
-      console.error('Translation error:', e);
-      alert('Translation network request failed.');
-    }
   }
 
   function handleClassChange(newClass) {
@@ -1159,7 +1095,9 @@
     document.documentElement.style.setProperty('--space-border-width', style === 'none' ? '0px' : '2px');
   }
 
-  function setActiveBlock(element) { activeBlock = element.closest('.period-block'); }
+  function setActiveBlock(element) { 
+    activeBlock = element.closest('.period-block'); 
+  }
 
   function changeActivePeriodIcon(iconChar) {
     if (!iconChar) return;
@@ -1188,9 +1126,21 @@
     });
   }
 
-  function deletePeriod(button) {
-    const block = button.closest('.period-block');
-    if (block) block.remove();
+  function removeActivePeriod() {
+    if (activeBlock && activeBlock.parentNode === document.getElementById('schedule-container')) {
+      activeBlock.remove();
+      activeBlock = null;
+      autoSaveDiaryData();
+    } else {
+      const container = document.getElementById('schedule-container');
+      const blocks = container.querySelectorAll('.period-block');
+      if (blocks.length > 0) {
+        blocks[blocks.length - 1].remove();
+        autoSaveDiaryData();
+      } else {
+        alert('Please click on a period line first or no periods left to remove!');
+      }
+    }
   }
 
   function addNewPeriod(type, withSubjectBox) {
@@ -1202,18 +1152,17 @@
 
     if (type === 'break') {
       block.innerHTML = `
-        <div class="period-row">
+        <div class="period-row" onclick="setActiveBlock(this)">
           <span class="period-icon">🍎</span>
           <input type="text" class="time-input" value="Time Slot -" onfocus="setActiveBlock(this)">
           <div class="rule-wrapper">
             <input type="text" class="break-banner" value="— BREAK —" onfocus="setActiveBlock(this)">
           </div>
-          <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Break">✕</button>
         </div>`;
     } else {
       if (withSubjectBox) {
         block.innerHTML = `
-          <div class="period-row">
+          <div class="period-row" onclick="setActiveBlock(this)">
             <span class="period-icon" title="Click to Change Icon">📝</span>
             <input type="text" class="time-input" value="SUBJECT :" onfocus="setActiveBlock(this)">
             <div class="rule-lines-stack">
@@ -1226,11 +1175,10 @@
                 <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
               </div>
             </div>
-            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
           </div>`;
       } else {
         block.innerHTML = `
-          <div class="period-row">
+          <div class="period-row" onclick="setActiveBlock(this)">
             <div style="width: 151px; flex-shrink: 0;"></div>
             <div class="rule-lines-stack">
               <div class="rule-wrapper ${rulingStyle}">
@@ -1242,7 +1190,6 @@
                 <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
               </div>
             </div>
-            <button class="delete-period-btn" onclick="deletePeriod(this)" title="Delete Period">✕</button>
           </div>`;
       }
     }
@@ -1253,6 +1200,7 @@
       container.appendChild(block);
     }
     setActiveBlock(block.querySelector('.rule-input-full, input'));
+    autoSaveDiaryData();
   }
 
   function insertEmojiFromSelect(emoji) {
