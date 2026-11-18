@@ -259,12 +259,12 @@
     justify-content: center;
   }
 
-  /* Main Printable Container with Default Locked Background */
+  /* Main Printable Container with Default Background */
   .diary-page {
     width: 210mm;
     min-height: 297mm;
     box-sizing: border-box;
-    background-image: url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg') !important;
+    background-image: url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png?raw=true') !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
@@ -302,7 +302,7 @@
   /* Header Section Grid */
   .header {
     display: grid;
-    grid-template-columns: 165px 1fr 140px;
+    grid-template-columns: 195px 1fr 140px;
     align-items: center;
     margin-bottom: 12px;
     width: 100%;
@@ -314,8 +314,8 @@
     border-radius: 12px;
     padding: 8px 12px;
     background: rgba(255, 255, 255, 0.95);
-    width: 160px;
-    min-height: 85px;
+    width: 190px;
+    min-height: 90px;
     box-shadow: 0px 3px 0px var(--primary-dark);
     display: flex;
     flex-direction: column;
@@ -327,7 +327,7 @@
 
   .info-row {
     font-family: 'Fredoka', sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -336,8 +336,8 @@
 
   .info-row span { white-space: nowrap; }
 
-  .info-row.class-row { color: var(--class-color); }
-  .info-row.class-row .info-select { color: var(--class-color); border-bottom-color: var(--class-color); }
+  .info-row.class-row { color: var(--class-color); font-size: 17px; }
+  .info-row.class-row .info-select { color: var(--class-color); border-bottom-color: var(--class-color); font-size: 17px; }
 
   .info-row.day-row { color: var(--day-color); }
   .info-row.day-row .info-input { color: var(--day-color); border-bottom-color: var(--day-color); }
@@ -346,9 +346,9 @@
   .info-row.date-row .info-input { color: var(--date-color); border-bottom-color: var(--date-color); }
 
   .info-input, .info-select {
-    font-weight: 800;
-    width: 85px;
-    font-size: 13.5px;
+    font-weight: 900;
+    width: 100px;
+    font-size: 15px;
     text-transform: uppercase;
     border-bottom: 2px solid;
     padding-left: 2px;
@@ -650,7 +650,6 @@
       padding: 60px 50px 40px 50px !important;
       transform: none !important;
       margin-bottom: 0 !important;
-      background-image: url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg') !important;
       background-size: cover !important;
       background-repeat: no-repeat !important;
       background-position: center !important;
@@ -737,10 +736,12 @@
   </div>
 
   <div class="control-group">
-    <label>✏️ Selection Style:</label>
+    <label>✏️ Formatting:</label>
     <button class="btn-fmt" onclick="formatSelection('bold')" title="Bold"><b>B</b></button>
     <button class="btn-fmt" onclick="formatSelection('italic')" title="Italic"><i>I</i></button>
     <button class="btn-fmt" onclick="formatSelection('underline')" title="Underline"><u>U</u></button>
+    <button class="btn-fmt" onclick="adjustTextSize(1)" title="Increase Size">A+</button>
+    <button class="btn-fmt" onclick="adjustTextSize(-1)" title="Decrease Size">A-</button>
     <input type="color" class="control-color" value="#1a252f" id="selection-color-picker" onchange="applySelectedColor(this.value)" title="Color Selected Text">
   </div>
 
@@ -787,7 +788,10 @@
     <button class="btn-remove-period" style="background: linear-gradient(145deg, #c0392b, #962d22);" onclick="removeLastPeriod()">❌ Remove Last Line</button>
     <button class="btn-add-period" style="background: linear-gradient(145deg, #e67e22, #d35400);" onclick="addNewPeriod('break', false)">🍎 Add Break</button>
     
-    <label class="menu-upload-btn">📷 Change Photo <input type="file" accept="image/*" style="display: none;" onchange="loadTopRightPhotoFromMenu(event)"></label>
+    <label class="menu-upload-btn">🖼️ Change Diary BG <input type="file" accept="image/*" style="display: none;" onchange="changeDiaryBackground(event)"></label>
+    <button class="menu-delete-btn" onclick="resetDiaryBackground()">🔄 Default BG</button>
+
+    <label class="menu-upload-btn" style="background: linear-gradient(145deg, #00a8ff, #0097e6);">📷 Change Photo <input type="file" accept="image/*" style="display: none;" onchange="loadTopRightPhotoFromMenu(event)"></label>
     <button class="menu-delete-btn" onclick="removeTopRightPhotoDirect()">🗑️ Delete Photo</button>
 
     <label class="menu-upload-btn" style="background: linear-gradient(145deg, #2ed573, #26af5f);">🖼️ Upload Media <input type="file" accept="image/*" style="display: none;" onchange="insertSpaceImage(event)"></label>
@@ -854,7 +858,7 @@
           </div>
           <div class="info-row date-row">
             <span>DATE:</span>
-            <input type="text" class="info-input" id="diary-date" placeholder="DD/MM/YY">
+            <input type="text" class="info-input" id="diary-date" placeholder="DD/MM/YY" onchange="checkDateChange()">
           </div>
         </div>
 
@@ -863,9 +867,9 @@
           <img src="https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/ABC%20School%20Full%20Logo.png" id="logo-img" class="center-logo-banner" alt="ABC High School Logo" crossorigin="anonymous">
         </div>
 
-        <!-- Top Right Default School Background Photo Box (No cross/remove buttons) -->
+        <!-- Top Right Corner Photo Box with the new image link -->
         <div class="top-right-photo-box" id="topRightPhotoBox">
-          <img id="topRightImgPreview" class="top-right-preview-img" src="https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg" alt="School Background" crossorigin="anonymous">
+          <img id="topRightImgPreview" class="top-right-preview-img" src="https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png?raw=true" alt="School Background" crossorigin="anonymous">
         </div>
       </div>
 
@@ -951,6 +955,20 @@
     arrow.textContent = panel.classList.contains('collapsed') ? '▶' : '▼';
   }
 
+  function changeDiaryBackground(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      const diaryPage = document.getElementById('diary-container');
+      diaryPage.style.backgroundImage = `url('${url}')`;
+      // Also update print/snap media rule dynamically
+    }
+  }
+
+  function resetDiaryBackground() {
+    document.getElementById('diary-container').style.backgroundImage = `url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png?raw=true')`;
+  }
+
   function loadTopRightPhotoFromMenu(event) {
     const file = event.target.files[0];
     if (file) {
@@ -1010,12 +1028,22 @@
       { icon: '🎨📖', label: '1.15 - 3.00 :', isBreak: false },
       { icon: '🎙️', label: '3.00 - 3.15 :', isBreak: false }
     ],
-    'PRIMARY_1_5': [
+    'PRIMARY_1_3': [
       { icon: '✏️', label: 'ENGLISH :', isBreak: false },
       { icon: '📚', label: 'TELUGU :', isBreak: false },
       { icon: '📖', label: 'HINDI :', isBreak: false },
       { icon: '🌱', label: 'EVS :', isBreak: false },
       { icon: '💡', label: 'G.K. :', isBreak: false },
+      { icon: '⭐', label: 'ILM :', isBreak: false },
+      { icon: '🔢', label: 'MATHS :', isBreak: false }
+    ],
+    'PRIMARY_4_5': [
+      { icon: '✏️', label: 'ENGLISH :', isBreak: false },
+      { icon: '📚', label: 'TELUGU :', isBreak: false },
+      { icon: '📖', label: 'HINDI :', isBreak: false },
+      { icon: '🌱', label: 'SCIENCE :', isBreak: false },
+      { icon: '💡', label: 'G.K. :', isBreak: false },
+      { icon: '⭐', label: 'ILM :', isBreak: false },
       { icon: '🔢', label: 'MATHS :', isBreak: false }
     ],
     'HIGH_SCHOOL': [
@@ -1027,6 +1055,7 @@
       { icon: '⚗️', label: 'CHEMISTRY :', isBreak: false },
       { icon: '🔬', label: 'N.S. :', isBreak: false },
       { icon: '🌍', label: 'SOCIAL :', isBreak: false },
+      { icon: '⭐', label: 'ILM :', isBreak: false },
       { icon: '🤖', label: 'A.I. :', isBreak: false }
     ]
   };
@@ -1041,8 +1070,10 @@
       preset = schedulePresets['BV1_BV2'];
     } else if (clsValue === 'BV3') {
       preset = schedulePresets['BV3'];
-    } else if (['1F','1G','2F','2G','3F','3G','4F','4G','5F','5G'].includes(clsValue)) {
-      preset = schedulePresets['PRIMARY_1_5'];
+    } else if (['1F','1G','2F','2G','3F','3G'].includes(clsValue)) {
+      preset = schedulePresets['PRIMARY_1_3'];
+    } else if (['4F','4G','5F','5G'].includes(clsValue)) {
+      preset = schedulePresets['PRIMARY_4_5'];
     }
 
     const rulingStyle = document.getElementById('ruling-select')?.value || 'rule-single';
@@ -1100,14 +1131,38 @@
     document.documentElement.style.setProperty('--border-color', t.primary);
   }
 
-  function changeFontColor(color) { document.documentElement.style.setProperty('--font-color-main', color); }
+  function changeFontColor(color) { 
+    document.documentElement.style.setProperty('--font-color-main', color);
+    document.querySelectorAll('.rule-input-full').forEach(el => el.style.color = color);
+  }
+
   function changeBreakColor(color) { document.documentElement.style.setProperty('--break-bg', color); }
   function formatSelection(command) { document.execCommand(command, false, null); }
-  function applySelectedColor(color) { document.execCommand('foreColor', false, color); }
+  
+  function applySelectedColor(color) { 
+    document.execCommand('styleWithCSS', false, true);
+    document.execCommand('foreColor', false, color); 
+  }
+
   function changeHeaderColor(variableName, color) { document.documentElement.style.setProperty(variableName, color); }
   function changeSpaceBorderStyle(style) {
     document.documentElement.style.setProperty('--space-border-style', style);
     document.documentElement.style.setProperty('--space-border-width', style === 'none' ? '0px' : '2px');
+  }
+
+  function adjustTextSize(step) {
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.classList.contains('rule-input-full') || activeEl.classList.contains('space-text-input'))) {
+      let currentSize = window.getComputedStyle(activeEl).fontSize;
+      let newSize = parseInt(currentSize) + step;
+      activeEl.style.fontSize = newSize + 'px';
+    } else {
+      document.querySelectorAll('.rule-input-full').forEach(input => {
+        let currentSize = window.getComputedStyle(input).fontSize;
+        let newSize = parseInt(currentSize) + step;
+        input.style.fontSize = newSize + 'px';
+      });
+    }
   }
 
   function setActiveBlock(element) { 
@@ -1499,10 +1554,23 @@
     updateTeacherSignatureLabel(currentSelectedClass);
   }
 
+  function changeDiaryBackground(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      document.getElementById('diary-container').style.backgroundImage = `url('${url}')`;
+    }
+  }
+
+  function resetDiaryBackground() {
+    document.getElementById('diary-container').style.backgroundImage = `url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png?raw=true')`;
+  }
+
   function autoSaveDiaryDataForClass(targetClass) {
     if (!targetClass) targetClass = currentSelectedClass;
     const saveData = {
       diaryClass: targetClass,
+      diaryDate: document.getElementById('diary-date').value,
       spaceText: document.getElementById('space-textarea').value,
       dedicatedText: document.getElementById('dedicated-text').value,
       remarksText: document.getElementById('remarks-text').value,
@@ -1527,8 +1595,22 @@
     saveTimeout = setTimeout(() => { autoSaveDiaryDataForClass(currentSelectedClass); }, 500);
   }
 
+  function checkDateChange() {
+    const currentDateInput = document.getElementById('diary-date').value;
+    const lastSavedDate = localStorage.getItem(`abc_diary_date_${currentSelectedClass}`);
+    if (lastSavedDate && lastSavedDate !== currentDateInput) {
+      // Date changed: clear subject lines data for this class
+      localStorage.removeItem(`abc_diary_save_${currentSelectedClass}`);
+      renderScheduleForClass(currentSelectedClass);
+      document.getElementById('space-textarea').value = '';
+      document.getElementById('dedicated-text').value = '';
+      document.getElementById('remarks-text').value = '';
+    }
+    localStorage.setItem(`abc_diary_date_${currentSelectedClass}`, currentDateInput);
+    autoSaveDiaryData();
+  }
+
   function autoLoadDiaryDataForClass(targetClass) {
-    // Always load current system Date and Day on load/class change
     const now = new Date();
     const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
     document.getElementById('diary-day').value = days[now.getDay()];
@@ -1536,7 +1618,16 @@
     const dd = String(now.getDate()).padStart(2, '0');
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const yy = String(now.getFullYear()).slice(-2);
-    document.getElementById('diary-date').value = `${dd}/${mm}/${yy}`;
+    const todayStr = `${dd}/${mm}/${yy}`;
+
+    document.getElementById('diary-date').value = todayStr;
+
+    // Check if date changed since last session
+    const lastSavedDate = localStorage.getItem(`abc_diary_date_${targetClass}`);
+    if (lastSavedDate && lastSavedDate !== todayStr) {
+      localStorage.removeItem(`abc_diary_save_${targetClass}`);
+      localStorage.setItem(`abc_diary_date_${targetClass}`, todayStr);
+    }
 
     document.getElementById('space-textarea').value = '';
     document.getElementById('dedicated-text').value = '';
@@ -1547,6 +1638,7 @@
 
     try {
       const saveData = JSON.parse(rawData);
+      if (saveData.diaryDate) document.getElementById('diary-date').value = saveData.diaryDate;
       if (saveData.spaceText !== undefined) document.getElementById('space-textarea').value = saveData.spaceText;
       if (saveData.dedicatedText !== undefined) document.getElementById('dedicated-text').value = saveData.dedicatedText;
       if (saveData.remarksText !== undefined) document.getElementById('remarks-text').value = saveData.remarksText;
