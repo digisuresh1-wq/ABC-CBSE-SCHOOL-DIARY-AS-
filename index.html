@@ -259,12 +259,12 @@
     justify-content: center;
   }
 
-  /* Main Printable Container with Default Background */
+  /* Main Printable Container with Direct Raw Background Link */
   .diary-page {
     width: 210mm;
     min-height: 297mm;
     box-sizing: border-box;
-    background-image: url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png?raw=true') !important;
+    background-image: url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png') !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
@@ -867,9 +867,9 @@
           <img src="https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/ABC%20School%20Full%20Logo.png" id="logo-img" class="center-logo-banner" alt="ABC High School Logo" crossorigin="anonymous">
         </div>
 
-        <!-- Top Right Corner Photo Box with the new image link -->
+        <!-- Top Right Corner Photo Box with original school-bg.jpeg -->
         <div class="top-right-photo-box" id="topRightPhotoBox">
-          <img id="topRightImgPreview" class="top-right-preview-img" src="https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png?raw=true" alt="School Background" crossorigin="anonymous">
+          <img id="topRightImgPreview" class="top-right-preview-img" src="https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg" alt="School Background" crossorigin="anonymous">
         </div>
       </div>
 
@@ -959,9 +959,7 @@
     const file = event.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      const diaryPage = document.getElementById('diary-container');
-      diaryPage.style.backgroundImage = `url('${url}')`;
-      // Also update print/snap media rule dynamically
+      document.getElementById('diary-container').style.backgroundImage = `url('${url}')`;
     }
   }
 
@@ -1563,7 +1561,23 @@
   }
 
   function resetDiaryBackground() {
-    document.getElementById('diary-container').style.backgroundImage = `url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png?raw=true')`;
+    document.getElementById('diary-container').style.backgroundImage = `url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg')`;
+  }
+
+  function loadTopRightPhotoFromMenu(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const imgUrl = URL.createObjectURL(file);
+      const img = document.getElementById('topRightImgPreview');
+      img.src = imgUrl;
+      img.style.display = 'block';
+    }
+  }
+
+  function removeTopRightPhotoDirect() {
+    const img = document.getElementById('topRightImgPreview');
+    img.src = '';
+    img.style.display = 'none';
   }
 
   function autoSaveDiaryDataForClass(targetClass) {
