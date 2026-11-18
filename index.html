@@ -259,12 +259,12 @@
     justify-content: center;
   }
 
-  /* Main Printable Container with Direct Raw Background Link */
+  /* Main Printable Container with Default Original School BG */
   .diary-page {
     width: 210mm;
     min-height: 297mm;
     box-sizing: border-box;
-    background-image: url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png') !important;
+    background-image: url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg') !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
@@ -650,6 +650,7 @@
       padding: 60px 50px 40px 50px !important;
       transform: none !important;
       margin-bottom: 0 !important;
+      background-image: url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg') !important;
       background-size: cover !important;
       background-repeat: no-repeat !important;
       background-position: center !important;
@@ -964,7 +965,7 @@
   }
 
   function resetDiaryBackground() {
-    document.getElementById('diary-container').style.backgroundImage = `url('https://github.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/blob/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png?raw=true')`;
+    document.getElementById('diary-container').style.backgroundImage = `url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg')`;
   }
 
   function loadTopRightPhotoFromMenu(event) {
@@ -979,8 +980,8 @@
 
   function removeTopRightPhotoDirect() {
     const img = document.getElementById('topRightImgPreview');
-    img.src = '';
-    img.style.display = 'none';
+    img.src = 'https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg';
+    img.style.display = 'block';
   }
 
   const themes = {
@@ -1576,8 +1577,8 @@
 
   function removeTopRightPhotoDirect() {
     const img = document.getElementById('topRightImgPreview');
-    img.src = '';
-    img.style.display = 'none';
+    img.src = 'https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg';
+    img.style.display = 'block';
   }
 
   function autoSaveDiaryDataForClass(targetClass) {
