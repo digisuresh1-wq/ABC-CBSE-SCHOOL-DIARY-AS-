@@ -533,6 +533,8 @@
     padding: 6px 10px;
     z-index: 1;
     line-height: 1.4;
+    outline: none;
+    overflow-y: auto;
   }
 
   .space-inserted-img {
@@ -579,6 +581,8 @@
     color: var(--font-color-main);
     font-weight: 700;
     padding-left: 6px;
+    outline: none;
+    min-height: 24px;
   }
 
   .signatures {
@@ -881,14 +885,14 @@
         <span>📢 ANNOUNCEMENTS / HOMEWORK MEDIA :</span>
       </div>
       <div class="compact-space-container" id="space-spacer">
-        <textarea id="space-textarea" class="space-text-input" placeholder="Type extra notes, homework or announcements here..."></textarea>
+        <div id="space-textarea" class="space-text-input" contenteditable="true" placeholder="Type extra notes, homework or announcements here..."></div>
         <img id="space-img-preview" class="space-inserted-img" alt="Space Picture">
       </div>
 
       <div class="footer-section">
         <div class="remark-row">
           <span class="remark-label">WEEK DEDICATION TOPIC :</span>
-          <input type="text" class="remark-input" id="dedicated-text">
+          <div class="remark-input" id="dedicated-text" contenteditable="true"></div>
         </div>
         <div class="remark-row">
           <span class="remark-label">TEACHER'S / PARENT'S REMARKS :</span>
@@ -1151,7 +1155,7 @@
 
   function adjustTextSize(step) {
     const activeEl = document.activeElement;
-    if (activeEl && (activeEl.classList.contains('rule-input-full') || activeEl.classList.contains('space-text-input'))) {
+    if (activeEl && (activeEl.classList.contains('rule-input-full') || activeEl.classList.contains('space-text-input') || activeEl.classList.contains('remark-input'))) {
       let currentSize = window.getComputedStyle(activeEl).fontSize;
       let newSize = parseInt(currentSize) + step;
       activeEl.style.fontSize = newSize + 'px';
@@ -1290,7 +1294,7 @@
       sel.addRange(range);
     } else {
       const area = document.getElementById('space-textarea');
-      area.value += emoji;
+      area.innerHTML += emoji;
     }
   }
 
@@ -1314,7 +1318,7 @@
 
   function apply3DEffectIndex(indexStr) {
     const idx = parseInt(indexStr);
-    const inputs = document.querySelectorAll('.rule-input-full, .space-text-input');
+    const inputs = document.querySelectorAll('.rule-input-full, .space-text-input, .remark-input');
     if (idx === 0) {
       inputs.forEach(input => {
         input.style.textShadow = 'none';
@@ -1458,8 +1462,8 @@
 
     document.querySelectorAll('.period-block').forEach(block => {
       let time = block.querySelector('.time-input')?.value || '';
-      let line1 = block.querySelector('.line-1-text')?.innerText || block.querySelector('.break-banner')?.value || '';
-      let line2 = block.querySelector('.line-2-text')?.innerText || '';
+      let line1 = block.querySelector('.line-1-text')?.innerHTML || block.querySelector('.break-banner')?.value || '';
+      let line2 = block.querySelector('.line-2-text')?.innerHTML || '';
       let text = line1 + (line2 ? ' | ' + line2 : '');
       if (line1.trim() !== '' || line2.trim() !== '') {
         content += `<tr><td><b>${time}</b></td><td>${text}</td></tr>`;
@@ -1467,8 +1471,8 @@
     });
 
     content += `</table><br/>`;
-    content += `<p><b>Extra Notes / Space:</b><br/>${document.getElementById('space-textarea').value || 'N/A'}</p>`;
-    content += `<p><b>Week Dedication Topic :</b> ${document.getElementById('dedicated-text').value || 'N/A'}</p>`;
+    content += `<p><b>Extra Notes / Space:</b><br/>${document.getElementById('space-textarea').innerHTML || 'N/A'}</p>`;
+    content += `<p><b>Week Dedication Topic :</b> ${document.getElementById('dedicated-text').innerHTML || 'N/A'}</p>`;
     content += `<p><b>Teacher's Remarks :</b> ${document.getElementById('remarks-text').value || 'N/A'}</p>`;
     content += `</body></html>`;
 
@@ -1500,8 +1504,8 @@
       }
     });
 
-    csv += `\nNotes / Space,"${(document.getElementById('space-textarea').value || '').replace(/"/g, '""')}"\n`;
-    csv += `Week Dedication Topic,"${(document.getElementById('dedicated-text').value || '').replace(/"/g, '""')}"\n`;
+    csv += `\nNotes / Space,"${(document.getElementById('space-textarea').innerText || '').replace(/"/g, '""')}"\n`;
+    csv += `Week Dedication Topic,"${(document.getElementById('dedicated-text').innerText || '').replace(/"/g, '""')}"\n`;
     csv += `Remarks,"${(document.getElementById('remarks-text').value || '').replace(/"/g, '""')}"\n`;
 
     let blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -1553,42 +1557,22 @@
     updateTeacherSignatureLabel(currentSelectedClass);
   }
 
-  function changeDiaryBackground(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      document.getElementById('diary-container').style.backgroundImage = `url('${url}')`;
-    }
-  }
-
-  function resetDiaryBackground() {
-    document.getElementById('diary-container').style.backgroundImage = `url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg')`;
-  }
-
-  function loadTopRightPhotoFromMenu(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const imgUrl = URL.createObjectURL(file);
-      const img = document.getElementById('topRightImgPreview');
-      img.src = imgUrl;
-      img.style.display = 'block';
-    }
-  }
-
-  function removeTopRightPhotoDirect() {
-    const img = document.getElementById('topRightImgPreview');
-    img.src = 'https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/school-bg.jpeg';
-    img.style.display = 'block';
-  }
-
   function autoSaveDiaryDataForClass(targetClass) {
     if (!targetClass) targetClass = currentSelectedClass;
-    const saveData = {
+    
+    // Save only Week Dedication Topic permanently (does NOT reset)
+    const generalData = {
+      dedicatedText: document.getElementById('dedicated-text').innerHTML
+    };
+    localStorage.setItem(`abc_diary_general_${targetClass}`, JSON.stringify(generalData));
+
+    // Save schedule, announcements, AND remarks with timestamp (these WILL reset after 12 hrs / date change)
+    const scheduleData = {
       diaryClass: targetClass,
       diaryDate: document.getElementById('diary-date').value,
-      spaceText: document.getElementById('space-textarea').value,
-      dedicatedText: document.getElementById('dedicated-text').value,
+      spaceText: document.getElementById('space-textarea').innerHTML,
       remarksText: document.getElementById('remarks-text').value,
+      saveTimestamp: new Date().getTime(),
       periods: []
     };
 
@@ -1598,10 +1582,10 @@
       const line1Text = block.querySelector('.line-1-text')?.innerHTML || '';
       const line2Text = block.querySelector('.line-2-text')?.innerHTML || '';
       const breakBanner = block.querySelector('.break-banner')?.value || '';
-      saveData.periods.push({ icon, timeInput, line1Text, line2Text, breakBanner, isBreak: !!block.querySelector('.break-banner') });
+      scheduleData.periods.push({ icon, timeInput, line1Text, line2Text, breakBanner, isBreak: !!block.querySelector('.break-banner') });
     });
 
-    localStorage.setItem(`abc_diary_save_${targetClass}`, JSON.stringify(saveData));
+    localStorage.setItem(`abc_diary_save_${targetClass}`, JSON.stringify(scheduleData));
     localStorage.setItem('abc_diary_last_active_class', targetClass);
   }
 
@@ -1611,17 +1595,6 @@
   }
 
   function checkDateChange() {
-    const currentDateInput = document.getElementById('diary-date').value;
-    const lastSavedDate = localStorage.getItem(`abc_diary_date_${currentSelectedClass}`);
-    if (lastSavedDate && lastSavedDate !== currentDateInput) {
-      // Date changed: clear subject lines data for this class
-      localStorage.removeItem(`abc_diary_save_${currentSelectedClass}`);
-      renderScheduleForClass(currentSelectedClass);
-      document.getElementById('space-textarea').value = '';
-      document.getElementById('dedicated-text').value = '';
-      document.getElementById('remarks-text').value = '';
-    }
-    localStorage.setItem(`abc_diary_date_${currentSelectedClass}`, currentDateInput);
     autoSaveDiaryData();
   }
 
@@ -1637,43 +1610,80 @@
 
     document.getElementById('diary-date').value = todayStr;
 
-    // Check if date changed since last session
-    const lastSavedDate = localStorage.getItem(`abc_diary_date_${targetClass}`);
-    if (lastSavedDate && lastSavedDate !== todayStr) {
-      localStorage.removeItem(`abc_diary_save_${targetClass}`);
-      localStorage.setItem(`abc_diary_date_${targetClass}`, todayStr);
-    }
-
-    document.getElementById('space-textarea').value = '';
-    document.getElementById('dedicated-text').value = '';
-    document.getElementById('remarks-text').value = '';
+    // Load permanent field (Week Dedication Topic)
+    try {
+      const generalRaw = localStorage.getItem(`abc_diary_general_${targetClass}`);
+      if (generalRaw) {
+        const generalData = JSON.parse(generalRaw);
+        if (generalData.dedicatedText !== undefined) document.getElementById('dedicated-text').innerHTML = generalData.dedicatedText;
+      } else {
+        document.getElementById('dedicated-text').innerHTML = '';
+      }
+    } catch(e) { console.log(e); }
 
     const rawData = localStorage.getItem(`abc_diary_save_${targetClass}`);
-    if (!rawData) return;
+    if (!rawData) {
+      document.getElementById('space-textarea').innerHTML = '';
+      document.getElementById('remarks-text').value = '';
+      return;
+    }
 
     try {
       const saveData = JSON.parse(rawData);
-      if (saveData.diaryDate) document.getElementById('diary-date').value = saveData.diaryDate;
-      if (saveData.spaceText !== undefined) document.getElementById('space-textarea').value = saveData.spaceText;
-      if (saveData.dedicatedText !== undefined) document.getElementById('dedicated-text').value = saveData.dedicatedText;
+      
+      // Check 12-hour expiration or Date change reset for subjects, announcements, and remarks
+      const currentTime = new Date().getTime();
+      const savedTime = saveData.saveTimestamp || 0;
+      const hoursPassed = (currentTime - savedTime) / (1000 * 60 * 60);
+
+      if (hoursPassed >= 12 || (saveData.diaryDate && saveData.diaryDate !== todayStr)) {
+        localStorage.removeItem(`abc_diary_save_${targetClass}`);
+        renderScheduleForClass(targetClass);
+        document.getElementById('space-textarea').innerHTML = '';
+        document.getElementById('remarks-text').value = '';
+        return;
+      }
+
+      if (saveData.spaceText !== undefined) document.getElementById('space-textarea').innerHTML = saveData.spaceText;
       if (saveData.remarksText !== undefined) document.getElementById('remarks-text').value = saveData.remarksText;
 
       if (saveData.periods && saveData.periods.length > 0) {
-        const periodBlocks = document.querySelectorAll('.period-block');
-        saveData.periods.forEach((pData, index) => {
-          if (periodBlocks[index]) {
-            const iconSpan = periodBlocks[index].querySelector('.period-icon');
-            const timeInput = periodBlocks[index].querySelector('.time-input');
-            const line1Text = periodBlocks[index].querySelector('.line-1-text');
-            const line2Text = periodBlocks[index].querySelector('.line-2-text');
-            const breakBanner = periodBlocks[index].querySelector('.break-banner');
+        const container = document.getElementById('schedule-container');
+        container.innerHTML = '';
+        const rulingStyle = document.getElementById('ruling-select')?.value || 'rule-single';
+        const currentFont = document.getElementById('font-select')?.value || "'Comic Neue', sans-serif";
 
-            if (iconSpan && pData.icon !== undefined) iconSpan.textContent = pData.icon;
-            if (timeInput && pData.timeInput !== undefined) timeInput.value = pData.timeInput;
-            if (line1Text && pData.line1Text !== undefined) line1Text.innerHTML = pData.line1Text;
-            if (line2Text && pData.line2Text !== undefined) line2Text.innerHTML = pData.line2Text;
-            if (breakBanner && pData.breakBanner !== undefined) breakBanner.value = pData.breakBanner;
+        saveData.periods.forEach((pData) => {
+          const block = document.createElement('div');
+          block.className = 'period-block';
+
+          if (pData.isBreak) {
+            block.innerHTML = `
+              <div class="period-row" onclick="setActiveBlock(this)">
+                <span class="period-icon" title="Click to Change Icon">${pData.icon}</span>
+                <input type="text" class="time-input" value="${pData.timeInput}" onfocus="setActiveBlock(this)">
+                <div class="rule-wrapper">
+                  <input type="text" class="break-banner" value="${pData.breakBanner}" onfocus="setActiveBlock(this)">
+                </div>
+              </div>`;
+          } else {
+            block.innerHTML = `
+              <div class="period-row" onclick="setActiveBlock(this)">
+                <span class="period-icon" title="Click to Change Icon">${pData.icon}</span>
+                <input type="text" class="time-input" value="${pData.timeInput}" onfocus="setActiveBlock(this)">
+                <div class="rule-lines-stack">
+                  <div class="rule-wrapper ${rulingStyle}">
+                    <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
+                    <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)">${pData.line1Text}</div>
+                  </div>
+                  <div class="rule-wrapper ${rulingStyle}">
+                    <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
+                    <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)">${pData.line2Text}</div>
+                  </div>
+                </div>
+              </div>`;
           }
+          container.appendChild(block);
         });
       }
     } catch(e) {
@@ -1694,9 +1704,10 @@
     const activeClass = document.getElementById('diary-class').value;
     if (confirm(`Are you sure you want to clear all saved notes for class ${activeClass}?`)) {
       localStorage.removeItem(`abc_diary_save_${activeClass}`);
+      localStorage.removeItem(`abc_diary_general_${activeClass}`);
       renderScheduleForClass(activeClass);
-      document.getElementById('space-textarea').value = '';
-      document.getElementById('dedicated-text').value = '';
+      document.getElementById('space-textarea').innerHTML = '';
+      document.getElementById('dedicated-text').innerHTML = '';
       document.getElementById('remarks-text').value = '';
     }
   }
