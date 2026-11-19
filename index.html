@@ -268,7 +268,7 @@
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
-    padding: 60px 50px 40px 50px;
+    padding: 50px 48px 35px 48px;
     position: relative;
     background-color: #ffffff;
     transition: all 0.3s ease;
@@ -283,7 +283,7 @@
     display: flex;
     flex-direction: column;
     border: 3.5px solid var(--border-color);
-    padding: 16px 18px;
+    padding: 14px 16px;
     background: var(--card-bg);
     border-radius: 16px;
     box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
@@ -304,7 +304,7 @@
     display: grid;
     grid-template-columns: 195px 1fr 140px;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     width: 100%;
     gap: 12px;
   }
@@ -315,12 +315,12 @@
     padding: 8px 12px;
     background: rgba(255, 255, 255, 0.95);
     width: 190px;
-    min-height: 90px;
+    min-height: 88px;
     box-shadow: 0px 3px 0px var(--primary-dark);
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    gap: 6px;
+    gap: 5px;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -359,7 +359,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 85px;
+    height: 82px;
     padding: 0 5px;
     overflow: hidden;
     margin: 0 auto;
@@ -367,7 +367,7 @@
   }
 
   .center-logo-banner {
-    max-height: 80px;
+    max-height: 78px;
     max-width: 100%;
     width: auto;
     height: auto;
@@ -380,7 +380,7 @@
 
   .top-right-photo-box {
     width: 140px;
-    height: 85px;
+    height: 82px;
     border: 2px dashed var(--primary);
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.95);
@@ -406,7 +406,7 @@
   .schedule-container {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 3px;
     width: 100%;
   }
 
@@ -429,7 +429,7 @@
     font-weight: 900;
     font-size: 12.5px;
     color: var(--primary);
-    padding: 4px 6px;
+    padding: 3px 6px;
     background: var(--time-bg);
     border-radius: 6px;
     flex-shrink: 0;
@@ -437,18 +437,18 @@
     print-color-adjust: exact !important;
   }
 
-  .period-icon { font-size: 16px; margin-right: 6px; flex-shrink: 0; cursor: pointer; }
+  .period-icon { font-size: 15px; margin-right: 6px; flex-shrink: 0; cursor: pointer; }
 
   .rule-lines-stack {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    gap: 2px;
+    gap: 0px;
   }
 
   .rule-wrapper {
     position: relative;
-    height: 28px;
+    height: 22px;
     overflow: hidden;
     margin-left: 6px;
     flex-grow: 1;
@@ -456,64 +456,74 @@
 
   .rule-line { position: absolute; left: 0; width: 100%; pointer-events: none; }
 
-  .rule-single .line-1 { top: 20px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-single .line-1 { top: 18px; border-bottom: 1.5px solid var(--line-top); }
   .rule-single .line-2, .rule-single .line-3, .rule-single .line-4 { display: none; }
 
-  .rule-double .line-1 { top: 6px; border-bottom: 1.5px solid var(--line-top); }
-  .rule-double .line-2 { top: 22px; border-bottom: 1.5px solid var(--line-bot); }
+  .rule-double .line-1 { top: 4px; border-bottom: 1.5px solid var(--line-top); }
+  .rule-double .line-2 { top: 19px; border-bottom: 1.5px solid var(--line-bot); }
   .rule-double .line-3, .rule-double .line-4 { display: none; }
 
-  .rule-four .line-1 { top: 3px; border-bottom: 1px solid var(--line-top); }
-  .rule-four .line-2 { top: 10px; border-bottom: 1px dashed var(--line-mid1); }
-  .rule-four .line-3 { top: 17px; border-bottom: 1px dashed var(--line-mid2); }
-  .rule-four .line-4 { top: 24px; border-bottom: 1px solid var(--line-bot); }
+  .rule-four .line-1 { top: 2px; border-bottom: 1px solid var(--line-top); }
+  .rule-four .line-2 { top: 8px; border-bottom: 1px dashed var(--line-mid1); }
+  .rule-four .line-3 { top: 14px; border-bottom: 1px dashed var(--line-mid2); }
+  .rule-four .line-4 { top: 20px; border-bottom: 1px solid var(--line-bot); }
 
   .rule-input-full {
     position: absolute;
-    top: -2px;
+    top: -1px;
     left: 0;
     width: 100%;
-    height: 26px;
+    height: 22px;
     font-family: 'Comic Neue', sans-serif;
-    font-size: 18px;
-    line-height: 22px;
+    font-size: 17px;
+    line-height: 20px;
     color: var(--font-color-main);
     font-weight: 700;
     padding: 0 6px;
     z-index: 2;
     outline: none;
+  }
+
+  .line-1-text {
     white-space: nowrap;
     overflow: hidden;
   }
 
+  .line-2-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    overflow: hidden;
+  }
+
   .break-banner {
-    position: absolute;
-    top: 2px;
+    position: relative;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 32px;
+    height: 24px;
     text-align: center;
     font-family: 'Fredoka', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: #ffffff;
     letter-spacing: 2px;
-    line-height: 32px;
+    line-height: 24px;
     z-index: 2;
     background: var(--break-bg);
-    border-radius: 8px;
+    border-radius: 6px;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
   .compact-space-container {
-    height: 55px;
+    height: 50px;
     min-height: 0px;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-    margin: 6px 0;
+    margin: 5px 0;
     resize: vertical;
     overflow: hidden;
     border-width: var(--space-border-width);
@@ -530,9 +540,9 @@
     font-size: 16px;
     font-weight: 700;
     color: var(--font-color-main);
-    padding: 6px 10px;
+    padding: 5px 10px;
     z-index: 1;
-    line-height: 1.4;
+    line-height: 1.35;
     outline: none;
     overflow-y: auto;
   }
@@ -551,7 +561,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 6px;
+    margin-top: 6px;
+    margin-bottom: 4px;
     font-size: 12px;
     font-weight: 800;
     color: var(--primary);
@@ -560,8 +571,8 @@
   .footer-section {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-top: 5px;
+    gap: 6px;
+    margin-top: 4px;
   }
 
   .remark-row {
@@ -582,14 +593,14 @@
     font-weight: 700;
     padding-left: 6px;
     outline: none;
-    min-height: 24px;
+    min-height: 22px;
   }
 
   .signatures {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-top: 8px;
+    margin-top: 6px;
     padding: 0 10px;
     font-weight: 800;
     font-size: 12px;
@@ -651,7 +662,7 @@
       width: 210mm !important; 
       min-height: 297mm !important; 
       box-shadow: none !important; 
-      padding: 60px 50px 40px 50px !important;
+      padding: 50px 48px 35px 48px !important;
       transform: none !important;
       margin-bottom: 0 !important;
       background-image: url('https://raw.githubusercontent.com/digisuresh1-wq/ABC-CBSE-SCHOOL-DIARY-AS-/main/fb964d9a-1875-4d9f-875f-d8eaf7b36abf.png') !important;
@@ -718,10 +729,10 @@
     <select class="control-select" onchange="changeFontSize(this.value)">
       <option value="15px">15px</option>
       <option value="16px">16px</option>
-      <option value="18px" selected>18px (Default)</option>
+      <option value="17px" selected>17px (Default)</option>
+      <option value="18px">18px</option>
       <option value="20px">20px</option>
       <option value="22px">22px</option>
-      <option value="24px">24px</option>
     </select>
   </div>
 
@@ -917,7 +928,7 @@
 </div>
 
 <script>
-  let currentTop = -2;
+  let currentTop = -1;
   let activeBlock = null;
   let currentSelectedClass = '6G';
   let saveTimeout = null;
@@ -1063,6 +1074,50 @@
     ]
   };
 
+  function createPeriodBlockHTML(item, rulingStyle, currentFont, line1Val = '', line2Val = '') {
+    if (item.isBreak) {
+      return `
+        <div class="period-row" onclick="setActiveBlock(this)">
+          <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
+          <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)">
+          <div class="rule-wrapper">
+            <input type="text" class="break-banner" value="${item.banner}" onfocus="setActiveBlock(this)">
+          </div>
+        </div>`;
+    } else if (item.hasSubjectInput === false) {
+      return `
+        <div class="period-row" onclick="setActiveBlock(this)">
+          <div style="width: 151px; flex-shrink: 0;"></div>
+          <div class="rule-lines-stack">
+            <div class="rule-wrapper ${rulingStyle}">
+              <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
+              <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)" onkeydown="handleLine1KeyDown(event, this)" oninput="handleLine1Input(this)">${line1Val}</div>
+            </div>
+            <div class="rule-wrapper ${rulingStyle}">
+              <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
+              <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)" onkeydown="handleLine2KeyDown(event, this)">${line2Val}</div>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      return `
+        <div class="period-row" onclick="setActiveBlock(this)">
+          <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
+          <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)">
+          <div class="rule-lines-stack">
+            <div class="rule-wrapper ${rulingStyle}">
+              <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
+              <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)" onkeydown="handleLine1KeyDown(event, this)" oninput="handleLine1Input(this)">${line1Val}</div>
+            </div>
+            <div class="rule-wrapper ${rulingStyle}">
+              <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
+              <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)" onkeydown="handleLine2KeyDown(event, this)">${line2Val}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+  }
+
   function renderScheduleForClass(clsValue) {
     const container = document.getElementById('schedule-container');
     container.innerHTML = ''; 
@@ -1085,35 +1140,72 @@
     preset.forEach((item) => {
       const block = document.createElement('div');
       block.className = 'period-block';
-
-      if (item.isBreak) {
-        block.innerHTML = `
-          <div class="period-row" onclick="setActiveBlock(this)">
-            <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
-            <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)">
-            <div class="rule-wrapper">
-              <input type="text" class="break-banner" value="${item.banner}" onfocus="setActiveBlock(this)">
-            </div>
-          </div>`;
-      } else {
-        block.innerHTML = `
-          <div class="period-row" onclick="setActiveBlock(this)">
-            <span class="period-icon" title="Click to Change Icon">${item.icon}</span>
-            <input type="text" class="time-input" value="${item.label}" onfocus="setActiveBlock(this)">
-            <div class="rule-lines-stack">
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
-            </div>
-          </div>`;
-      }
+      block.innerHTML = createPeriodBlockHTML(item, rulingStyle, currentFont);
       container.appendChild(block);
     });
+  }
+
+  function moveCursorToEnd(el) {
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  function handleLine1KeyDown(event, line1El) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const stack = line1El.closest('.rule-lines-stack');
+      if (stack) {
+        const line2El = stack.querySelector('.line-2-text');
+        if (line2El) {
+          moveCursorToEnd(line2El);
+        }
+      }
+    }
+  }
+
+  function handleLine2KeyDown(event, line2El) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const currentBlock = line2El.closest('.period-block');
+      let nextBlock = currentBlock ? currentBlock.nextElementSibling : null;
+      while (nextBlock && nextBlock.querySelector('.break-banner')) {
+        nextBlock = nextBlock.nextElementSibling;
+      }
+      if (nextBlock) {
+        const nextLine1 = nextBlock.querySelector('.line-1-text');
+        if (nextLine1) {
+          moveCursorToEnd(nextLine1);
+        }
+      }
+    }
+  }
+
+  function handleLine1Input(line1El) {
+    if (line1El.scrollWidth > line1El.clientWidth + 2) {
+      const stack = line1El.closest('.rule-lines-stack');
+      const line2El = stack ? stack.querySelector('.line-2-text') : null;
+      if (line2El) {
+        let text = line1El.innerText;
+        let lastSpace = text.lastIndexOf(' ');
+        let overflowText = '';
+        if (lastSpace > 0) {
+          overflowText = text.substring(lastSpace + 1);
+          line1El.innerText = text.substring(0, lastSpace);
+        } else if (text.length > 1) {
+          overflowText = text.slice(-1);
+          line1El.innerText = text.slice(0, -1);
+        }
+        if (overflowText) {
+          line2El.innerText = overflowText + line2El.innerText;
+          moveCursorToEnd(line2El);
+        }
+      }
+    }
   }
 
   function handleClassChange(newClass) {
@@ -1227,49 +1319,16 @@
     const block = document.createElement('div');
     block.className = 'period-block';
 
+    let item;
     if (type === 'break') {
-      block.innerHTML = `
-        <div class="period-row" onclick="setActiveBlock(this)">
-          <span class="period-icon">🍎</span>
-          <input type="text" class="time-input" value="Time Slot -" onfocus="setActiveBlock(this)">
-          <div class="rule-wrapper">
-            <input type="text" class="break-banner" value="— BREAK —" onfocus="setActiveBlock(this)">
-          </div>
-        </div>`;
+      item = { icon: '🍎', label: 'Time Slot -', isBreak: true, banner: '— BREAK —' };
+    } else if (withSubjectBox) {
+      item = { icon: '📝', label: 'SUBJECT :', isBreak: false, hasSubjectInput: true };
     } else {
-      if (withSubjectBox) {
-        block.innerHTML = `
-          <div class="period-row" onclick="setActiveBlock(this)">
-            <span class="period-icon" title="Click to Change Icon">📝</span>
-            <input type="text" class="time-input" value="SUBJECT :" onfocus="setActiveBlock(this)">
-            <div class="rule-lines-stack">
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
-            </div>
-          </div>`;
-      } else {
-        block.innerHTML = `
-          <div class="period-row" onclick="setActiveBlock(this)">
-            <div style="width: 151px; flex-shrink: 0;"></div>
-            <div class="rule-lines-stack">
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
-              <div class="rule-wrapper ${rulingStyle}">
-                <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)"></div>
-              </div>
-            </div>
-          </div>`;
-      }
+      item = { icon: '', label: '', isBreak: false, hasSubjectInput: false };
     }
+
+    block.innerHTML = createPeriodBlockHTML(item, rulingStyle, currentFont);
 
     if (activeBlock && activeBlock.parentNode === container) {
       activeBlock.after(block);
@@ -1560,13 +1619,11 @@
   function autoSaveDiaryDataForClass(targetClass) {
     if (!targetClass) targetClass = currentSelectedClass;
     
-    // Save only Week Dedication Topic permanently (does NOT reset)
     const generalData = {
       dedicatedText: document.getElementById('dedicated-text').innerHTML
     };
     localStorage.setItem(`abc_diary_general_${targetClass}`, JSON.stringify(generalData));
 
-    // Save schedule, announcements, AND remarks with timestamp (these WILL reset after 12 hrs / date change)
     const scheduleData = {
       diaryClass: targetClass,
       diaryDate: document.getElementById('diary-date').value,
@@ -1578,11 +1635,21 @@
 
     document.querySelectorAll('.period-block').forEach((block) => {
       const icon = block.querySelector('.period-icon')?.textContent || '';
-      const timeInput = block.querySelector('.time-input')?.value || '';
+      const timeInputEl = block.querySelector('.time-input');
+      const hasSubjectInput = !!timeInputEl;
+      const timeInput = timeInputEl ? timeInputEl.value : '';
       const line1Text = block.querySelector('.line-1-text')?.innerHTML || '';
       const line2Text = block.querySelector('.line-2-text')?.innerHTML || '';
       const breakBanner = block.querySelector('.break-banner')?.value || '';
-      scheduleData.periods.push({ icon, timeInput, line1Text, line2Text, breakBanner, isBreak: !!block.querySelector('.break-banner') });
+      scheduleData.periods.push({
+        icon,
+        timeInput,
+        hasSubjectInput,
+        line1Text,
+        line2Text,
+        breakBanner,
+        isBreak: !!block.querySelector('.break-banner')
+      });
     });
 
     localStorage.setItem(`abc_diary_save_${targetClass}`, JSON.stringify(scheduleData));
@@ -1610,7 +1677,6 @@
 
     document.getElementById('diary-date').value = todayStr;
 
-    // Load permanent field (Week Dedication Topic)
     try {
       const generalRaw = localStorage.getItem(`abc_diary_general_${targetClass}`);
       if (generalRaw) {
@@ -1631,21 +1697,18 @@
     try {
       const saveData = JSON.parse(rawData);
       
-      // Check 12-hour expiration or Date change reset for subjects, announcements, and remarks
       const currentTime = new Date().getTime();
       const savedTime = saveData.saveTimestamp || 0;
       const hoursPassed = (currentTime - savedTime) / (1000 * 60 * 60);
+      const shouldResetText = hoursPassed >= 12 || (saveData.diaryDate && saveData.diaryDate !== todayStr);
 
-      if (hoursPassed >= 12 || (saveData.diaryDate && saveData.diaryDate !== todayStr)) {
-        localStorage.removeItem(`abc_diary_save_${targetClass}`);
-        renderScheduleForClass(targetClass);
+      if (shouldResetText) {
         document.getElementById('space-textarea').innerHTML = '';
         document.getElementById('remarks-text').value = '';
-        return;
+      } else {
+        if (saveData.spaceText !== undefined) document.getElementById('space-textarea').innerHTML = saveData.spaceText;
+        if (saveData.remarksText !== undefined) document.getElementById('remarks-text').value = saveData.remarksText;
       }
-
-      if (saveData.spaceText !== undefined) document.getElementById('space-textarea').innerHTML = saveData.spaceText;
-      if (saveData.remarksText !== undefined) document.getElementById('remarks-text').value = saveData.remarksText;
 
       if (saveData.periods && saveData.periods.length > 0) {
         const container = document.getElementById('schedule-container');
@@ -1656,35 +1719,23 @@
         saveData.periods.forEach((pData) => {
           const block = document.createElement('div');
           block.className = 'period-block';
-
-          if (pData.isBreak) {
-            block.innerHTML = `
-              <div class="period-row" onclick="setActiveBlock(this)">
-                <span class="period-icon" title="Click to Change Icon">${pData.icon}</span>
-                <input type="text" class="time-input" value="${pData.timeInput}" onfocus="setActiveBlock(this)">
-                <div class="rule-wrapper">
-                  <input type="text" class="break-banner" value="${pData.breakBanner}" onfocus="setActiveBlock(this)">
-                </div>
-              </div>`;
-          } else {
-            block.innerHTML = `
-              <div class="period-row" onclick="setActiveBlock(this)">
-                <span class="period-icon" title="Click to Change Icon">${pData.icon}</span>
-                <input type="text" class="time-input" value="${pData.timeInput}" onfocus="setActiveBlock(this)">
-                <div class="rule-lines-stack">
-                  <div class="rule-wrapper ${rulingStyle}">
-                    <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                    <div contenteditable="true" class="rule-input-full period-text line-1-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)">${pData.line1Text}</div>
-                  </div>
-                  <div class="rule-wrapper ${rulingStyle}">
-                    <div class="rule-line line-1"></div><div class="rule-line line-2"></div><div class="rule-line line-3"></div><div class="rule-line line-4"></div>
-                    <div contenteditable="true" class="rule-input-full period-text line-2-text" style="top: ${currentTop}px; font-family: ${currentFont};" onfocus="setActiveBlock(this)">${pData.line2Text}</div>
-                  </div>
-                </div>
-              </div>`;
-          }
+          const hasSub = pData.hasSubjectInput !== undefined ? pData.hasSubjectInput : true;
+          const item = {
+            icon: pData.icon,
+            label: pData.timeInput,
+            isBreak: pData.isBreak,
+            banner: pData.breakBanner,
+            hasSubjectInput: hasSub
+          };
+          const l1 = shouldResetText ? '' : (pData.line1Text || '');
+          const l2 = shouldResetText ? '' : (pData.line2Text || '');
+          block.innerHTML = createPeriodBlockHTML(item, rulingStyle, currentFont, l1, l2);
           container.appendChild(block);
         });
+
+        if (shouldResetText) {
+          autoSaveDiaryDataForClass(targetClass);
+        }
       }
     } catch(e) {
       console.log('Error restoring auto-saved class data:', e);
